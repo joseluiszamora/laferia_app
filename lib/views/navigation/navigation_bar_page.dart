@@ -3,6 +3,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:laferia/core/layouts/layout_main.dart';
 import 'package:laferia/core/providers/theme_provider.dart';
 import 'package:laferia/core/constants/app_colors.dart';
+import 'package:laferia/views/categorias/categorias_page.dart';
 import 'package:laferia/views/home/home_page.dart';
 import 'package:laferia/views/navigation/components/header_section.dart';
 import 'package:line_icons/line_icons.dart';
@@ -24,9 +25,9 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
     final theme = Theme.of(context);
 
     //* Pages List
-    List<Widget> pages = [const HomePage()];
+    List<Widget> pages = [const HomePage(), const CategoriasPage()];
 
-    List<String> titles = ['Inicio'];
+    List<String> titles = ['Inicio', 'Categorias'];
 
     return Scaffold(
       key: _scaffoldKey,
@@ -69,10 +70,8 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
                       ? AppColors.primary
                       : Colors.white,
               tabs: [
-                GButton(icon: LineIcons.userCircle, text: 'Personas'),
                 GButton(icon: LineIcons.home, text: 'Inicio'),
-                GButton(icon: LineIcons.fileContract, text: 'Agencias'),
-                GButton(icon: LineIcons.sign, text: 'Marcas'),
+                GButton(icon: LineIcons.userCircle, text: 'Categorias'),
               ],
               selectedIndex: _pageSelected,
               onTabChange: (index) {

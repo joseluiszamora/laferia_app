@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/models/tienda.dart';
+import '../../../core/services/categoria_service.dart';
 
 class TiendaCard extends StatelessWidget {
   final Tienda tienda;
@@ -60,6 +61,24 @@ class TiendaCard extends StatelessWidget {
                           tienda.rubroPrincipal,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: Colors.grey.shade600,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: theme.primaryColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '${CategoriaService.getCategoriaNombre(tienda.categoriaId)} > ${CategoriaService.getSubcategoriaNombre(tienda.subcategoriaId)}',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.primaryColor,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
                       ],

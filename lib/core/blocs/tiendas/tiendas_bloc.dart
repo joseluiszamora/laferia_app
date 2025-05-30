@@ -42,6 +42,8 @@ class TiendasBloc extends Bloc<TiendasEvent, TiendasState> {
         nombrePropietario: "Juan Pérez",
         ubicacion: const Ubicacion(lat: -16.500123, lng: -68.123456),
         rubroPrincipal: "Ropa usada americana",
+        categoriaId: "cat_002",
+        subcategoriaId: "sub_004",
         productos: ["prod_001", "prod_002", "prod_003"],
         contacto: const Contacto(
           telefono: "71234567",
@@ -63,6 +65,8 @@ class TiendasBloc extends Bloc<TiendasEvent, TiendasState> {
         nombrePropietario: "María González",
         ubicacion: const Ubicacion(lat: -16.501234, lng: -68.124567),
         rubroPrincipal: "Comida rápida",
+        categoriaId: "cat_001",
+        subcategoriaId: "sub_001",
         productos: ["prod_004", "prod_005", "prod_006"],
         contacto: const Contacto(
           telefono: "72345678",
@@ -84,6 +88,8 @@ class TiendasBloc extends Bloc<TiendasEvent, TiendasState> {
         nombrePropietario: "Carlos Mamani",
         ubicacion: const Ubicacion(lat: -16.502345, lng: -68.125678),
         rubroPrincipal: "Accesorios de celular",
+        categoriaId: "cat_003",
+        subcategoriaId: "sub_006",
         productos: ["prod_007", "prod_008", "prod_009"],
         contacto: const Contacto(
           telefono: "73456789",
@@ -105,6 +111,8 @@ class TiendasBloc extends Bloc<TiendasEvent, TiendasState> {
         nombrePropietario: "Ana Torres",
         ubicacion: const Ubicacion(lat: -16.503456, lng: -68.126789),
         rubroPrincipal: "Artesanías",
+        categoriaId: "cat_004",
+        subcategoriaId: "sub_007",
         productos: ["prod_010", "prod_011", "prod_012"],
         contacto: const Contacto(
           telefono: "74567890",
@@ -126,6 +134,8 @@ class TiendasBloc extends Bloc<TiendasEvent, TiendasState> {
         nombrePropietario: "Roberto Silva",
         ubicacion: const Ubicacion(lat: -16.504567, lng: -68.127890),
         rubroPrincipal: "Zapatos y calzado",
+        categoriaId: "cat_002",
+        subcategoriaId: "sub_005",
         productos: ["prod_013", "prod_014", "prod_015"],
         contacto: const Contacto(
           telefono: "75678901",
@@ -147,6 +157,8 @@ class TiendasBloc extends Bloc<TiendasEvent, TiendasState> {
         nombrePropietario: "Carlos Fernández",
         ubicacion: const Ubicacion(lat: -16.505678, lng: -68.128901),
         rubroPrincipal: "Muebles y decoración",
+        categoriaId: "cat_005",
+        subcategoriaId: "sub_010",
         productos: ["prod_016", "prod_017", "prod_018"],
         contacto: const Contacto(
           telefono: "76789012",
