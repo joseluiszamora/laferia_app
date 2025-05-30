@@ -86,48 +86,62 @@ class ProductoCard extends StatelessWidget {
 
                     const SizedBox(height: 2), // Reducido de 4 a 2
                     // Precio y disponibilidad
-                    Row(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          // Agregado Expanded para evitar overflow
-                          child: Text(
-                            'Bs. ${producto.precio.toStringAsFixed(0)}',
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              // Cambiado de titleMedium a titleSmall
-                              color: theme.primaryColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
+                        // Precios
+                        _buildPriceSection(theme),
+                        const SizedBox(height: 4),
+                        // Estado de disponibilidad y acepta ofertas
+                        Row(
+                          children: [
+                            // Estado de disponibilidad
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color:
+                                    producto.disponible
+                                        ? Colors.green.shade100
+                                        : Colors.red.shade100,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                producto.disponible ? 'Disponible' : 'Agotado',
+                                style: TextStyle(
+                                  fontSize: 8,
+                                  color:
+                                      producto.disponible
+                                          ? Colors.green.shade700
+                                          : Colors.red.shade700,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        // Estado de disponibilidad
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 4, // Reducido de 6 a 4
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color:
-                                producto.disponible
-                                    ? Colors.green.shade100
-                                    : Colors.red.shade100,
-                            borderRadius: BorderRadius.circular(
-                              6,
-                            ), // Reducido de 8 a 6
-                          ),
-                          child: Text(
-                            producto.disponible ? 'Disponible' : 'Agotado',
-                            style: TextStyle(
-                              fontSize: 8, // Reducido de 10 a 8
-                              color:
-                                  producto.disponible
-                                      ? Colors.green.shade700
-                                      : Colors.red.shade700,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
+                            const SizedBox(width: 4),
+                            // Acepta ofertas
+                            if (producto.aceptaOfertas)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 4,
+                                  vertical: 2,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.orange.shade100,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  'Acepta ofertas',
+                                  style: TextStyle(
+                                    fontSize: 8,
+                                    color: Colors.orange.shade700,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                          ],
                         ),
                       ],
                     ),
@@ -197,5 +211,64 @@ class ProductoCard extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Widget _buildPriceSection(ThemeData theme) {
+    if (producto.tieneOferta) {
+      // Mostrar precio original tachado y precio de oferta
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Precio original tachado
+          Text(
+            'Bs. ${producto.precio.toStringAsFixed(0)}',
+            style: TextStyle(
+              fontSize: 10,
+              color: Colors.grey.shade600,
+              decoration: TextDecoration.lineThrough,
+            ),
+          ),
+          // Precio de oferta
+          Row(
+            children: [
+              Text(
+                'Bs. ${producto.precioEfectivo.toStringAsFixed(0)}',
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: Colors.red.shade600,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade100,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  '-${producto.porcentajeDescuento.toStringAsFixed(0)}%',
+                  style: TextStyle(
+                    fontSize: 8,
+                    color: Colors.red.shade700,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+    } else {
+      // Mostrar precio normal
+      return Text(
+        'Bs. ${producto.precio.toStringAsFixed(0)}',
+        style: theme.textTheme.titleSmall?.copyWith(
+          color: theme.primaryColor,
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+        ),
+      );
+    }
   }
 }

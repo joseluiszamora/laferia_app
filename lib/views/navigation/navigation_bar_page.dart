@@ -5,6 +5,7 @@ import 'package:laferia/core/providers/theme_provider.dart';
 import 'package:laferia/core/constants/app_colors.dart';
 import 'package:laferia/views/categorias/categorias_page.dart';
 import 'package:laferia/views/home/home_page.dart';
+import 'package:laferia/views/home/ofertas_page.dart';
 import 'package:laferia/views/navigation/components/header_section.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
@@ -25,9 +26,13 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
     final theme = Theme.of(context);
 
     //* Pages List
-    List<Widget> pages = [const HomePage(), const CategoriasPage()];
+    List<Widget> pages = [
+      const HomePage(),
+      const CategoriasPage(),
+      const OfertasPage(),
+    ];
 
-    List<String> titles = ['Inicio', 'Categorias'];
+    List<String> titles = ['Inicio', 'Categorias', 'Ofertas'];
 
     return Scaffold(
       key: _scaffoldKey,
@@ -72,6 +77,7 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
               tabs: [
                 GButton(icon: LineIcons.home, text: 'Inicio'),
                 GButton(icon: LineIcons.userCircle, text: 'Categorias'),
+                GButton(icon: LineIcons.handshake, text: 'Ofertas'),
               ],
               selectedIndex: _pageSelected,
               onTabChange: (index) {
@@ -98,6 +104,16 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
             icon: Icons.person,
             text: 'Perfil',
             onTap: () => _navigateTo(context, '/profile'),
+          ),
+          _buildDrawerItem(
+            icon: Icons.handshake,
+            text: 'Mis Ofertas',
+            onTap: () {
+              Navigator.pop(context); // Cierra el drawer
+              setState(() {
+                _pageSelected = 2; // Cambia a la pestaña de ofertas
+              });
+            },
           ),
           _buildDrawerItem(
             icon: Icons.history,

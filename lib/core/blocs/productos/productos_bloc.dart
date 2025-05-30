@@ -45,6 +45,8 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         id: "prod_001",
         nombre: "Jeans Levis 501",
         precio: 80,
+        precioOferta: 65, // Oferta especial
+        aceptaOfertas: true,
         caracteristicas: "Talla 32, usado, buen estado, color azul clásico",
         imagenUrl:
             "https://via.placeholder.com/300x300/4285F4/FFFFFF?text=Jeans",
@@ -57,6 +59,7 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         id: "prod_002",
         nombre: "Camisa Tommy Hilfiger",
         precio: 45,
+        aceptaOfertas: true,
         caracteristicas: "Talla M, algodón 100%, como nueva",
         imagenUrl:
             "https://via.placeholder.com/300x300/34A853/FFFFFF?text=Camisa",
@@ -69,6 +72,8 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         id: "prod_003",
         nombre: "Chaqueta Nike",
         precio: 120,
+        precioOferta: 95, // Oferta por liquidación
+        aceptaOfertas: false,
         caracteristicas: "Talla L, impermeable, deportiva",
         imagenUrl:
             "https://via.placeholder.com/300x300/EA4335/FFFFFF?text=Chaqueta",
@@ -83,6 +88,8 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         id: "prod_004",
         nombre: "Chicharrón de Cerdo",
         precio: 25,
+        precioOferta: 20, // Oferta de medio día
+        aceptaOfertas: false,
         caracteristicas: "Porción de 200g, crujiente, con papa y ensalada",
         imagenUrl:
             "https://via.placeholder.com/300x300/FBBC04/FFFFFF?text=Chicharron",
@@ -95,6 +102,7 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         id: "prod_005",
         nombre: "Chicharrón de Pollo",
         precio: 20,
+        aceptaOfertas: false,
         caracteristicas: "Porción de 250g, dorado, con papas fritas",
         imagenUrl:
             "https://via.placeholder.com/300x300/FF6D01/FFFFFF?text=Pollo",
@@ -107,6 +115,8 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         id: "prod_006",
         nombre: "Papas Fritas Especiales",
         precio: 12,
+        precioOferta: 10, // Combo especial
+        aceptaOfertas: false,
         caracteristicas: "Papas cortadas finas, doradas, con salsa",
         imagenUrl:
             "https://via.placeholder.com/300x300/9C27B0/FFFFFF?text=Papas",
@@ -121,6 +131,7 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         id: "prod_007",
         nombre: "Filtro de Aceite",
         precio: 35,
+        aceptaOfertas: true,
         caracteristicas: "Compatible con Toyota, Nissan, Honda",
         imagenUrl:
             "https://via.placeholder.com/300x300/607D8B/FFFFFF?text=Filtro",
@@ -133,6 +144,8 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         id: "prod_008",
         nombre: "Pastillas de Freno",
         precio: 120,
+        precioOferta: 100, // Liquidación de stock
+        aceptaOfertas: true,
         caracteristicas: "Cerámicas, larga duración, para vehículos medianos",
         imagenUrl:
             "https://via.placeholder.com/300x300/795548/FFFFFF?text=Frenos",
@@ -145,6 +158,7 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         id: "prod_009",
         nombre: "Aceite de Motor 5W-30",
         precio: 85,
+        aceptaOfertas: false,
         caracteristicas: "4 litros, sintético, para motores a gasolina",
         imagenUrl:
             "https://via.placeholder.com/300x300/FF9800/FFFFFF?text=Aceite",

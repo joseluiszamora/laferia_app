@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/models/producto.dart';
+import '../../core/blocs/ofertas/ofertas_bloc.dart';
+import 'components/ofertar_producto_dialog.dart';
 
 class ProductoDetailPage extends StatelessWidget {
   final Producto producto;
@@ -8,27 +11,30 @@ class ProductoDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(producto.nombre),
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.share),
-            onPressed: () => _shareProduct(context),
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _ProductImageSection(producto: producto),
-            _ProductInfoSection(producto: producto),
+    return BlocProvider(
+      create: (context) => OfertasBloc(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(producto.nombre),
+          elevation: 0,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.share),
+              onPressed: () => _shareProduct(context),
+            ),
           ],
         ),
+        body: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _ProductImageSection(producto: producto),
+              _ProductInfoSection(producto: producto),
+            ],
+          ),
+        ),
+        bottomNavigationBar: _BottomActionBar(producto: producto),
       ),
-      bottomNavigationBar: _BottomActionBar(producto: producto),
     );
   }
 
@@ -122,15 +128,12 @@ class _ProductInfoSection extends StatelessWidget {
 
           // Precio y disponibilidad
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Bs. ${producto.precio.toStringAsFixed(0)}',
-                style: theme.textTheme.headlineMedium?.copyWith(
-                  color: theme.primaryColor,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Spacer(),
+              // Sección de precios
+              Expanded(child: _buildPriceSection(theme)),
+              const SizedBox(width: 16),
+              // Disponibilidad
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
@@ -229,6 +232,114 @@ class _ProductInfoSection extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildPriceSection(ThemeData theme) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (producto.tieneOferta) ...[
+          // Precio original tachado
+          Text(
+            'Precio normal:',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: Colors.grey.shade600,
+            ),
+          ),
+          Text(
+            'Bs. ${producto.precio.toStringAsFixed(0)}',
+            style: theme.textTheme.titleLarge?.copyWith(
+              color: Colors.grey.shade600,
+              decoration: TextDecoration.lineThrough,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 4),
+          // Precio de oferta
+          Row(
+            children: [
+              Text(
+                'Oferta especial:',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: Colors.red.shade600,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade100,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  'Ahorro ${producto.porcentajeDescuento.toStringAsFixed(0)}%',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.red.shade700,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          Text(
+            'Bs. ${producto.precioEfectivo.toStringAsFixed(0)}',
+            style: theme.textTheme.headlineMedium?.copyWith(
+              color: Colors.red.shade600,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ] else ...[
+          // Precio normal
+          Text(
+            'Precio:',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: Colors.grey.shade600,
+            ),
+          ),
+          Text(
+            'Bs. ${producto.precio.toStringAsFixed(0)}',
+            style: theme.textTheme.headlineMedium?.copyWith(
+              color: theme.primaryColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+
+        // Acepta ofertas
+        if (producto.aceptaOfertas) ...[
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.orange.shade100,
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: Colors.orange.shade300),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.local_offer,
+                  size: 16,
+                  color: Colors.orange.shade700,
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  'Acepta ofertas',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.orange.shade700,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ],
+    );
+  }
 }
 
 class _InfoCard extends StatelessWidget {
@@ -321,39 +432,155 @@ class _BottomActionBar extends StatelessWidget {
         ],
       ),
       child: SafeArea(
-        child: Row(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // Botón de contactar vendedor
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed:
-                    producto.disponible ? () => _contactSeller(context) : null,
-                icon: const Icon(Icons.chat),
-                label: const Text('Contactar'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+            // Información de precio
+            if (producto.tieneOferta)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.red.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.local_fire_department,
+                      color: Colors.red.shade600,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Precio normal: Bs. ${producto.precio.toStringAsFixed(0)}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                              decoration: TextDecoration.lineThrough,
+                            ),
+                          ),
+                          Text(
+                            'Precio de oferta: Bs. ${producto.precioEfectivo.toStringAsFixed(0)}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.red.shade600,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade100,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'Ahorra ${producto.porcentajeDescuento.toStringAsFixed(0)}%',
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: Colors.red.shade700,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
 
-            const SizedBox(width: 12),
+            if (producto.tieneOferta) const SizedBox(height: 12),
 
-            // Botón de consultar precio
-            Expanded(
-              flex: 2,
-              child: ElevatedButton.icon(
-                onPressed:
-                    producto.disponible ? () => _consultPrice(context) : null,
-                icon: const Icon(Icons.price_check),
-                label: const Text('Consultar Precio'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 12),
+            // Botones de acción
+            Row(
+              children: [
+                // Botón de contactar vendedor
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed:
+                        producto.disponible
+                            ? () => _contactSeller(context)
+                            : null,
+                    icon: const Icon(Icons.chat),
+                    label: const Text('Contactar'),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
                 ),
-              ),
+
+                const SizedBox(width: 8),
+
+                // Botón de ofertar (si acepta ofertas)
+                if (producto.aceptaOfertas && producto.disponible)
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => _showOfertarDialog(context),
+                      icon: const Icon(Icons.local_offer),
+                      label: const Text('Ofertar'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                      ),
+                    ),
+                  ),
+
+                if (producto.aceptaOfertas && producto.disponible)
+                  const SizedBox(width: 8),
+
+                // Botón de consultar precio
+                Expanded(
+                  flex: producto.aceptaOfertas ? 1 : 2,
+                  child: ElevatedButton.icon(
+                    onPressed:
+                        producto.disponible
+                            ? () => _consultPrice(context)
+                            : null,
+                    icon: const Icon(Icons.price_check),
+                    label: Text(
+                      producto.aceptaOfertas ? 'Consultar' : 'Consultar Precio',
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
       ),
+    );
+  }
+
+  void _showOfertarDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return OfertarProductoDialog(
+          producto: producto,
+          onOfertaEnviada: (double oferta) {
+            // Aquí se podría manejar la oferta enviada
+            // Por ejemplo, guardarla en una base de datos local o enviarla a un servidor
+            debugPrint(
+              'Oferta de Bs. ${oferta.toStringAsFixed(0)} enviada para ${producto.nombre}',
+            );
+          },
+        );
+      },
     );
   }
 
