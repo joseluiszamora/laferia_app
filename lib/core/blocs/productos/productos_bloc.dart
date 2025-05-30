@@ -45,10 +45,12 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         id: "prod_001",
         nombre: "Jeans Levis 501",
         precio: 80,
-        caracteristicas: "Talla 32, usado, buen estado",
+        caracteristicas: "Talla 32, usado, buen estado, color azul clásico",
         imagenUrl:
             "https://via.placeholder.com/300x300/4285F4/FFFFFF?text=Jeans",
-        categoria: "Ropa usada",
+        categoria: "Ropa usada", // Mantener por compatibilidad
+        categoriaId: "prod_cat_001", // Pantalones
+        subcategoriaId: "prod_sub_001", // Jeans Levi's
         disponible: true,
       ),
       const Producto(
@@ -58,7 +60,9 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         caracteristicas: "Talla M, algodón 100%, como nueva",
         imagenUrl:
             "https://via.placeholder.com/300x300/34A853/FFFFFF?text=Camisa",
-        categoria: "Ropa usada",
+        categoria: "Ropa usada", // Mantener por compatibilidad
+        categoriaId: "prod_cat_002", // Camisas y Blusas
+        subcategoriaId: "prod_sub_004", // Camisas de Vestir
         disponible: true,
       ),
       const Producto(
@@ -68,71 +72,85 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         caracteristicas: "Talla L, impermeable, deportiva",
         imagenUrl:
             "https://via.placeholder.com/300x300/EA4335/FFFFFF?text=Chaqueta",
-        categoria: "Ropa usada",
+        categoria: "Ropa usada", // Mantener por compatibilidad
+        categoriaId: "prod_cat_002", // Camisas y Blusas
+        subcategoriaId: "prod_sub_005", // Polos y T-Shirts
         disponible: false,
       ),
 
       // Productos para puesto_002 (María González - Comida rápida)
       const Producto(
         id: "prod_004",
-        nombre: "Hamburguesa Completa",
+        nombre: "Chicharrón de Cerdo",
         precio: 25,
-        caracteristicas: "Carne, lechuga, tomate, queso, papas fritas",
+        caracteristicas: "Porción de 200g, crujiente, con papa y ensalada",
         imagenUrl:
-            "https://via.placeholder.com/300x300/FBBC04/FFFFFF?text=Hamburguesa",
-        categoria: "Comida rápida",
+            "https://via.placeholder.com/300x300/FBBC04/FFFFFF?text=Chicharron",
+        categoria: "Comida rápida", // Mantener por compatibilidad
+        categoriaId: "prod_cat_003", // Comidas Preparadas
+        subcategoriaId: "prod_sub_007", // Chicharrón de Cerdo
         disponible: true,
       ),
       const Producto(
         id: "prod_005",
-        nombre: "Salteña de Pollo",
-        precio: 8,
-        caracteristicas: "Recién horneada, jugosa, tradicional",
+        nombre: "Chicharrón de Pollo",
+        precio: 20,
+        caracteristicas: "Porción de 250g, dorado, con papas fritas",
         imagenUrl:
-            "https://via.placeholder.com/300x300/FF6D01/FFFFFF?text=Salteña",
-        categoria: "Comida rápida",
+            "https://via.placeholder.com/300x300/FF6D01/FFFFFF?text=Pollo",
+        categoria: "Comida rápida", // Mantener por compatibilidad
+        categoriaId: "prod_cat_003", // Comidas Preparadas
+        subcategoriaId: "prod_sub_008", // Chicharrón de Pollo
         disponible: true,
       ),
       const Producto(
         id: "prod_006",
-        nombre: "Refresco Natural",
-        precio: 5,
-        caracteristicas: "Mocochinchi, tumbo, durazno",
+        nombre: "Papas Fritas Especiales",
+        precio: 12,
+        caracteristicas: "Papas cortadas finas, doradas, con salsa",
         imagenUrl:
-            "https://via.placeholder.com/300x300/9C27B0/FFFFFF?text=Refresco",
-        categoria: "Bebidas",
+            "https://via.placeholder.com/300x300/9C27B0/FFFFFF?text=Papas",
+        categoria: "Comida rápida", // Mantener por compatibilidad
+        categoriaId: "prod_cat_003", // Comidas Preparadas
+        subcategoriaId: "prod_sub_009", // Papas Fritas
         disponible: true,
       ),
 
-      // Productos para puesto_003 (Carlos Mamani - Accesorios de celular)
+      // Productos para puesto_003 (Carlos Mamani - Autopartes)
       const Producto(
         id: "prod_007",
-        nombre: "Funda iPhone 14",
+        nombre: "Filtro de Aceite",
         precio: 35,
-        caracteristicas: "Silicona transparente, protección completa",
+        caracteristicas: "Compatible con Toyota, Nissan, Honda",
         imagenUrl:
-            "https://via.placeholder.com/300x300/795548/FFFFFF?text=Funda",
-        categoria: "Accesorios",
+            "https://via.placeholder.com/300x300/607D8B/FFFFFF?text=Filtro",
+        categoria: "Autopartes", // Mantener por compatibilidad
+        categoriaId: "prod_cat_004", // Repuestos Automotrices
+        subcategoriaId: "prod_sub_010", // Filtros
         disponible: true,
       ),
       const Producto(
         id: "prod_008",
-        nombre: "Cargador Universal",
-        precio: 40,
-        caracteristicas: "Tipo C, carga rápida, 2 metros",
+        nombre: "Pastillas de Freno",
+        precio: 120,
+        caracteristicas: "Cerámicas, larga duración, para vehículos medianos",
         imagenUrl:
-            "https://via.placeholder.com/300x300/607D8B/FFFFFF?text=Cargador",
-        categoria: "Accesorios",
+            "https://via.placeholder.com/300x300/795548/FFFFFF?text=Frenos",
+        categoria: "Autopartes", // Mantener por compatibilidad
+        categoriaId: "prod_cat_004", // Repuestos Automotrices
+        subcategoriaId: "prod_sub_011", // Frenos
         disponible: true,
       ),
       const Producto(
         id: "prod_009",
-        nombre: "Audífonos Bluetooth",
+        nombre: "Aceite de Motor 5W-30",
         precio: 85,
-        caracteristicas: "Inalámbricos, cancelación de ruido",
+        caracteristicas: "4 litros, sintético, para motores a gasolina",
         imagenUrl:
-            "https://via.placeholder.com/300x300/3F51B5/FFFFFF?text=Audífonos",
-        categoria: "Accesorios",
+            "https://via.placeholder.com/300x300/FF9800/FFFFFF?text=Aceite",
+        categoria: "Autopartes", // Mantener por compatibilidad
+        categoriaId: "prod_cat_004", // Repuestos Automotrices
+        subcategoriaId: "prod_sub_012", // Aceites y Lubricantes
         disponible: true,
       ),
 
@@ -144,7 +162,9 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         caracteristicas: "Lana de alpaca, diseño tradicional",
         imagenUrl:
             "https://via.placeholder.com/300x300/E91E63/FFFFFF?text=Tejido",
-        categoria: "Artesanías",
+        categoria: "Artesanías", // Mantener por compatibilidad
+        categoriaId: "prod_cat_005", // Artesanías Tradicionales
+        subcategoriaId: "prod_sub_013", // Textiles Andinos
         disponible: true,
       ),
       const Producto(
@@ -154,7 +174,9 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         caracteristicas: "Hecha a mano, motivos prehispánicos",
         imagenUrl:
             "https://via.placeholder.com/300x300/FF9800/FFFFFF?text=Cerámica",
-        categoria: "Artesanías",
+        categoria: "Artesanías", // Mantener por compatibilidad
+        categoriaId: "prod_cat_005", // Artesanías Tradicionales
+        subcategoriaId: "prod_sub_014", // Cerámica
         disponible: true,
       ),
       const Producto(
@@ -164,7 +186,9 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         caracteristicas: "Plata 925, diseño exclusivo",
         imagenUrl:
             "https://via.placeholder.com/300x300/9E9E9E/FFFFFF?text=Joyería",
-        categoria: "Artesanías",
+        categoria: "Artesanías", // Mantener por compatibilidad
+        categoriaId: "prod_cat_005", // Artesanías Tradicionales
+        subcategoriaId: "prod_sub_015", // Joyería Artesanal
         disponible: true,
       ),
 
@@ -176,7 +200,9 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         caracteristicas: "Cuero genuino, número 42, color marrón",
         imagenUrl:
             "https://via.placeholder.com/300x300/8BC34A/FFFFFF?text=Botas",
-        categoria: "Calzado",
+        categoria: "Calzado", // Mantener por compatibilidad
+        categoriaId: "prod_cat_006", // Calzado
+        subcategoriaId: "prod_sub_016", // Botas
         disponible: true,
       ),
       const Producto(
@@ -186,7 +212,9 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         caracteristicas: "Número 40, para running, muy cómodas",
         imagenUrl:
             "https://via.placeholder.com/300x300/00BCD4/FFFFFF?text=Zapatillas",
-        categoria: "Calzado",
+        categoria: "Calzado", // Mantener por compatibilidad
+        categoriaId: "prod_cat_006", // Calzado
+        subcategoriaId: "prod_sub_017", // Calzado Deportivo
         disponible: true,
       ),
       const Producto(
@@ -196,7 +224,9 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         caracteristicas: "Número 38, perfectas para el calor",
         imagenUrl:
             "https://via.placeholder.com/300x300/FFEB3B/FFFFFF?text=Sandalias",
-        categoria: "Calzado",
+        categoria: "Calzado", // Mantener por compatibilidad
+        categoriaId: "prod_cat_006", // Calzado
+        subcategoriaId: "prod_sub_018", // Sandalias
         disponible: false,
       ),
 
@@ -208,7 +238,9 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         caracteristicas: "Madera de pino, 6 personas, barnizada",
         imagenUrl:
             "https://via.placeholder.com/300x300/8D6E63/FFFFFF?text=Mesa",
-        categoria: "Muebles",
+        categoria: "Muebles", // Mantener por compatibilidad
+        categoriaId: "prod_cat_007", // Muebles
+        subcategoriaId: "prod_sub_019", // Mesas
         disponible: true,
       ),
       const Producto(
@@ -218,7 +250,9 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         caracteristicas: "Juego de 4, tapizado en cuero sintético",
         imagenUrl:
             "https://via.placeholder.com/300x300/795548/FFFFFF?text=Sillas",
-        categoria: "Muebles",
+        categoria: "Muebles", // Mantener por compatibilidad
+        categoriaId: "prod_cat_007", // Muebles
+        subcategoriaId: "prod_sub_020", // Sillas
         disponible: true,
       ),
       const Producto(
@@ -228,7 +262,9 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         caracteristicas: "Melaminico blanco, con espejo central",
         imagenUrl:
             "https://via.placeholder.com/300x300/607D8B/FFFFFF?text=Ropero",
-        categoria: "Muebles",
+        categoria: "Muebles", // Mantener por compatibilidad
+        categoriaId: "prod_cat_007", // Muebles
+        subcategoriaId: "prod_sub_021", // Roperos y Armarios
         disponible: true,
       ),
     ];

@@ -1,6 +1,7 @@
 import '../models/categoria.dart';
 
 class CategoriaService {
+  // Categorías de tiendas (existentes)
   static final List<Categoria> _categorias = [
     const Categoria(
       id: "cat_001",
@@ -138,16 +139,251 @@ class CategoriaService {
   }
 
   static String getCategoriaNombre(String categoriaId) {
+    // Buscar primero en categorías de tiendas
     final categoria = getCategoriaById(categoriaId);
-    return categoria?.nombre ?? 'Sin categoría';
+    if (categoria != null) return categoria.nombre;
+
+    // Buscar en categorías de productos
+    final categoriaProducto = getProductoCategoriaById(categoriaId);
+    return categoriaProducto?.nombre ?? 'Sin categoría';
   }
 
   static String getSubcategoriaNombre(String subcategoriaId) {
+    // Buscar primero en subcategorías de tiendas
     final subcategoria = getSubcategoriaById(subcategoriaId);
-    return subcategoria?.nombre ?? 'Sin subcategoría';
+    if (subcategoria != null) return subcategoria.nombre;
+
+    // Buscar en subcategorías de productos
+    final subcategoriaProducto = getProductoSubcategoriaById(subcategoriaId);
+    return subcategoriaProducto?.nombre ?? 'Sin subcategoría';
   }
 
   static List<Categoria> getAllCategorias() {
     return _categorias;
+  }
+
+  // ===== CATEGORÍAS DE PRODUCTOS =====
+
+  static final List<Categoria> _categoriasProductos = [
+    const Categoria(
+      id: "prod_cat_001",
+      nombre: "Pantalones",
+      descripcion: "Todo tipo de pantalones",
+      icono: "style",
+      subcategorias: [
+        Subcategoria(
+          id: "prod_sub_001",
+          nombre: "Jeans Levi's",
+          descripcion: "Jeans marca Levi's",
+          categoriaId: "prod_cat_001",
+        ),
+        Subcategoria(
+          id: "prod_sub_002",
+          nombre: "Jeans Generales",
+          descripcion: "Jeans de diversas marcas",
+          categoriaId: "prod_cat_001",
+        ),
+        Subcategoria(
+          id: "prod_sub_003",
+          nombre: "Pantalones de Vestir",
+          descripcion: "Pantalones formales",
+          categoriaId: "prod_cat_001",
+        ),
+      ],
+    ),
+    const Categoria(
+      id: "prod_cat_002",
+      nombre: "Camisas y Blusas",
+      descripcion: "Camisas, blusas y tops",
+      icono: "checkroom",
+      subcategorias: [
+        Subcategoria(
+          id: "prod_sub_004",
+          nombre: "Camisas de Vestir",
+          descripcion: "Camisas formales",
+          categoriaId: "prod_cat_002",
+        ),
+        Subcategoria(
+          id: "prod_sub_005",
+          nombre: "Polos y T-Shirts",
+          descripcion: "Camisetas casuales",
+          categoriaId: "prod_cat_002",
+        ),
+        Subcategoria(
+          id: "prod_sub_006",
+          nombre: "Blusas Femeninas",
+          descripcion: "Blusas para mujeres",
+          categoriaId: "prod_cat_002",
+        ),
+      ],
+    ),
+    const Categoria(
+      id: "prod_cat_003",
+      nombre: "Comidas Preparadas",
+      descripcion: "Platos y comidas listas",
+      icono: "restaurant",
+      subcategorias: [
+        Subcategoria(
+          id: "prod_sub_007",
+          nombre: "Chicharrón de Cerdo",
+          descripcion: "Chicharrones tradicionales",
+          categoriaId: "prod_cat_003",
+        ),
+        Subcategoria(
+          id: "prod_sub_008",
+          nombre: "Chicharrón de Pollo",
+          descripcion: "Chicharrones de pollo",
+          categoriaId: "prod_cat_003",
+        ),
+        Subcategoria(
+          id: "prod_sub_009",
+          nombre: "Papas Fritas",
+          descripcion: "Papas fritas y acompañamientos",
+          categoriaId: "prod_cat_003",
+        ),
+      ],
+    ),
+    const Categoria(
+      id: "prod_cat_004",
+      nombre: "Repuestos Automotrices",
+      descripcion: "Partes y repuestos para vehículos",
+      icono: "build",
+      subcategorias: [
+        Subcategoria(
+          id: "prod_sub_010",
+          nombre: "Filtros",
+          descripcion: "Filtros de aceite, aire y combustible",
+          categoriaId: "prod_cat_004",
+        ),
+        Subcategoria(
+          id: "prod_sub_011",
+          nombre: "Frenos",
+          descripcion: "Pastillas y discos de freno",
+          categoriaId: "prod_cat_004",
+        ),
+        Subcategoria(
+          id: "prod_sub_012",
+          nombre: "Aceites y Lubricantes",
+          descripcion: "Aceites para motor y lubricantes",
+          categoriaId: "prod_cat_004",
+        ),
+      ],
+    ),
+    const Categoria(
+      id: "prod_cat_005",
+      nombre: "Artesanías Tradicionales",
+      descripcion: "Artesanías y objetos decorativos",
+      icono: "palette",
+      subcategorias: [
+        Subcategoria(
+          id: "prod_sub_013",
+          nombre: "Textiles Andinos",
+          descripcion: "Tejidos tradicionales andinos",
+          categoriaId: "prod_cat_005",
+        ),
+        Subcategoria(
+          id: "prod_sub_014",
+          nombre: "Cerámica",
+          descripcion: "Cerámicas y vasijas",
+          categoriaId: "prod_cat_005",
+        ),
+        Subcategoria(
+          id: "prod_sub_015",
+          nombre: "Joyería Artesanal",
+          descripcion: "Joyas hechas a mano",
+          categoriaId: "prod_cat_005",
+        ),
+      ],
+    ),
+    const Categoria(
+      id: "prod_cat_006",
+      nombre: "Calzado",
+      descripcion: "Zapatos, botas y sandalias",
+      icono: "foundation",
+      subcategorias: [
+        Subcategoria(
+          id: "prod_sub_016",
+          nombre: "Zapatos de Vestir",
+          descripcion: "Calzado formal",
+          categoriaId: "prod_cat_006",
+        ),
+        Subcategoria(
+          id: "prod_sub_017",
+          nombre: "Zapatillas Deportivas",
+          descripcion: "Calzado deportivo",
+          categoriaId: "prod_cat_006",
+        ),
+        Subcategoria(
+          id: "prod_sub_018",
+          nombre: "Botas",
+          descripcion: "Botas de trabajo y casual",
+          categoriaId: "prod_cat_006",
+        ),
+      ],
+    ),
+    const Categoria(
+      id: "prod_cat_007",
+      nombre: "Muebles",
+      descripcion: "Muebles y decoración para el hogar",
+      icono: "chair",
+      subcategorias: [
+        Subcategoria(
+          id: "prod_sub_019",
+          nombre: "Sillas",
+          descripcion: "Sillas de diversos tipos",
+          categoriaId: "prod_cat_007",
+        ),
+        Subcategoria(
+          id: "prod_sub_020",
+          nombre: "Mesas",
+          descripcion: "Mesas de comedor y centro",
+          categoriaId: "prod_cat_007",
+        ),
+        Subcategoria(
+          id: "prod_sub_021",
+          nombre: "Decoración",
+          descripcion: "Objetos decorativos",
+          categoriaId: "prod_cat_007",
+        ),
+      ],
+    ),
+  ];
+
+  // Métodos para categorías de productos
+  static Categoria? getProductoCategoriaById(String categoriaId) {
+    try {
+      return _categoriasProductos.firstWhere(
+        (categoria) => categoria.id == categoriaId,
+      );
+    } catch (e) {
+      return null;
+    }
+  }
+
+  static Subcategoria? getProductoSubcategoriaById(String subcategoriaId) {
+    for (final categoria in _categoriasProductos) {
+      try {
+        return categoria.subcategorias.firstWhere(
+          (sub) => sub.id == subcategoriaId,
+        );
+      } catch (e) {
+        continue;
+      }
+    }
+    return null;
+  }
+
+  static List<Categoria> getAllProductoCategorias() {
+    return _categoriasProductos;
+  }
+
+  static String getProductoCategoriaNombre(String categoriaId) {
+    final categoria = getProductoCategoriaById(categoriaId);
+    return categoria?.nombre ?? 'Sin categoría';
+  }
+
+  static String getProductoSubcategoriaNombre(String subcategoriaId) {
+    final subcategoria = getProductoSubcategoriaById(subcategoriaId);
+    return subcategoria?.nombre ?? 'Sin subcategoría';
   }
 }

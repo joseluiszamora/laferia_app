@@ -6,7 +6,9 @@ class Producto extends Equatable {
   final double precio;
   final String caracteristicas;
   final String? imagenUrl;
-  final String categoria;
+  final String categoria; // Mantener por compatibilidad
+  final String categoriaId;
+  final String subcategoriaId;
   final bool disponible;
 
   const Producto({
@@ -15,7 +17,9 @@ class Producto extends Equatable {
     required this.precio,
     required this.caracteristicas,
     this.imagenUrl,
-    required this.categoria,
+    this.categoria = '', // Mantener por compatibilidad
+    required this.categoriaId,
+    required this.subcategoriaId,
     this.disponible = true,
   });
 
@@ -26,7 +30,9 @@ class Producto extends Equatable {
       precio: json['precio']?.toDouble() ?? 0.0,
       caracteristicas: json['caracteristicas'] ?? '',
       imagenUrl: json['imagen_url'],
-      categoria: json['categoria'] ?? '',
+      categoria: json['categoria'] ?? '', // Mantener por compatibilidad
+      categoriaId: json['categoria_id'] ?? '',
+      subcategoriaId: json['subcategoria_id'] ?? '',
       disponible: json['disponible'] ?? true,
     );
   }
@@ -38,7 +44,9 @@ class Producto extends Equatable {
       'precio': precio,
       'caracteristicas': caracteristicas,
       'imagen_url': imagenUrl,
-      'categoria': categoria,
+      'categoria': categoria, // Mantener por compatibilidad
+      'categoria_id': categoriaId,
+      'subcategoria_id': subcategoriaId,
       'disponible': disponible,
     };
   }
@@ -51,6 +59,8 @@ class Producto extends Equatable {
     caracteristicas,
     imagenUrl,
     categoria,
+    categoriaId,
+    subcategoriaId,
     disponible,
   ];
 }
