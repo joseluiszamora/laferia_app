@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'ubicacion.dart';
 import 'contacto.dart';
+import 'comentario.dart';
 
 class Tienda extends Equatable {
   final String id;
@@ -17,6 +18,7 @@ class Tienda extends Equatable {
   final String horarioAtencion;
   final String? horario; // Mantener por compatibilidad
   final double? calificacion;
+  final List<Comentario> comentarios;
 
   const Tienda({
     required this.id,
@@ -33,6 +35,7 @@ class Tienda extends Equatable {
     this.horarioAtencion = '08:00 - 18:00',
     this.horario,
     this.calificacion,
+    this.comentarios = const [],
   });
 
   factory Tienda.fromJson(Map<String, dynamic> json) {
@@ -54,6 +57,11 @@ class Tienda extends Equatable {
       horarioAtencion: json['horario_atencion'] ?? '08:00 - 18:00',
       horario: json['horario'], // Mantener por compatibilidad
       calificacion: json['calificacion']?.toDouble(),
+      comentarios:
+          (json['comentarios'] as List<dynamic>?)
+              ?.map((comentario) => Comentario.fromJson(comentario))
+              .toList() ??
+          [],
     );
   }
 
@@ -73,6 +81,8 @@ class Tienda extends Equatable {
       'horario_atencion': horarioAtencion,
       'horario': horario,
       'calificacion': calificacion,
+      'comentarios':
+          comentarios.map((comentario) => comentario.toJson()).toList(),
     };
   }
 
@@ -92,5 +102,56 @@ class Tienda extends Equatable {
     horarioAtencion,
     horario,
     calificacion,
+    comentarios,
   ];
+
+  // Método para calcular la calificación promedio basada en comentarios
+  double get calificacionPromedio {
+    if (comentarios.isEmpty) return 0.0;
+    final suma = comentarios.fold(
+      0.0,
+      (sum, comentario) => sum + comentario.calificacion,
+    );
+    return suma / comentarios.length;
+  }
+
+  // Método para obtener el total de comentarios
+  int get totalComentarios => comentarios.length;
+
+  // Método para crear una copia con nuevos comentarios
+  Tienda copyWith({
+    String? id,
+    String? nombre,
+    String? nombrePropietario,
+    Ubicacion? ubicacion,
+    String? rubroPrincipal,
+    String? categoriaId,
+    String? subcategoriaId,
+    List<String>? productos,
+    Contacto? contacto,
+    String? direccion,
+    List<String>? diasAtencion,
+    String? horarioAtencion,
+    String? horario,
+    double? calificacion,
+    List<Comentario>? comentarios,
+  }) {
+    return Tienda(
+      id: id ?? this.id,
+      nombre: nombre ?? this.nombre,
+      nombrePropietario: nombrePropietario ?? this.nombrePropietario,
+      ubicacion: ubicacion ?? this.ubicacion,
+      rubroPrincipal: rubroPrincipal ?? this.rubroPrincipal,
+      categoriaId: categoriaId ?? this.categoriaId,
+      subcategoriaId: subcategoriaId ?? this.subcategoriaId,
+      productos: productos ?? this.productos,
+      contacto: contacto ?? this.contacto,
+      direccion: direccion ?? this.direccion,
+      diasAtencion: diasAtencion ?? this.diasAtencion,
+      horarioAtencion: horarioAtencion ?? this.horarioAtencion,
+      horario: horario ?? this.horario,
+      calificacion: calificacion ?? this.calificacion,
+      comentarios: comentarios ?? this.comentarios,
+    );
+  }
 }

@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../models/tienda.dart';
 import '../../models/ubicacion.dart';
 import '../../models/contacto.dart';
+import '../../models/comentario.dart';
 import 'tiendas_event.dart';
 import 'tiendas_state.dart';
 
@@ -60,7 +61,7 @@ class TiendasBloc extends Bloc<TiendasEvent, TiendasState> {
         calificacion: 4.5,
       ),
       Tienda(
-        id: "puesto_002",
+        id: "1", // Cambio de ID para coincidir con comentarios
         nombre: "Chicharrones Rosario",
         nombrePropietario: "María González",
         ubicacion: const Ubicacion(lat: -16.501234, lng: -68.124567),
@@ -81,9 +82,30 @@ class TiendasBloc extends Bloc<TiendasEvent, TiendasState> {
         horarioAtencion: "10:00 - 20:00",
         horario: "Martes a sábado, 10:00 - 20:00",
         calificacion: 4.2,
+        comentarios: [
+          Comentario(
+            id: '1',
+            tiendaId: '1',
+            nombreUsuario: 'María González',
+            comentario:
+                '¡Los mejores chicharrones de toda la feria! Muy crujientes y sabrosos.',
+            calificacion: 5.0,
+            fechaCreacion: DateTime.now().subtract(const Duration(days: 2)),
+            verificado: true,
+          ),
+          Comentario(
+            id: '2',
+            tiendaId: '1',
+            nombreUsuario: 'Carlos Mendoza',
+            comentario:
+                'Excelente sabor, pero a veces hay que esperar un poco.',
+            calificacion: 4.0,
+            fechaCreacion: DateTime.now().subtract(const Duration(days: 5)),
+          ),
+        ],
       ),
       Tienda(
-        id: "puesto_003",
+        id: "2", // Cambio de ID para coincidir con comentarios
         nombre: "Autopartes Gonzalo",
         nombrePropietario: "Carlos Mamani",
         ubicacion: const Ubicacion(lat: -16.502345, lng: -68.125678),
@@ -104,6 +126,18 @@ class TiendasBloc extends Bloc<TiendasEvent, TiendasState> {
         horarioAtencion: "09:00 - 19:00",
         horario: "Lunes a viernes, 09:00 - 19:00",
         calificacion: 4.8,
+        comentarios: [
+          Comentario(
+            id: '4',
+            tiendaId: '2',
+            nombreUsuario: 'Pedro Mamani',
+            comentario:
+                'Encontré justo la pieza que necesitaba para mi auto. Precios accesibles.',
+            calificacion: 4.5,
+            fechaCreacion: DateTime.now().subtract(const Duration(days: 1)),
+            verificado: true,
+          ),
+        ],
       ),
       Tienda(
         id: "puesto_004",

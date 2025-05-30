@@ -84,7 +84,23 @@ class TiendaCard extends StatelessWidget {
                       ],
                     ),
                   ),
-                  if (tienda.calificacion != null) ...[
+                  // Calificación promedio basada en comentarios
+                  if (tienda.comentarios.isNotEmpty) ...[
+                    Icon(Icons.star, color: Colors.amber, size: 20),
+                    const SizedBox(width: 4),
+                    Text(
+                      tienda.calificacionPromedio.toStringAsFixed(1),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    Text(
+                      ' (${tienda.totalComentarios})',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ] else if (tienda.calificacion != null) ...[
                     Icon(Icons.star, color: Colors.amber, size: 20),
                     const SizedBox(width: 4),
                     Text(

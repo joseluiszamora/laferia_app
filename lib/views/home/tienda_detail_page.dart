@@ -5,7 +5,9 @@ import '../../core/models/tienda.dart';
 import '../../core/blocs/productos/productos_bloc.dart';
 import '../../core/blocs/productos/productos_event.dart';
 import '../../core/blocs/productos/productos_state.dart';
+import '../../core/blocs/comentarios/comentarios.dart';
 import 'components/producto_card.dart';
+import 'components/comentarios_section.dart';
 import 'producto_detail_page.dart';
 
 class TiendaDetailPage extends StatelessWidget {
@@ -15,9 +17,15 @@ class TiendaDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create:
-          (context) => ProductosBloc()..add(LoadProductos(tienda.productos)),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create:
+              (context) =>
+                  ProductosBloc()..add(LoadProductos(tienda.productos)),
+        ),
+        BlocProvider(create: (context) => ComentariosBloc()),
+      ],
       child: Scaffold(
         appBar: AppBar(title: Text(tienda.nombre), elevation: 0),
         body: SingleChildScrollView(
@@ -27,6 +35,13 @@ class TiendaDetailPage extends StatelessWidget {
               _TiendaHeader(tienda: tienda),
               const SizedBox(height: 16),
               _ProductosSection(tienda: tienda),
+              const SizedBox(height: 24),
+              // Sección de comentarios
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: ComentariosSection(tiendaId: tienda.id),
+              ),
+              const SizedBox(height: 24),
             ],
           ),
         ),
