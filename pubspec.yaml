@@ -1,0 +1,47 @@
+name: laferia
+description: "A new Flutter project."
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  bloc: ^9.0.0
+  cupertino_icons: ^1.0.8
+  equatable: ^2.0.7
+  fl_chart: ^1.0.0
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.1
+  get_it: ^8.0.3
+  go_router: ^15.1.2
+  google_nav_bar: ^5.0.7
+  intl: ^0.20.2
+  line_icons: ^2.0.3
+  provider: ^6.1.5
+  shared_preferences: ^2.5.3
+  supabase_flutter: ^2.9.0
+  url_launcher: ^6.3.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/
+    - assets/images/
+
+  fonts:
+    - family: Kodchasan
+      fonts:
+        - asset: assets/fonts/Kodchasan-Regular.ttf
+        - asset: assets/fonts/Kodchasan-Bold.ttf
+        - asset: assets/fonts/Kodchasan-SemiBold.ttf
+        - asset: assets/fonts/Kodchasan-Light.ttf
+        - asset: assets/fonts/Kodchasan-Medium.ttf
