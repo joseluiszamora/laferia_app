@@ -43,9 +43,16 @@ class TiendaCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          tienda.nombrePropietario,
+                          tienda.nombre,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'Propietario: ${tienda.nombrePropietario}',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: Colors.grey.shade600,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -72,6 +79,31 @@ class TiendaCard extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
+              // Dirección
+              if (tienda.direccion != null) ...[
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.location_on_outlined,
+                      size: 16,
+                      color: Colors.grey.shade600,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        tienda.direccion!,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+
+              const SizedBox(height: 12),
+
               // Información adicional
               Row(
                 children: [
@@ -92,27 +124,26 @@ class TiendaCard extends StatelessWidget {
                 ],
               ),
 
-              if (tienda.horario != null) ...[
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.access_time,
-                      size: 16,
-                      color: Colors.grey.shade600,
+              const SizedBox(height: 8),
+
+              // Días y horarios de atención
+              Row(
+                children: [
+                  Expanded(
+                    child: _InfoChip(
+                      icon: Icons.calendar_today_outlined,
+                      label: tienda.diasAtencion.join(', '),
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        tienda.horario!,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: Colors.grey.shade600,
-                        ),
-                      ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _InfoChip(
+                      icon: Icons.access_time_outlined,
+                      label: tienda.horarioAtencion,
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ],
           ),
         ),

@@ -199,6 +199,38 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
         categoria: "Calzado",
         disponible: false,
       ),
+
+      // Productos para puesto_006 (Carlos Fernández - Muebles y decoración)
+      const Producto(
+        id: "prod_016",
+        nombre: "Mesa de Comedor",
+        precio: 450,
+        caracteristicas: "Madera de pino, 6 personas, barnizada",
+        imagenUrl:
+            "https://via.placeholder.com/300x300/8D6E63/FFFFFF?text=Mesa",
+        categoria: "Muebles",
+        disponible: true,
+      ),
+      const Producto(
+        id: "prod_017",
+        nombre: "Sillas de Madera",
+        precio: 80,
+        caracteristicas: "Juego de 4, tapizado en cuero sintético",
+        imagenUrl:
+            "https://via.placeholder.com/300x300/795548/FFFFFF?text=Sillas",
+        categoria: "Muebles",
+        disponible: true,
+      ),
+      const Producto(
+        id: "prod_018",
+        nombre: "Ropero 3 Puertas",
+        precio: 650,
+        caracteristicas: "Melaminico blanco, con espejo central",
+        imagenUrl:
+            "https://via.placeholder.com/300x300/607D8B/FFFFFF?text=Ropero",
+        categoria: "Muebles",
+        disponible: true,
+      ),
     ];
   }
 }

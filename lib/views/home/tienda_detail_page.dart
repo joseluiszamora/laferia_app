@@ -19,7 +19,7 @@ class TiendaDetailPage extends StatelessWidget {
       create:
           (context) => ProductosBloc()..add(LoadProductos(tienda.productos)),
       child: Scaffold(
-        appBar: AppBar(title: Text(tienda.nombrePropietario), elevation: 0),
+        appBar: AppBar(title: Text(tienda.nombre), elevation: 0),
         body: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,9 +75,16 @@ class _TiendaHeader extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        tienda.nombrePropietario,
+                        tienda.nombre,
                         style: theme.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        'Propietario: ${tienda.nombrePropietario}',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: Colors.grey.shade600,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -121,11 +128,32 @@ class _TiendaHeader extends StatelessWidget {
 
             const SizedBox(height: 20),
 
+            // Información de ubicación
+            if (tienda.direccion != null)
+              _InfoRow(
+                icon: Icons.location_on,
+                title: 'Dirección',
+                subtitle: tienda.direccion!,
+              ),
+
+            // Información de días y horarios de atención
+            _InfoRow(
+              icon: Icons.calendar_today,
+              title: 'Días de atención',
+              subtitle: tienda.diasAtencion.join(', '),
+            ),
+
+            _InfoRow(
+              icon: Icons.access_time,
+              title: 'Horario de atención',
+              subtitle: tienda.horarioAtencion,
+            ),
+
             // Información de contacto y horario
             if (tienda.horario != null)
               _InfoRow(
-                icon: Icons.access_time,
-                title: 'Horario',
+                icon: Icons.schedule,
+                title: 'Horario completo',
                 subtitle: tienda.horario!,
               ),
 
