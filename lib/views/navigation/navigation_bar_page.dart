@@ -6,6 +6,7 @@ import 'package:laferia/core/constants/app_colors.dart';
 import 'package:laferia/views/categorias/categorias_page.dart';
 import 'package:laferia/views/home/home_page.dart';
 import 'package:laferia/views/home/ofertas_page.dart';
+import 'package:laferia/views/maps/maps_page.dart';
 import 'package:laferia/views/navigation/components/header_section.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
@@ -18,7 +19,7 @@ class NavigationBarPage extends StatefulWidget {
 }
 
 class _NavigationBarPageState extends State<NavigationBarPage> {
-  int _pageSelected = 0;
+  int _pageSelected = 3;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -30,9 +31,10 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
       const HomePage(),
       const CategoriasPage(),
       const OfertasPage(),
+      const MapsPage(),
     ];
 
-    List<String> titles = ['Inicio', 'Categorias', 'Ofertas'];
+    List<String> titles = ['Inicio', 'Categorias', 'Ofertas', 'Mapa'];
 
     return Scaffold(
       key: _scaffoldKey,
@@ -78,6 +80,7 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
                 GButton(icon: LineIcons.home, text: 'Inicio'),
                 GButton(icon: LineIcons.userCircle, text: 'Categorias'),
                 GButton(icon: LineIcons.handshake, text: 'Ofertas'),
+                GButton(icon: LineIcons.map, text: 'Mapa'),
               ],
               selectedIndex: _pageSelected,
               onTabChange: (index) {
