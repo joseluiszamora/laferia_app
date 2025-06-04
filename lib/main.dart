@@ -9,10 +9,13 @@ import 'package:laferia/core/blocs/tiendas/tiendas_bloc.dart';
 import 'package:laferia/core/providers/theme_provider.dart';
 import 'package:laferia/core/routes/app_router.dart';
 import 'package:laferia/core/themes/theme.dart';
+import 'package:laferia/maps/tile_cache_service.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await TileCacheService.instance.initialize();
+
   serviceLocatorInit();
   runApp(
     MultiProvider(
