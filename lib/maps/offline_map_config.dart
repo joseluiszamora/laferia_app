@@ -1,17 +1,74 @@
 // Configuración del sistema de mapas offline
 class OfflineMapConfig {
+  // PROVEEDOR POR DEFECTO - Cambia este valor para usar otro mapa
+  static const String defaultProvider =
+      'cartodb_voyager'; // Cambia aquí: 'openstreetmap', 'cartodb_light', 'cartodb_dark', 'stadia_smooth', 'stadia_dark', 'basemaps', 'stamen'
+
   // URLs de diferentes proveedores de mapas basados en OpenStreetMap
+  // recomendado basemaps es gratuito
   static const Map<String, String> tileProviders = {
     'openstreetmap': 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
     'cartodb_light':
-        'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png',
+        'https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/light_all/{z}/{x}/{y}.png',
     'cartodb_dark':
-        'https://cartodb-basemaps-{s}.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png',
-    'stadia_smooth':
-        'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png',
-    'stadia_dark':
-        'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
+        'https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/dark_all/{z}/{x}/{y}.png',
+    'cartodb_voyager':
+        'https://cartodb-basemaps-{s}.global.ssl.fastly.net/rastertiles/voyager/{z}/{x}/{y}.png',
+    'basemaps': 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+    'esri':
+        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    'opentopo': 'https://tile.opentopomap.org/{z}/{x}/{y}.png',
   };
+
+  // Subdominios para proveedores que los soportan
+  static const Map<String, List<String>> providerSubdomains = {
+    'openstreetmap': ['a', 'b', 'c'],
+    'cartodb_light': ['a', 'b', 'c', 'd'],
+    'cartodb_dark': ['a', 'b', 'c', 'd'],
+    'cartodb_voyager': ['a', 'b', 'c', 'd'],
+    'basemaps': ['a', 'b', 'c', 'd'],
+    'stamen': ['a', 'b', 'c'],
+    'esri': ['a', 'b', 'c', 'd'],
+    'opentopo': ['a', 'b', 'c', 'd'],
+  };
+
+  // Atribuciones para cada proveedor
+  static const Map<String, String> providerAttributions = {
+    'openstreetmap': '© OpenStreetMap contributors',
+    'cartodb_light': '© CartoDB © OpenStreetMap contributors',
+    'cartodb_dark': '© CartoDB © OpenStreetMap contributors',
+    'cartodb_voyager': '© CartoDB © OpenStreetMap contributors',
+    'basemaps': '© Base Maps © OpenStreetMap contributors',
+    'stamen': '© Stamen Maps © OpenStreetMap contributors',
+    'esri': '© Esri Maps © OpenStreetMap contributors',
+    'opentopo': '© Esri Maps © OpenStreetMap contributors',
+  };
+
+  // Métodos utilitarios para obtener configuración del proveedor por defecto
+  static String getDefaultTileUrl() {
+    return tileProviders[defaultProvider] ?? tileProviders['openstreetmap']!;
+  }
+
+  static List<String> getDefaultSubdomains() {
+    return providerSubdomains[defaultProvider] ?? [];
+  }
+
+  static String getDefaultAttribution() {
+    return providerAttributions[defaultProvider] ??
+        providerAttributions['openstreetmap']!;
+  }
+
+  static String getProviderUrl(String provider) {
+    return tileProviders[provider] ?? getDefaultTileUrl();
+  }
+
+  static List<String> getProviderSubdomains(String provider) {
+    return providerSubdomains[provider] ?? [];
+  }
+
+  static String getProviderAttribution(String provider) {
+    return providerAttributions[provider] ?? getDefaultAttribution();
+  }
 
   // Configuración de áreas predefinidas para La Paz
   static const Map<String, Map<String, double>> predefinedAreas = {

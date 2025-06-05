@@ -3,11 +3,14 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:laferia/core/layouts/layout_main.dart';
 import 'package:laferia/core/providers/theme_provider.dart';
 import 'package:laferia/core/constants/app_colors.dart';
+import 'package:laferia/maps/examples/quick_provider_change_example.dart';
+import 'package:laferia/maps/map_provider_switcher_example.dart';
 import 'package:laferia/views/categorias/categorias_page.dart';
 import 'package:laferia/views/home/home_page.dart';
 import 'package:laferia/views/home/home_page_with_map.dart';
 import 'package:laferia/views/home/ofertas_page.dart';
 import 'package:laferia/views/maps/maps_page.dart';
+import 'package:laferia/views/maps/modern_offline_map_screen.dart';
 import 'package:laferia/views/maps/simple_offline_map_screen.dart';
 import 'package:laferia/views/navigation/components/header_section.dart';
 import 'package:line_icons/line_icons.dart';
@@ -33,7 +36,7 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
       const HomePageWithMap(),
       const CategoriasPage(),
       const OfertasPage(),
-      const SimpleOfflineMapScreen(),
+      const MapsPage(),
     ];
 
     List<String> titles = ['Inicio', 'Categorias', 'Ofertas', 'Mapa'];

@@ -3,6 +3,8 @@ import 'package:laferia/views/maps/modern_offline_map_screen.dart';
 import 'package:laferia/views/maps/offline_map_manager.dart';
 import 'package:laferia/maps/tile_cache_service.dart';
 import 'package:laferia/maps/default_tiles_service.dart';
+import 'package:laferia/maps/map_provider_switcher_example.dart';
+import 'package:laferia/maps/map_provider_helper.dart';
 
 class MapNavigationHelper {
   // Navegar al mapa principal
@@ -19,6 +21,21 @@ class MapNavigationHelper {
       context,
       MaterialPageRoute(builder: (context) => const OfflineMapManager()),
     );
+  }
+
+  // Navegar al ejemplo de cambio de proveedores
+  static void openProviderSwitcher(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const MapProviderSwitcherExample(),
+      ),
+    );
+  }
+
+  // Obtener información del proveedor actual
+  static MapProviderInfo getCurrentProviderInfo() {
+    return MapProviderHelper.defaultProviderInfo;
   }
 
   // Widget para botón de mapa en la página principal
@@ -103,13 +120,26 @@ class MapNavigationHelper {
                       ),
                     ),
                   ),
-                  SizedBox(width: 12),
+                  SizedBox(width: 8),
                   ElevatedButton.icon(
                     onPressed: () => openMapManager(context),
                     icon: Icon(Icons.settings),
-                    label: Text('Configurar'),
+                    label: Text('Config'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white24,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 8),
+                  ElevatedButton.icon(
+                    onPressed: () => openProviderSwitcher(context),
+                    icon: Icon(Icons.layers),
+                    label: Text('Estilo'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange.shade600,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),

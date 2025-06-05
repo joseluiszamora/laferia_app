@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:laferia/maps/examples/quick_provider_change_example.dart';
 import 'package:laferia/maps/map_navigation_helper.dart';
 
 class HomePageWithMap extends StatelessWidget {
@@ -25,6 +26,7 @@ class HomePageWithMap extends StatelessWidget {
             MapNavigationHelper.buildMapCard(context),
 
             // Más contenido...
+            CurrentProviderInfo(),
           ],
         ),
       ),

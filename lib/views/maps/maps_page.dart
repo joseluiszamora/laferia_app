@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:laferia/views/maps/components/map_actions_buttons.dart';
+import 'package:laferia/maps/offline_map_config.dart';
 import 'package:latlong2/latlong.dart';
 
 class MapsPage extends StatefulWidget {
@@ -44,7 +45,7 @@ class _MapsPageState extends State<MapsPage> {
         ),
         children: [
           TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            urlTemplate: OfflineMapConfig.getDefaultTileUrl(),
             userAgentPackageName: 'com.example.laferia_app',
           ),
         ],

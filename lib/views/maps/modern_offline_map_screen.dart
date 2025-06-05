@@ -5,6 +5,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:laferia/maps/custom_cached_tile_provider.dart';
 import 'package:laferia/maps/tile_cache_service.dart';
 import 'package:laferia/maps/default_tiles_service.dart';
+import 'package:laferia/maps/offline_map_config.dart';
 import 'package:latlong2/latlong.dart';
 
 class ModernOfflineMapScreen extends StatefulWidget {
@@ -57,14 +58,14 @@ class _ModernOfflineMapScreenState extends State<ModernOfflineMapScreen>
   }
 
   void _preloadBasicArea() async {
-    // Precargar área básica en background
+    // Precargar área básica en background usando el proveedor por defecto
     TileCacheService.instance.preloadArea(
       northEast_lat: -16.490,
       northEast_lng: -68.120,
       southWest_lat: -16.510,
       southWest_lng: -68.140,
       zoomLevels: [12, 13, 14, 15],
-      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      urlTemplate: OfflineMapConfig.getDefaultTileUrl(),
     );
   }
 
@@ -152,7 +153,7 @@ class _ModernOfflineMapScreenState extends State<ModernOfflineMapScreen>
             children: [
               // Capa de tiles con estilo moderno
               TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                urlTemplate: OfflineMapConfig.getDefaultTileUrl(),
                 userAgentPackageName: 'com.laferia.app',
                 tileProvider: CustomCachedTileProvider(),
                 tileSize: 256,
@@ -387,7 +388,11 @@ class _ModernOfflineMapScreenState extends State<ModernOfflineMapScreen>
 
     for (int x = tileBounds['minX']!; x <= tileBounds['maxX']!; x++) {
       for (int y = tileBounds['minY']!; y <= tileBounds['maxY']!; y++) {
-        final url = 'https://tile.openstreetmap.org/$zoom/$x/$y.png';
+        final url = OfflineMapConfig.getDefaultTileUrl()
+            .replaceAll('{z}', zoom.toString())
+            .replaceAll('{x}', x.toString())
+            .replaceAll('{y}', y.toString())
+            .replaceAll('{s}', 'a'); // Usar primer subdominio por defecto
         try {
           TileCacheService.instance.getTile(url, zoom, x, y);
         } catch (e) {

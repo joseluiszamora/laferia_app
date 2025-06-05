@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:laferia/maps/custom_cached_tile_provider.dart';
 import 'package:laferia/maps/tile_cache_service.dart';
+import 'package:laferia/maps/offline_map_config.dart';
 import 'package:latlong2/latlong.dart';
 import 'dart:math' as math;
 
@@ -38,7 +39,7 @@ class _SimpleOfflineMapScreenState extends State<SimpleOfflineMapScreen> {
       southWest_lat: -16.5100,
       southWest_lng: -68.1400,
       zoomLevels: [12, 13, 14, 15],
-      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      urlTemplate: OfflineMapConfig.getDefaultTileUrl(),
     );
   }
 
@@ -67,7 +68,7 @@ class _SimpleOfflineMapScreenState extends State<SimpleOfflineMapScreen> {
         children: [
           // Capa de tiles con estilo moderno basado en OpenStreetMap
           TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+            urlTemplate: OfflineMapConfig.getDefaultTileUrl(),
             userAgentPackageName: 'com.laferia.app',
 
             // Usar nuestro tile provider personalizado con caché
@@ -191,7 +192,11 @@ class _SimpleOfflineMapScreenState extends State<SimpleOfflineMapScreen> {
 
     for (int x = tileBounds['minX']!; x <= tileBounds['maxX']!; x++) {
       for (int y = tileBounds['minY']!; y <= tileBounds['maxY']!; y++) {
-        final url = 'https://tile.openstreetmap.org/$zoom/$x/$y.png';
+        final url = OfflineMapConfig.getDefaultTileUrl()
+            .replaceAll('{z}', zoom.toString())
+            .replaceAll('{x}', x.toString())
+            .replaceAll('{y}', y.toString())
+            .replaceAll('{s}', 'a'); // Usar primer subdominio por defecto
         try {
           // Usar nuestro servicio de caché personalizado
           await TileCacheService.instance.getTile(url, zoom, x, y);

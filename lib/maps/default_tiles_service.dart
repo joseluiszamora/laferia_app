@@ -1,6 +1,6 @@
-import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:laferia/maps/tile_cache_service.dart';
+import 'package:laferia/maps/offline_map_config.dart';
 
 class DefaultTilesService {
   static const String _assetBasePath = 'assets/map_tiles';
@@ -45,7 +45,11 @@ class DefaultTilesService {
       final uint8List = bytes.buffer.asUint8List();
 
       // Guardar en el caché usando el servicio
-      final url = 'https://tile.openstreetmap.org/$z/$x/$y.png';
+      final url = OfflineMapConfig.getDefaultTileUrl()
+          .replaceAll('{z}', z.toString())
+          .replaceAll('{x}', x.toString())
+          .replaceAll('{y}', y.toString())
+          .replaceAll('{s}', 'a'); // Usar primer subdominio por defecto
       await TileCacheService.instance.saveTileFromBytes(
         url,
         z,
@@ -108,7 +112,7 @@ assets:
       southWest_lat: -16.510,
       southWest_lng: -68.140,
       zoomLevels: [12, 13, 14],
-      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+      urlTemplate: OfflineMapConfig.getDefaultTileUrl(),
     );
 
     print(

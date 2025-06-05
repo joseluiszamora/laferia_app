@@ -2,10 +2,11 @@
 
 ## 🗺️ Características Implementadas
 
-### ✅ 1. Basado en OpenStreetMap
+### ✅ 1. Basado en OpenStreetMap con Múltiples Proveedores
 
 - Utiliza tiles de OpenStreetMap como fuente principal
 - Soporte para múltiples proveedores de tiles (CartoDB, Stadia Maps)
+- **Sistema configurable**: Cambia fácilmente entre proveedores
 - Atribución correcta a OpenStreetMap contributors
 
 ### ✅ 2. Funcionalidad Offline Completa
@@ -161,6 +162,78 @@ static const List<double> modernMapColorMatrix = [
 'mi_estilo': 'https://mi-servidor.com/tiles/{z}/{x}/{y}.png',
 ```
 
+## 🔧 Configuración de Proveedores de Mapas
+
+### Cambiar el Proveedor por Defecto
+
+Para cambiar el proveedor de mapas por defecto, simplemente modifica la constante `defaultProvider` en el archivo `lib/maps/offline_map_config.dart`:
+
+```dart
+// En OfflineMapConfig
+static const String defaultProvider = 'cartodb_light'; // Cambia este valor
+```
+
+### Proveedores Disponibles
+
+| Proveedor     | Descripción                    | Valor             |
+| ------------- | ------------------------------ | ----------------- |
+| OpenStreetMap | Mapa estándar de OpenStreetMap | `'openstreetmap'` |
+| CartoDB Light | Estilo claro y minimalista     | `'cartodb_light'` |
+| CartoDB Dark  | Estilo oscuro elegante         | `'cartodb_dark'`  |
+| Stadia Smooth | Estilo suave y moderno         | `'stadia_smooth'` |
+| Stadia Dark   | Estilo oscuro profesional      | `'stadia_dark'`   |
+
+### Ejemplo de Cambio
+
+Para usar CartoDB Dark como proveedor por defecto:
+
+```dart
+// En lib/maps/offline_map_config.dart
+class OfflineMapConfig {
+  static const String defaultProvider = 'cartodb_dark'; // ← Cambiar aquí
+
+  // ... resto del código
+}
+```
+
+### Agregar Nuevos Proveedores
+
+Para agregar un nuevo proveedor de tiles:
+
+1. Añade la URL del tile al mapa `tileProviders`:
+
+```dart
+static const Map<String, String> tileProviders = {
+  // ...existing providers...
+  'mi_proveedor': 'https://mi-servidor.com/tiles/{z}/{x}/{y}.png',
+};
+```
+
+2. Agrega subdominios si es necesario:
+
+```dart
+static const Map<String, List<String>> providerSubdomains = {
+  // ...existing providers...
+  'mi_proveedor': ['a', 'b', 'c'],
+};
+```
+
+3. Agrega la atribución correspondiente:
+
+```dart
+static const Map<String, String> providerAttributions = {
+  // ...existing providers...
+  'mi_proveedor': '© Mi Proveedor © OpenStreetMap contributors',
+};
+```
+
+## ⚡ Ventajas del Sistema Configurable
+
+- **Flexibilidad**: Cambia el estilo visual con una sola línea
+- **Mantenimiento**: Todos los URLs están centralizados
+- **Escalabilidad**: Fácil agregar nuevos proveedores
+- **Consistencia**: Todos los componentes usan la misma configuración
+
 ## 📱 Características de la UI
 
 ### Controles Disponibles
@@ -270,3 +343,76 @@ Si tienes problemas con la implementación:
 2. Asegúrate de que los permisos de almacenamiento estén configurados
 3. Revisa los logs para errores de red o base de datos
 4. Consulta la documentación de flutter_map para problemas específicos
+
+## 🎯 Resumen de Cambios Completados
+
+### ✅ Sistema Totalmente Configurable
+
+Todos los archivos del sistema de mapas offline ahora utilizan la configuración centralizada en lugar de URLs hardcodeadas:
+
+- ✅ `ModernOfflineMapScreen` - Utiliza `OfflineMapConfig.getDefaultTileUrl()`
+- ✅ `SimpleOfflineMapScreen` - Utiliza configuración dinámica
+- ✅ `MapsPage` - Actualizado para usar el sistema configurable
+- ✅ `DefaultTilesService` - URLs dinámicas basadas en configuración
+- ✅ `TileCacheService` - Compatible con todos los proveedores
+
+### ✅ Nuevos Componentes Agregados
+
+1. **MapProviderHelper** - Helper para manejo dinámico de proveedores
+2. **MapProviderSwitcherExample** - Interfaz completa para cambiar proveedores en tiempo real
+3. **QuickProviderChangeExample** - Ejemplos y widgets informativos
+4. **Documentación ampliada** - Guía completa de configuración
+
+### ✅ Configuración Actual
+
+```dart
+// Proveedor actual: CartoDB Dark
+static const String defaultProvider = 'cartodb_dark';
+```
+
+### 🔄 Cómo Cambiar el Proveedor
+
+#### Método 1: Editar Configuración (Recomendado)
+
+```dart
+// En lib/maps/offline_map_config.dart
+static const String defaultProvider = 'cartodb_light'; // Cambiar aquí
+```
+
+#### Método 2: Usar el Switcher Dinámico
+
+```dart
+// Navegar al selector de proveedores
+MapNavigationHelper.openProviderSwitcher(context);
+```
+
+#### Método 3: Programáticamente
+
+```dart
+// Obtener información del proveedor actual
+MapProviderInfo info = MapProviderHelper.defaultProviderInfo;
+print('Usando: ${info.name}');
+```
+
+## 🚀 Funcionalidades Avanzadas
+
+### Selector Dinámico de Proveedores
+
+El sistema incluye un widget completo (`MapProviderSwitcherExample`) que permite:
+
+- ✅ Cambiar proveedores en tiempo real
+- ✅ Vista previa inmediata de cada estilo
+- ✅ Información detallada de cada proveedor
+- ✅ Botones de acceso rápido
+- ✅ Interfaz moderna y responsive
+
+### Integración Fácil
+
+```dart
+// En cualquier parte de tu app
+FloatingActionButton(
+  onPressed: () => MapNavigationHelper.openProviderSwitcher(context),
+  child: Icon(Icons.layers),
+  tooltip: 'Cambiar estilo de mapa',
+)
+```
