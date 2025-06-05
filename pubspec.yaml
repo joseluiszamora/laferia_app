@@ -44,6 +44,7 @@ flutter:
   assets:
     - assets/
     - assets/images/
+    - assets/map_tiles/
 
   fonts:
     - family: Kodchasan

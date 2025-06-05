@@ -1,8 +1,7 @@
 import 'dart:ui';
-
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'dart:typed_data';
 
 import 'package:laferia/maps/tile_cache_service.dart';
 

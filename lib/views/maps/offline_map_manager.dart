@@ -26,19 +26,21 @@ class _OfflineMapManagerState extends State<OfflineMapManager> {
         backgroundColor: Colors.blue.shade900,
         foregroundColor: Colors.white,
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildConfigurationSection(),
-            SizedBox(height: 20),
-            _buildDownloadSection(),
-            SizedBox(height: 20),
-            _buildCacheStatsSection(),
-            SizedBox(height: 20),
-            _buildPresetAreasSection(),
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildConfigurationSection(),
+              SizedBox(height: 20),
+              _buildDownloadSection(),
+              SizedBox(height: 20),
+              _buildCacheStatsSection(),
+              SizedBox(height: 20),
+              _buildPresetAreasSection(),
+            ],
+          ),
         ),
       ),
     );
