@@ -109,225 +109,227 @@ class _ModernOfflineMapScreenState extends State<ModernOfflineMapScreen>
       );
     }
 
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Text(
-          'Mapa Offline - La Feria',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            shadows: [
-              Shadow(
-                offset: Offset(0, 1),
-                blurRadius: 3,
-                color: Colors.black26,
-              ),
-            ],
+    return SizedBox.expand(
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          title: Text(
+            'Mapa Offline - La Feria',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              shadows: [
+                Shadow(
+                  offset: Offset(0, 1),
+                  blurRadius: 3,
+                  color: Colors.black26,
+                ),
+              ],
+            ),
           ),
+          backgroundColor: Colors.blue.shade900.withOpacity(0.9),
+          foregroundColor: Colors.white,
+          elevation: 0,
+          actions: [
+            IconButton(icon: Icon(Icons.info_outline), onPressed: _showMapInfo),
+          ],
         ),
-        backgroundColor: Colors.blue.shade900.withOpacity(0.9),
-        foregroundColor: Colors.white,
-        elevation: 0,
-        actions: [
-          IconButton(icon: Icon(Icons.info_outline), onPressed: _showMapInfo),
-        ],
-      ),
-      body: Stack(
-        children: [
-          FlutterMap(
-            mapController: mapController,
-            options: MapOptions(
-              initialCenter: LatLng(-16.500, -68.130), // La Paz, Bolivia
-              initialZoom: 13.0,
-              minZoom: 5.0,
-              maxZoom: 18.0,
-              // Auto-cachear área visible cuando el usuario navega
-              onPositionChanged: (MapCamera position, bool hasGesture) {
-                if (hasGesture) {
-                  _cacheVisibleAreaDelayed();
-                }
-              },
-              // Ocultar FABs cuando el usuario interactúa con el mapa
-              onTap: (_, __) => _toggleFabs(),
-            ),
-            children: [
-              // Capa de tiles con estilo moderno
-              TileLayer(
-                urlTemplate: OfflineMapConfig.getDefaultTileUrl(),
-                userAgentPackageName: 'com.laferia.app',
-                tileProvider: CustomCachedTileProvider(),
-                tileSize: 256,
-                tileBuilder:
-                    (context, tileWidget, tile) => Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(2.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.1),
-                            blurRadius: 1,
-                            offset: Offset(0, 0.5),
-                          ),
-                        ],
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(2.0),
-                        child: ColorFiltered(
-                          colorFilter: ColorFilter.matrix([
-                            // Matriz de color para un estilo más moderno y vibrante
-                            1.1, 0.0, 0.0, 0.0, -15, // Rojo
-                            0.0, 1.15, 0.0, 0.0, -20, // Verde
-                            0.0, 0.0, 1.2, 0.0, -25, // Azul
-                            0.0, 0.0, 0.0, 1.0, 0, // Alpha
-                          ]),
-                          child: tileWidget,
-                        ),
-                      ),
-                    ),
-                additionalOptions: const {
-                  'attribution': '© OpenStreetMap contributors',
+        body: Stack(
+          children: [
+            FlutterMap(
+              mapController: mapController,
+              options: MapOptions(
+                initialCenter: LatLng(-16.500, -68.130), // La Paz, Bolivia
+                initialZoom: 13.0,
+                minZoom: 5.0,
+                maxZoom: 18.0,
+                // Auto-cachear área visible cuando el usuario navega
+                onPositionChanged: (MapCamera position, bool hasGesture) {
+                  if (hasGesture) {
+                    _cacheVisibleAreaDelayed();
+                  }
                 },
+                // Ocultar FABs cuando el usuario interactúa con el mapa
+                onTap: (_, __) => _toggleFabs(),
               ),
-
-              // Marcador principal
-              MarkerLayer(
-                markers: [
-                  Marker(
-                    width: 50.0,
-                    height: 50.0,
-                    point: LatLng(-16.500, -68.130),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: RadialGradient(
-                          colors: [Colors.red.shade400, Colors.red.shade700],
+              children: [
+                // Capa de tiles con estilo moderno
+                TileLayer(
+                  urlTemplate: OfflineMapConfig.getDefaultTileUrl(),
+                  userAgentPackageName: 'com.laferia.app',
+                  tileProvider: CustomCachedTileProvider(),
+                  tileSize: 256,
+                  tileBuilder:
+                      (context, tileWidget, tile) => Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(2.0),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 1,
+                              offset: Offset(0, 0.5),
+                            ),
+                          ],
                         ),
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.red.withOpacity(0.3),
-                            blurRadius: 10,
-                            spreadRadius: 2,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(2.0),
+                          child: ColorFiltered(
+                            colorFilter: ColorFilter.matrix([
+                              // Matriz de color para un estilo más moderno y vibrante
+                              1.1, 0.0, 0.0, 0.0, -15, // Rojo
+                              0.0, 1.15, 0.0, 0.0, -20, // Verde
+                              0.0, 0.0, 1.2, 0.0, -25, // Azul
+                              0.0, 0.0, 0.0, 1.0, 0, // Alpha
+                            ]),
+                            child: tileWidget,
                           ),
-                        ],
+                        ),
                       ),
-                      child: Icon(
-                        Icons.location_on,
+                  additionalOptions: const {
+                    'attribution': '© OpenStreetMap contributors',
+                  },
+                ),
+
+                // Marcador principal
+                MarkerLayer(
+                  markers: [
+                    Marker(
+                      width: 50.0,
+                      height: 50.0,
+                      point: LatLng(-16.500, -68.130),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: RadialGradient(
+                            colors: [Colors.red.shade400, Colors.red.shade700],
+                          ),
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.red.withOpacity(0.3),
+                              blurRadius: 10,
+                              spreadRadius: 2,
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          Icons.location_on,
+                          color: Colors.white,
+                          size: 30,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Attribution personalizada
+                RichAttributionWidget(
+                  attributions: [
+                    TextSourceAttribution(
+                      '© OpenStreetMap contributors',
+                      textStyle: TextStyle(color: Colors.black87, fontSize: 10),
+                    ),
+                    TextSourceAttribution(
+                      'Modo Offline Habilitado',
+                      textStyle: TextStyle(
+                        color: Colors.green.shade700,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                  alignment: AttributionAlignment.bottomLeft,
+                ),
+              ],
+            ),
+
+            // Indicador de estado de caché
+            Positioned(
+              top: 100,
+              right: 16,
+              child: AnimatedContainer(
+                duration: Duration(milliseconds: 300),
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade600.withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 4,
+                      offset: Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.offline_bolt, color: Colors.white, size: 16),
+                    SizedBox(width: 4),
+                    Text(
+                      'OFFLINE',
+                      style: TextStyle(
                         color: Colors.white,
-                        size: 30,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-                ],
-              ),
-
-              // Attribution personalizada
-              RichAttributionWidget(
-                attributions: [
-                  TextSourceAttribution(
-                    '© OpenStreetMap contributors',
-                    textStyle: TextStyle(color: Colors.black87, fontSize: 10),
-                  ),
-                  TextSourceAttribution(
-                    'Modo Offline Habilitado',
-                    textStyle: TextStyle(
-                      color: Colors.green.shade700,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-                alignment: AttributionAlignment.bottomLeft,
-              ),
-            ],
-          ),
-
-          // Indicador de estado de caché
-          Positioned(
-            top: 100,
-            right: 16,
-            child: AnimatedContainer(
-              duration: Duration(milliseconds: 300),
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: Colors.green.shade600.withOpacity(0.9),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.offline_bolt, color: Colors.white, size: 16),
-                  SizedBox(width: 4),
-                  Text(
-                    'OFFLINE',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
 
-      // Controles flotantes mejorados
-      floatingActionButton: AnimatedBuilder(
-        animation: _fabAnimationController,
-        builder: (context, child) {
-          return Transform.scale(
-            scale: _fabAnimationController.value,
-            child: Visibility(
-              visible: _showFabs,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  _buildModernFAB(
-                    heroTag: "zoom_in",
-                    icon: Icons.add,
-                    onPressed: () => _zoomIn(),
-                    backgroundColor: Colors.blue.shade600,
-                  ),
-                  SizedBox(height: 12),
-                  _buildModernFAB(
-                    heroTag: "zoom_out",
-                    icon: Icons.remove,
-                    onPressed: () => _zoomOut(),
-                    backgroundColor: Colors.blue.shade600,
-                  ),
-                  SizedBox(height: 12),
-                  _buildModernFAB(
-                    heroTag: "my_location",
-                    icon: Icons.my_location,
-                    onPressed: () => _centerOnLaPaz(),
-                    backgroundColor: Colors.indigo.shade600,
-                  ),
-                  SizedBox(height: 12),
-                  _buildModernFAB(
-                    heroTag: "download",
-                    icon: Icons.download_for_offline,
-                    onPressed: () => _downloadVisibleArea(),
-                    backgroundColor: Colors.green.shade600,
-                  ),
-                  SizedBox(height: 12),
-                  _buildModernFAB(
-                    heroTag: "stats",
-                    icon: Icons.analytics_outlined,
-                    onPressed: () => _showCacheStats(),
-                    backgroundColor: Colors.orange.shade600,
-                  ),
-                ],
+        // Controles flotantes mejorados
+        floatingActionButton: AnimatedBuilder(
+          animation: _fabAnimationController,
+          builder: (context, child) {
+            return Transform.scale(
+              scale: _fabAnimationController.value,
+              child: Visibility(
+                visible: _showFabs,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    _buildModernFAB(
+                      heroTag: "zoom_in",
+                      icon: Icons.add,
+                      onPressed: () => _zoomIn(),
+                      backgroundColor: Colors.blue.shade600,
+                    ),
+                    SizedBox(height: 12),
+                    _buildModernFAB(
+                      heroTag: "zoom_out",
+                      icon: Icons.remove,
+                      onPressed: () => _zoomOut(),
+                      backgroundColor: Colors.blue.shade600,
+                    ),
+                    SizedBox(height: 12),
+                    _buildModernFAB(
+                      heroTag: "my_location",
+                      icon: Icons.my_location,
+                      onPressed: () => _centerOnLaPaz(),
+                      backgroundColor: Colors.indigo.shade600,
+                    ),
+                    SizedBox(height: 12),
+                    _buildModernFAB(
+                      heroTag: "download",
+                      icon: Icons.download_for_offline,
+                      onPressed: () => _downloadVisibleArea(),
+                      backgroundColor: Colors.green.shade600,
+                    ),
+                    SizedBox(height: 12),
+                    _buildModernFAB(
+                      heroTag: "stats",
+                      icon: Icons.analytics_outlined,
+                      onPressed: () => _showCacheStats(),
+                      backgroundColor: Colors.orange.shade600,
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -384,26 +386,53 @@ class _ModernOfflineMapScreenState extends State<ModernOfflineMapScreen>
   }
 
   Future<void> _downloadTilesForBounds(LatLngBounds bounds, int zoom) async {
-    final tileBounds = _getTileBounds(bounds, zoom);
+    try {
+      final tileBounds = _getTileBounds(bounds, zoom);
 
-    for (int x = tileBounds['minX']!; x <= tileBounds['maxX']!; x++) {
-      for (int y = tileBounds['minY']!; y <= tileBounds['maxY']!; y++) {
-        final url = OfflineMapConfig.getDefaultTileUrl()
-            .replaceAll('{z}', zoom.toString())
-            .replaceAll('{x}', x.toString())
-            .replaceAll('{y}', y.toString())
-            .replaceAll('{s}', 'a'); // Usar primer subdominio por defecto
-        try {
-          TileCacheService.instance.getTile(url, zoom, x, y);
-        } catch (e) {
-          // Error silencioso para no interrumpir la experiencia
+      // Validar que los bounds sean razonables
+      final maxTiles =
+          100; // Limitar a 100 tiles por nivel de zoom para evitar sobrecargas
+      final totalTiles =
+          (tileBounds['maxX']! - tileBounds['minX']! + 1) *
+          (tileBounds['maxY']! - tileBounds['minY']! + 1);
+
+      if (totalTiles > maxTiles) {
+        print(
+          'Demasiados tiles para descargar ($totalTiles), limitando área...',
+        );
+        return;
+      }
+
+      final subdomains = OfflineMapConfig.getDefaultSubdomains();
+      final selectedSubdomain = subdomains.isNotEmpty ? subdomains[0] : 'a';
+
+      for (int x = tileBounds['minX']!; x <= tileBounds['maxX']!; x++) {
+        for (int y = tileBounds['minY']!; y <= tileBounds['maxY']!; y++) {
+          final url = OfflineMapConfig.getDefaultTileUrl()
+              .replaceAll('{z}', zoom.toString())
+              .replaceAll('{x}', x.toString())
+              .replaceAll('{y}', y.toString())
+              .replaceAll('{s}', selectedSubdomain);
+
+          try {
+            await TileCacheService.instance.getTile(url, zoom, x, y);
+            // Pequeña pausa para no sobrecargar el servidor
+            await Future.delayed(Duration(milliseconds: 50));
+          } catch (e) {
+            print('Error descargando tile $zoom/$x/$y: $e');
+            // Continuar con el siguiente tile
+          }
         }
       }
+    } catch (e) {
+      print('Error en _downloadTilesForBounds: $e');
+      rethrow;
     }
   }
 
   void _downloadVisibleArea() async {
     final bounds = mapController.camera.visibleBounds;
+    final currentZoom = mapController.camera.zoom.round();
 
     showDialog(
       context: context,
@@ -440,18 +469,25 @@ class _ModernOfflineMapScreenState extends State<ModernOfflineMapScreen>
     );
 
     try {
-      final currentZoom = mapController.camera.zoom.round();
+      // Descargar tiles para diferentes niveles de zoom
       for (int z = currentZoom - 1; z <= currentZoom + 2; z++) {
         if (z >= 10 && z <= 18) {
           await _downloadTilesForBounds(bounds, z);
         }
       }
 
-      Navigator.of(context).pop();
-      _showSuccessSnackbar('Área descargada exitosamente');
+      // Cerrar diálogo y mostrar éxito
+      if (mounted) {
+        Navigator.of(context).pop();
+        _showSuccessSnackbar('Área descargada exitosamente');
+      }
     } catch (e) {
-      Navigator.of(context).pop();
-      _showErrorSnackbar('Error al descargar: $e');
+      print('Error descargando área visible: $e');
+      // Cerrar diálogo y mostrar error
+      if (mounted) {
+        Navigator.of(context).pop();
+        _showErrorSnackbar('Error al descargar: $e');
+      }
     }
   }
 
@@ -598,26 +634,69 @@ class _ModernOfflineMapScreenState extends State<ModernOfflineMapScreen>
   }
 
   Map<String, int> _getTileBounds(LatLngBounds bounds, int zoom) {
-    final factor = (1 << zoom).toDouble();
+    try {
+      // Validar zoom level
+      if (zoom < 0 || zoom > 18) {
+        throw ArgumentError('Zoom level inválido: $zoom');
+      }
 
-    final minX = ((bounds.west + 180.0) / 360.0 * factor).floor();
-    final maxX = ((bounds.east + 180.0) / 360.0 * factor).floor();
+      final factor = (1 << zoom).toDouble();
 
-    final northLatRad = bounds.north * math.pi / 180.0;
-    final southLatRad = bounds.south * math.pi / 180.0;
+      // Calcular X tiles
+      double westNorm = (bounds.west + 180.0) / 360.0;
+      double eastNorm = (bounds.east + 180.0) / 360.0;
 
-    final minY =
-        ((1.0 - _asinh(math.tan(northLatRad)) / math.pi) / 2.0 * factor)
-            .floor();
-    final maxY =
-        ((1.0 - _asinh(math.tan(southLatRad)) / math.pi) / 2.0 * factor)
-            .floor();
+      // Asegurar que los valores estén en el rango válido
+      westNorm = westNorm.clamp(0.0, 1.0);
+      eastNorm = eastNorm.clamp(0.0, 1.0);
 
-    return {'minX': minX, 'maxX': maxX, 'minY': minY, 'maxY': maxY};
+      final minX = (westNorm * factor).floor();
+      final maxX = (eastNorm * factor).floor();
+
+      // Calcular Y tiles
+      final northLatRad = (bounds.north * math.pi / 180.0).clamp(
+        -math.pi / 2,
+        math.pi / 2,
+      );
+      final southLatRad = (bounds.south * math.pi / 180.0).clamp(
+        -math.pi / 2,
+        math.pi / 2,
+      );
+
+      final minY =
+          ((1.0 - _asinh(math.tan(northLatRad)) / math.pi) / 2.0 * factor)
+              .floor();
+      final maxY =
+          ((1.0 - _asinh(math.tan(southLatRad)) / math.pi) / 2.0 * factor)
+              .floor();
+
+      // Validar que los valores sean razonables
+      final maxTileIndex = (1 << zoom) - 1;
+
+      return {
+        'minX': minX.clamp(0, maxTileIndex),
+        'maxX': maxX.clamp(0, maxTileIndex),
+        'minY': minY.clamp(0, maxTileIndex),
+        'maxY': maxY.clamp(0, maxTileIndex),
+      };
+    } catch (e) {
+      print('Error calculando tile bounds: $e');
+      // Devolver bounds por defecto para La Paz como fallback
+      return {'minX': 1240, 'maxX': 1241, 'minY': 1815, 'maxY': 1816};
+    }
   }
 
   double _asinh(double x) {
-    return math.log(x + math.sqrt(x * x + 1.0));
+    try {
+      // Proteger contra valores extremos
+      if (x.isNaN || x.isInfinite) {
+        return 0.0;
+      }
+      return math.log(x + math.sqrt(x * x + 1.0));
+    } catch (e) {
+      print('Error en _asinh con x=$x: $e');
+      return 0.0;
+    }
   }
 
   @override
