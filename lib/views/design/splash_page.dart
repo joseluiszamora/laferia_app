@@ -50,7 +50,7 @@ class _SplashPageState extends State<SplashPage>
 
     // Navigate to onboarding
     if (mounted) {
-      context.go(AppRoutes.login);
+      context.go(AppRoutes.cuisineSelection);
     }
   }
 

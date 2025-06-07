@@ -10,6 +10,7 @@ class CustomTextField extends StatefulWidget {
   final Widget? suffixIcon;
   final Widget? prefixIcon;
   final bool readOnly;
+  final bool enabled;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry? margin;
   final int maxLines;
@@ -25,6 +26,7 @@ class CustomTextField extends StatefulWidget {
     this.suffixIcon,
     this.prefixIcon,
     this.readOnly = false,
+    this.enabled = true,
     this.onTap,
     this.margin,
     this.maxLines = 1,
@@ -48,7 +50,13 @@ class _CustomTextFieldState extends State<CustomTextField> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(widget.label, style: theme.textTheme.labelLarge),
+          Text(
+            widget.label,
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: theme.textTheme.labelLarge?.color,
+              fontFamily: 'Kodchasan',
+            ),
+          ),
           const SizedBox(height: 8),
           TextFormField(
             controller: widget.controller,
@@ -56,11 +64,46 @@ class _CustomTextFieldState extends State<CustomTextField> {
             keyboardType: widget.keyboardType,
             validator: widget.validator,
             readOnly: widget.readOnly,
+            enabled: widget.enabled,
             onTap: widget.onTap,
             maxLines: widget.maxLines,
+            style: TextStyle(
+              fontFamily: 'Kodchasan',
+              color:
+                  widget.enabled
+                      ? theme.textTheme.bodyLarge?.color
+                      : theme.disabledColor,
+            ),
             decoration: InputDecoration(
               hintText: widget.hint ?? widget.label,
-              border: OutlineInputBorder(),
+              hintStyle: TextStyle(
+                fontFamily: 'Kodchasan',
+                color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6),
+              ),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: theme.colorScheme.outline),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: theme.colorScheme.outline),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(
+                  color: theme.colorScheme.primary,
+                  width: 2,
+                ),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: theme.disabledColor),
+              ),
+              filled: true,
+              fillColor:
+                  widget.enabled
+                      ? theme.cardColor
+                      : theme.cardColor.withOpacity(0.5),
               prefixIcon: widget.prefixIcon,
               suffixIcon:
                   widget.isPassword

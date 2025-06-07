@@ -9,20 +9,26 @@ import 'package:laferia/views/design/email_verification_page.dart';
 import 'package:laferia/views/design/cuisine_selection_page.dart';
 import 'package:laferia/views/design/location_setup_page.dart';
 import 'package:laferia/views/design/setup_complete_page.dart';
+import 'package:laferia/views/design/design_pages.dart';
+import 'package:laferia/views/design/search_page.dart';
+import 'package:laferia/views/design/cart_page.dart';
+import 'package:laferia/views/design/profile_page.dart';
+import 'package:laferia/views/design/payment_methods_page.dart';
+import 'package:laferia/views/design/order_history_page.dart';
 
 import 'app_routes.dart';
 
 GoRouter appRouter() => GoRouter(
-  // Cambiar initialLocation al nuevo splash de diseño
-  initialLocation: AppRoutes.designSplash,
+  // Cambiar initialLocation a la página de diseño
+  initialLocation: AppRoutes.navigation,
   routes: publicRoutes(),
   redirect: (context, state) {
-    final isSplashRoute = state.matchedLocation == AppRoutes.designSplash;
+    // final isDesignPageRoute = state.matchedLocation == AppRoutes.designPages;
 
-    // Si está en splash, permitir
-    if (isSplashRoute) return null;
+    // // Si está en design pages, permitir
+    // if (isDesignPageRoute) return null;
 
-    return null;
+    // return null;
   },
 );
 
@@ -34,6 +40,11 @@ List<RouteBase> publicRoutes() => [
   ),
 
   /* <---- DESIGN FLOW -----> */
+  GoRoute(
+    path: AppRoutes.designPages,
+    name: 'DesignPages',
+    builder: (context, state) => const DesignPagesPage(),
+  ),
   GoRoute(
     path: AppRoutes.designSplash,
     name: 'DesignSplash',
@@ -76,6 +87,31 @@ List<RouteBase> publicRoutes() => [
     path: AppRoutes.setupComplete,
     name: 'SetupComplete',
     builder: (context, state) => const SetupCompletePage(),
+  ),
+  GoRoute(
+    path: AppRoutes.search,
+    name: 'Search',
+    builder: (context, state) => const SearchPage(),
+  ),
+  GoRoute(
+    path: AppRoutes.cart,
+    name: 'Cart',
+    builder: (context, state) => const CartPage(),
+  ),
+  GoRoute(
+    path: AppRoutes.profile,
+    name: 'Profile',
+    builder: (context, state) => const ProfilePage(),
+  ),
+  GoRoute(
+    path: AppRoutes.paymentMethods,
+    name: 'PaymentMethods',
+    builder: (context, state) => const PaymentMethodsPage(),
+  ),
+  GoRoute(
+    path: AppRoutes.orderHistory,
+    name: 'OrderHistory',
+    builder: (context, state) => const OrderHistoryPage(),
   ),
 
   // GoRoute(

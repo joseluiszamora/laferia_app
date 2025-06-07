@@ -60,6 +60,8 @@ class SecondaryButton extends StatelessWidget {
   final IconData? icon;
   final double? width;
   final EdgeInsetsGeometry? margin;
+  final Color? backgroundColor;
+  final Color? textColor;
 
   const SecondaryButton({
     Key? key,
@@ -69,6 +71,8 @@ class SecondaryButton extends StatelessWidget {
     this.icon,
     this.width,
     this.margin,
+    this.backgroundColor,
+    this.textColor,
   }) : super(key: key);
 
   @override
@@ -80,14 +84,21 @@ class SecondaryButton extends StatelessWidget {
       margin: margin ?? const EdgeInsets.symmetric(horizontal: 24),
       child: OutlinedButton(
         onPressed: isLoading ? null : onPressed,
-        style: theme.outlinedButtonTheme.style,
+        style: theme.outlinedButtonTheme.style?.copyWith(
+          backgroundColor:
+              backgroundColor != null
+                  ? MaterialStateProperty.all(backgroundColor)
+                  : null,
+          foregroundColor:
+              textColor != null ? MaterialStateProperty.all(textColor) : null,
+        ),
         child:
             isLoading
                 ? SizedBox(
                   height: 20,
                   width: 20,
                   child: CircularProgressIndicator(
-                    color: theme.colorScheme.primary,
+                    color: textColor ?? theme.colorScheme.primary,
                     strokeWidth: 2,
                   ),
                 )

@@ -11,6 +11,7 @@ class AppRoutes {
   static const authLogin = '/auth_login_page';
 
   /* <---- DESIGN FLOW -----> */
+  static const designPages = '/design_pages';
   static const designSplash = '/design_splash';
   static const onboarding = '/onboarding';
   static const login = '/login';
@@ -19,6 +20,11 @@ class AppRoutes {
   static const cuisineSelection = '/cuisine_selection';
   static const locationSetup = '/location_setup';
   static const setupComplete = '/setup_complete';
+  static const search = '/search';
+  static const cart = '/cart';
+  static const profile = '/profile';
+  static const paymentMethods = '/payment_methods';
+  static const orderHistory = '/order_history';
 
   /* <---- CONFIGURATION -----> */
   static const configuration = "/configuration";
