@@ -8,7 +8,7 @@ import 'package:laferia/core/blocs/service_locator.dart';
 import 'package:laferia/core/blocs/tiendas/tiendas_bloc.dart';
 import 'package:laferia/core/providers/theme_provider.dart';
 import 'package:laferia/core/routes/app_router.dart';
-import 'package:laferia/core/themes/theme.dart';
+import 'package:laferia/core/themes/design_theme.dart';
 import 'package:laferia/maps/tile_cache_service.dart';
 import 'package:provider/provider.dart';
 
@@ -51,12 +51,10 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return MaterialApp.router(
-          title: 'DLZA Legal App',
+          title: 'La Feria',
           debugShowCheckedModeBanner: false,
-          theme:
-              themeProvider.isDarkMode
-                  ? AppTheme.darkTheme(context)
-                  : AppTheme.lightTheme(context),
+          theme: DesignTheme.lightTheme(context),
+          themeMode: ThemeMode.light,
           routerConfig: appRouter(),
         );
       },

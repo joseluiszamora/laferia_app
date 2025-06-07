@@ -5,140 +5,156 @@ import 'package:laferia/core/constants/app_defaults.dart';
 import 'constants.dart';
 
 class AppTheme {
-  // Colores base para ambos temas
-  static const Color primaryColor = Color(0xFF0BBFDF);
-  static const Color secondaryColor = Color(0xFF09173D);
+  // Colores base para ambos temas (inspirados en Tasty! app)
+  static const Color primaryColor = Color(0xFFFF6B35); // Naranja principal
+  static const Color primaryLightColor = Color(0xFFFF8A5B); // Naranja claro
+  static const Color primaryDarkColor = Color(0xFFE55100); // Naranja oscuro
+  static const Color secondaryColor = Color(0xFF2E2E2E); // Gris oscuro
   static const Color accentColor = Color(0xFFFFC107);
   static const Color errorColor = Color(0xFFE53935);
   static const Color successColor = Color(0xFF4CAF50);
   static const Color warningColor = Color(0xFFFF9800);
-  static const Color grayWhiteColor = Color(0xFFF3F2FB);
-  static const Color grayColor = Color(0xFFDEDEE2);
-  static const Color geraintBlueColor = Color(0xFF9b98A9);
-  static const Color bluishGrayColor = Color(0xFF676475);
-  static const Color bluishBlackColor = Color(0xFF21223B);
-  static const Color blueColor = Color(0xFF226AFE);
-  static const Color blueBlackColor = Color(0xFF07051C);
+  static const Color grayWhiteColor = Color(0xFFFAFAFA);
+  static const Color grayColor = Color(0xFFF5F5F5);
+  static const Color grayLightColor = Color(0xFFE0E0E0);
+  static const Color textPrimaryColor = Color(0xFF212121);
+  static const Color textSecondaryColor = Color(0xFF757575);
+  static const Color backgroundColor = Color(
+    0xFFFFFBF8,
+  ); // Fondo ligeramente cálido
+  static const Color cardColor = Colors.white;
+  static const Color dividerColor = Color(0xFFE0E0E0);
 
   static ThemeData lightTheme(BuildContext context) {
     return ThemeData(
       brightness: Brightness.light,
-      scaffoldBackgroundColor: grayWhiteColor,
+      scaffoldBackgroundColor: backgroundColor,
       primaryColor: primaryColor,
       colorScheme: const ColorScheme.light(
         primary: primaryColor,
         secondary: secondaryColor,
         error: errorColor,
-        surface: Colors.white,
-        background: Color(0xFFF5F5F5),
+        surface: cardColor,
+        background: backgroundColor,
+        onPrimary: Colors.white,
+        onSecondary: Colors.white,
+        onSurface: textPrimaryColor,
+        onBackground: textPrimaryColor,
       ),
       indicatorColor: secondaryColor,
       fontFamily: 'Kodchasan',
       appBarTheme: const AppBarTheme(
-        backgroundColor: grayWhiteColor,
+        backgroundColor: backgroundColor,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: textPrimaryColor),
         titleTextStyle: TextStyle(
-          color: Colors.white,
+          color: textPrimaryColor,
           fontSize: 20,
           fontWeight: FontWeight.w600,
           fontFamily: 'Kodchasan',
         ),
       ),
       cardTheme: CardTheme(
-        color: Colors.white,
-        elevation: 4,
-        shadowColor: Colors.black.withOpacity(0.1),
+        color: cardColor,
+        elevation: 2,
+        shadowColor: Colors.black.withOpacity(0.08),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       ),
       textTheme: TextTheme(
-        bodyLarge: TextStyle(color: kTextColor),
-        bodyMedium: TextStyle(color: kTextColor),
-        bodySmall: TextStyle(color: kTextColor),
+        bodyLarge: TextStyle(color: textPrimaryColor, fontSize: 16),
+        bodyMedium: TextStyle(color: textPrimaryColor, fontSize: 14),
+        bodySmall: TextStyle(color: textSecondaryColor, fontSize: 12),
         titleLarge: TextStyle(
-          fontSize: AppDefaults.fontSizeTitleLarge,
-          color: AppColors.black,
-          fontWeight: FontWeight.w600,
+          fontSize: 24,
+          color: textPrimaryColor,
+          fontWeight: FontWeight.bold,
           fontFamily: 'Kodchasan',
         ),
         titleMedium: TextStyle(
-          fontSize: AppDefaults.fontSizeTitleMedium,
-          color: AppColors.black,
+          fontSize: 20,
+          color: textPrimaryColor,
           fontWeight: FontWeight.w600,
           fontFamily: 'Kodchasan',
         ),
         titleSmall: TextStyle(
-          fontSize: AppDefaults.fontSizeTitleSmall,
-          color: AppColors.black,
+          fontSize: 16,
+          color: textPrimaryColor,
           fontWeight: FontWeight.w600,
           fontFamily: 'Kodchasan',
         ),
         labelMedium: TextStyle(
-          color: AppColors.black,
-          fontSize: AppDefaults.fontSizeLabelMedium,
+          color: textSecondaryColor,
+          fontSize: 14,
           fontFamily: 'Kodchasan',
         ),
         labelLarge: TextStyle(
-          color: AppColors.black,
-          fontSize: AppDefaults.fontSizeSubTitle,
+          color: textPrimaryColor,
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
           fontFamily: 'Kodchasan',
         ),
         displayLarge: TextStyle(
-          color: secondaryColor,
+          color: textPrimaryColor,
+          fontSize: 32,
           fontWeight: FontWeight.bold,
           fontFamily: 'Kodchasan',
         ),
         displayMedium: TextStyle(
-          color: secondaryColor,
+          color: textPrimaryColor,
+          fontSize: 28,
           fontWeight: FontWeight.bold,
           fontFamily: 'Kodchasan',
         ),
         displaySmall: TextStyle(
-          color: secondaryColor,
+          color: textPrimaryColor,
+          fontSize: 24,
           fontWeight: FontWeight.w600,
           fontFamily: 'Kodchasan',
         ),
         headlineLarge: TextStyle(
-          color: secondaryColor,
+          color: textPrimaryColor,
+          fontSize: 22,
           fontWeight: FontWeight.w600,
           fontFamily: 'Kodchasan',
         ),
         headlineMedium: TextStyle(
-          color: secondaryColor,
+          color: textPrimaryColor,
+          fontSize: 20,
           fontWeight: FontWeight.w600,
           fontFamily: 'Kodchasan',
         ),
         headlineSmall: TextStyle(
-          color: secondaryColor,
+          color: textPrimaryColor,
+          fontSize: 18,
           fontWeight: FontWeight.w600,
           fontFamily: 'Kodchasan',
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: Colors.white,
+        fillColor: cardColor,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 20,
-          vertical: 16,
+          vertical: 18,
         ),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: grayLightColor),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide(color: grayLightColor),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: primaryColor, width: 2),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: errorColor, width: 2),
         ),
-        hintStyle: TextStyle(color: Colors.grey[400]),
-        labelStyle: const TextStyle(color: secondaryColor),
+        hintStyle: TextStyle(color: textSecondaryColor, fontSize: 16),
+        labelStyle: TextStyle(color: textSecondaryColor, fontSize: 16),
       ),
       visualDensity: VisualDensity.adaptivePlatformDensity,
       elevatedButtonTheme: ElevatedButtonThemeData(
