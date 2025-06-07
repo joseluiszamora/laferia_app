@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:laferia/core/routes/app_routes.dart';
-import 'package:laferia/core/themes/design_theme.dart';
 import 'package:laferia/views/design/components/custom_buttons.dart';
 
 class SetupCompletePage extends StatelessWidget {
@@ -9,8 +8,10 @@ class SetupCompletePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: DesignTheme.backgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -27,8 +28,8 @@ class SetupCompletePage extends StatelessWidget {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      DesignTheme.primaryColor.withOpacity(0.2),
-                      DesignTheme.primaryLightColor.withOpacity(0.1),
+                      theme.colorScheme.primary.withOpacity(0.2),
+                      theme.colorScheme.primary.withOpacity(0.1),
                     ],
                   ),
                   borderRadius: BorderRadius.circular(100),
@@ -38,7 +39,7 @@ class SetupCompletePage extends StatelessWidget {
                     width: 120,
                     height: 120,
                     decoration: BoxDecoration(
-                      color: DesignTheme.primaryColor,
+                      color: theme.colorScheme.primary,
                       borderRadius: BorderRadius.circular(60),
                     ),
                     child: const Icon(
@@ -51,24 +52,24 @@ class SetupCompletePage extends StatelessWidget {
               ),
               const SizedBox(height: 48),
               // Title
-              const Text(
+              Text(
                 "Setup account completed",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: DesignTheme.textPrimaryColor,
+                  color: theme.textTheme.headlineMedium?.color,
                   fontFamily: 'Kodchasan',
                 ),
               ),
               const SizedBox(height: 16),
               // Description
-              const Text(
+              Text(
                 "Now you can start ordering your favorite foods from restaurants near you.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,
-                  color: DesignTheme.textSecondaryColor,
+                  color: theme.textTheme.bodyMedium?.color,
                   height: 1.5,
                   fontFamily: 'Kodchasan',
                 ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:laferia/core/routes/app_routes.dart';
-import 'package:laferia/core/themes/design_theme.dart';
 import 'package:laferia/views/design/components/custom_buttons.dart';
 import 'package:laferia/views/design/components/custom_text_field.dart';
 
@@ -27,8 +26,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: DesignTheme.backgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -45,7 +46,7 @@ class _LoginPageState extends State<LoginPage> {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: DesignTheme.primaryColor,
+                        color: theme.colorScheme.primary,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: const Icon(
@@ -57,26 +58,26 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 32),
                   // Title
-                  const Center(
+                  Center(
                     child: Text(
                       "Login to your account",
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: DesignTheme.textPrimaryColor,
+                        color: theme.textTheme.headlineMedium?.color,
                         fontFamily: 'Kodchasan',
                       ),
                     ),
                   ),
                   const SizedBox(height: 8),
                   // Subtitle
-                  const Center(
+                  Center(
                     child: Text(
                       "Welcome back! Sign in using your social account or email to continue us",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14,
-                        color: DesignTheme.textSecondaryColor,
+                        color: theme.textTheme.bodyMedium?.color,
                         fontFamily: 'Kodchasan',
                       ),
                     ),
@@ -88,9 +89,9 @@ class _LoginPageState extends State<LoginPage> {
                     hint: "Enter your username or email",
                     controller: _usernameController,
                     keyboardType: TextInputType.emailAddress,
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.person_outline,
-                      color: DesignTheme.textSecondaryColor,
+                      color: theme.textTheme.bodyMedium?.color,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -107,9 +108,9 @@ class _LoginPageState extends State<LoginPage> {
                     hint: "Enter your password",
                     controller: _passwordController,
                     isPassword: true,
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.lock_outline,
-                      color: DesignTheme.textSecondaryColor,
+                      color: theme.textTheme.bodyMedium?.color,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -130,10 +131,10 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         // Navigate to forgot password
                       },
-                      child: const Text(
+                      child: Text(
                         "Forgot password?",
                         style: TextStyle(
-                          color: DesignTheme.textSecondaryColor,
+                          color: theme.textTheme.bodyMedium?.color,
                           fontFamily: 'Kodchasan',
                         ),
                       ),
@@ -149,20 +150,24 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 24),
                   // Social login section
-                  const Row(
+                  Row(
                     children: [
-                      Expanded(child: Divider()),
+                      Expanded(
+                        child: Divider(color: theme.colorScheme.outline),
+                      ),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
                           "or continue with",
                           style: TextStyle(
-                            color: DesignTheme.textSecondaryColor,
+                            color: theme.textTheme.bodyMedium?.color,
                             fontFamily: 'Kodchasan',
                           ),
                         ),
                       ),
-                      Expanded(child: Divider()),
+                      Expanded(
+                        child: Divider(color: theme.colorScheme.outline),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -200,10 +205,10 @@ class _LoginPageState extends State<LoginPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
+                        Text(
                           "Don't have an account? ",
                           style: TextStyle(
-                            color: DesignTheme.textSecondaryColor,
+                            color: theme.textTheme.bodyMedium?.color,
                             fontFamily: 'Kodchasan',
                           ),
                         ),
@@ -211,10 +216,10 @@ class _LoginPageState extends State<LoginPage> {
                           onPressed: () {
                             context.push(AppRoutes.register);
                           },
-                          child: const Text(
+                          child: Text(
                             "Sign Up",
                             style: TextStyle(
-                              color: DesignTheme.primaryColor,
+                              color: theme.colorScheme.primary,
                               fontWeight: FontWeight.w600,
                               fontFamily: 'Kodchasan',
                             ),
@@ -270,15 +275,17 @@ class _SocialButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
-        foregroundColor: DesignTheme.textPrimaryColor,
-        side: const BorderSide(color: DesignTheme.grayLightColor),
+        foregroundColor: theme.textTheme.titleMedium?.color,
+        side: BorderSide(color: theme.colorScheme.outline),
         padding: const EdgeInsets.symmetric(vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      child: Icon(icon, size: 24, color: DesignTheme.textSecondaryColor),
+      child: Icon(icon, size: 24, color: theme.textTheme.bodyMedium?.color),
     );
   }
 }

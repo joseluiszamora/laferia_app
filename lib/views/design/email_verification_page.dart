@@ -35,15 +35,17 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: DesignTheme.backgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: DesignTheme.backgroundColor,
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back,
-            color: DesignTheme.textPrimaryColor,
+            color: theme.textTheme.titleMedium?.color,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -60,23 +62,23 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                 width: 100,
                 height: 100,
                 decoration: BoxDecoration(
-                  color: DesignTheme.primaryColor.withOpacity(0.1),
+                  color: theme.colorScheme.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(50),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.email_outlined,
                   size: 50,
-                  color: DesignTheme.primaryColor,
+                  color: theme.colorScheme.primary,
                 ),
               ),
               const SizedBox(height: 32),
               // Title
-              const Text(
+              Text(
                 "Verify your Email",
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: DesignTheme.textPrimaryColor,
+                  color: theme.textTheme.headlineMedium?.color,
                   fontFamily: 'Kodchasan',
                 ),
               ),
@@ -85,9 +87,9 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
               Text(
                 "Please enter the 6-digit code sent to ${widget.email}",
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 16,
-                  color: DesignTheme.textSecondaryColor,
+                  color: theme.textTheme.bodyMedium?.color,
                   height: 1.5,
                   fontFamily: 'Kodchasan',
                 ),
@@ -106,32 +108,32 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
                       textAlign: TextAlign.center,
                       keyboardType: TextInputType.number,
                       maxLength: 1,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: DesignTheme.textPrimaryColor,
+                        color: theme.textTheme.headlineMedium?.color,
                         fontFamily: 'Kodchasan',
                       ),
                       decoration: InputDecoration(
                         counterText: '',
                         filled: true,
-                        fillColor: DesignTheme.cardColor,
+                        fillColor: theme.cardColor,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: DesignTheme.grayLightColor,
+                          borderSide: BorderSide(
+                            color: theme.colorScheme.outline,
                           ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: DesignTheme.grayLightColor,
+                          borderSide: BorderSide(
+                            color: theme.colorScheme.outline,
                           ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(
-                            color: DesignTheme.primaryColor,
+                          borderSide: BorderSide(
+                            color: theme.colorScheme.primary,
                             width: 2,
                           ),
                         ),
@@ -152,19 +154,19 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     "Didn't get the email? ",
                     style: TextStyle(
-                      color: DesignTheme.textSecondaryColor,
+                      color: theme.textTheme.bodyMedium?.color,
                       fontFamily: 'Kodchasan',
                     ),
                   ),
                   TextButton(
                     onPressed: _resendCode,
-                    child: const Text(
+                    child: Text(
                       "Resend now",
                       style: TextStyle(
-                        color: DesignTheme.primaryColor,
+                        color: theme.colorScheme.primary,
                         fontWeight: FontWeight.w600,
                         fontFamily: 'Kodchasan',
                       ),

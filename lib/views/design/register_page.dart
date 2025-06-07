@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:laferia/core/routes/app_routes.dart';
-import 'package:laferia/core/themes/design_theme.dart';
 import 'package:laferia/views/design/components/custom_buttons.dart';
 import 'package:laferia/views/design/components/custom_text_field.dart';
 
@@ -32,15 +31,17 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: DesignTheme.backgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: DesignTheme.backgroundColor,
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back,
-            color: DesignTheme.textPrimaryColor,
+            color: theme.textTheme.titleMedium?.color,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -60,7 +61,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
-                        color: DesignTheme.primaryColor,
+                        color: theme.colorScheme.primary,
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: const Icon(
@@ -72,26 +73,26 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 32),
                   // Title
-                  const Center(
+                  Center(
                     child: Text(
                       "Create your new account",
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: DesignTheme.textPrimaryColor,
+                        color: theme.textTheme.headlineMedium?.color,
                         fontFamily: 'Kodchasan',
                       ),
                     ),
                   ),
                   const SizedBox(height: 8),
                   // Subtitle
-                  const Center(
+                  Center(
                     child: Text(
                       "Create an account to start looking for the food you like",
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14,
-                        color: DesignTheme.textSecondaryColor,
+                        color: theme.textTheme.bodyMedium?.color,
                         fontFamily: 'Kodchasan',
                       ),
                     ),
@@ -102,9 +103,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     label: "Full name",
                     hint: "Enter your full name",
                     controller: _fullNameController,
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.person_outline,
-                      color: DesignTheme.textSecondaryColor,
+                      color: theme.textTheme.bodyMedium?.color,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -121,9 +122,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     hint: "Enter your email address",
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.email_outlined,
-                      color: DesignTheme.textSecondaryColor,
+                      color: theme.textTheme.bodyMedium?.color,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -143,9 +144,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     hint: "Enter your password",
                     controller: _passwordController,
                     isPassword: true,
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.lock_outline,
-                      color: DesignTheme.textSecondaryColor,
+                      color: theme.textTheme.bodyMedium?.color,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -165,9 +166,9 @@ class _RegisterPageState extends State<RegisterPage> {
                     hint: "Confirm your password",
                     controller: _confirmPasswordController,
                     isPassword: true,
-                    prefixIcon: const Icon(
+                    prefixIcon: Icon(
                       Icons.lock_outline,
-                      color: DesignTheme.textSecondaryColor,
+                      color: theme.textTheme.bodyMedium?.color,
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -191,30 +192,30 @@ class _RegisterPageState extends State<RegisterPage> {
                             _agreeToTerms = value ?? false;
                           });
                         },
-                        activeColor: DesignTheme.primaryColor,
+                        activeColor: theme.colorScheme.primary,
                       ),
                       Expanded(
                         child: RichText(
-                          text: const TextSpan(
+                          text: TextSpan(
                             style: TextStyle(
-                              color: DesignTheme.textSecondaryColor,
+                              color: theme.textTheme.bodyMedium?.color,
                               fontSize: 14,
                               fontFamily: 'Kodchasan',
                             ),
                             children: [
-                              TextSpan(text: "I agree with "),
+                              const TextSpan(text: "I agree with "),
                               TextSpan(
                                 text: "Terms of Service",
                                 style: TextStyle(
-                                  color: DesignTheme.primaryColor,
+                                  color: theme.colorScheme.primary,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              TextSpan(text: " and "),
+                              const TextSpan(text: " and "),
                               TextSpan(
                                 text: "Privacy Policy",
                                 style: TextStyle(
-                                  color: DesignTheme.primaryColor,
+                                  color: theme.colorScheme.primary,
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -234,20 +235,24 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   const SizedBox(height: 24),
                   // Social login section
-                  const Row(
+                  Row(
                     children: [
-                      Expanded(child: Divider()),
+                      Expanded(
+                        child: Divider(color: theme.colorScheme.outline),
+                      ),
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: Text(
                           "or continue with",
                           style: TextStyle(
-                            color: DesignTheme.textSecondaryColor,
+                            color: theme.textTheme.bodyMedium?.color,
                             fontFamily: 'Kodchasan',
                           ),
                         ),
                       ),
-                      Expanded(child: Divider()),
+                      Expanded(
+                        child: Divider(color: theme.colorScheme.outline),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -285,10 +290,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text(
+                        Text(
                           "Already have an account? ",
                           style: TextStyle(
-                            color: DesignTheme.textSecondaryColor,
+                            color: theme.textTheme.bodyMedium?.color,
                             fontFamily: 'Kodchasan',
                           ),
                         ),
@@ -296,10 +301,10 @@ class _RegisterPageState extends State<RegisterPage> {
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          child: const Text(
+                          child: Text(
                             "Sign In",
                             style: TextStyle(
-                              color: DesignTheme.primaryColor,
+                              color: theme.colorScheme.primary,
                               fontWeight: FontWeight.w600,
                               fontFamily: 'Kodchasan',
                             ),
@@ -355,15 +360,17 @@ class _SocialButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return OutlinedButton(
       onPressed: onPressed,
       style: OutlinedButton.styleFrom(
-        foregroundColor: DesignTheme.textPrimaryColor,
-        side: const BorderSide(color: DesignTheme.grayLightColor),
+        foregroundColor: theme.textTheme.titleMedium?.color,
+        side: BorderSide(color: theme.colorScheme.outline),
         padding: const EdgeInsets.symmetric(vertical: 12),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      child: Icon(icon, size: 24, color: DesignTheme.textSecondaryColor),
+      child: Icon(icon, size: 24, color: theme.textTheme.bodyMedium?.color),
     );
   }
 }

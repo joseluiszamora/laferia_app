@@ -54,7 +54,9 @@ class MyApp extends StatelessWidget {
           title: 'La Feria',
           debugShowCheckedModeBanner: false,
           theme: DesignTheme.lightTheme(context),
-          themeMode: ThemeMode.light,
+          darkTheme: DesignTheme.darkTheme(context),
+          themeMode:
+              themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
           routerConfig: appRouter(),
         );
       },

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:laferia/core/routes/app_routes.dart';
-import 'package:laferia/core/themes/design_theme.dart';
 import 'package:laferia/views/design/components/custom_buttons.dart';
 
 class OnboardingPage extends StatefulWidget {
@@ -21,28 +20,27 @@ class _OnboardingPageState extends State<OnboardingPage> {
       description:
           "We have varieties of food ranging from African, European, Continental and many more",
       illustration: "🍲", // Placeholder for illustration
-      backgroundColor: DesignTheme.backgroundColor,
     ),
     OnboardingData(
       title: "Ordering food in a simple way",
       description:
           "With a simple process, you just have to order through the application and wait the food to arrive",
       illustration: "📱", // Placeholder for illustration
-      backgroundColor: DesignTheme.backgroundColor,
     ),
     OnboardingData(
       title: "Get extra daily vouchers",
       description:
           "You can save more money with our promos and offers every day",
       illustration: "🎟️", // Placeholder for illustration
-      backgroundColor: DesignTheme.backgroundColor,
     ),
   ];
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: DesignTheme.backgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
@@ -53,10 +51,10 @@ class _OnboardingPageState extends State<OnboardingPage> {
                 padding: const EdgeInsets.all(20),
                 child: TextButton(
                   onPressed: () => _goToLogin(),
-                  child: const Text(
+                  child: Text(
                     "Skip",
                     style: TextStyle(
-                      color: DesignTheme.textSecondaryColor,
+                      color: theme.textTheme.bodyMedium?.color,
                       fontSize: 16,
                       fontFamily: 'Kodchasan',
                     ),
@@ -92,8 +90,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   decoration: BoxDecoration(
                     color:
                         _currentPage == index
-                            ? DesignTheme.primaryColor
-                            : DesignTheme.grayLightColor,
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.outline,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -137,6 +135,8 @@ class OnboardingItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -147,7 +147,7 @@ class OnboardingItem extends StatelessWidget {
             width: 200,
             height: 200,
             decoration: BoxDecoration(
-              color: DesignTheme.primaryColor.withOpacity(0.1),
+              color: theme.colorScheme.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(100),
             ),
             child: Center(
@@ -162,10 +162,10 @@ class OnboardingItem extends StatelessWidget {
           Text(
             data.title,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: DesignTheme.textPrimaryColor,
+              color: theme.textTheme.headlineMedium?.color,
               fontFamily: 'Kodchasan',
             ),
           ),
@@ -174,9 +174,9 @@ class OnboardingItem extends StatelessWidget {
           Text(
             data.description,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 16,
-              color: DesignTheme.textSecondaryColor,
+              color: theme.textTheme.bodyMedium?.color,
               height: 1.5,
               fontFamily: 'Kodchasan',
             ),
@@ -191,12 +191,10 @@ class OnboardingData {
   final String title;
   final String description;
   final String illustration;
-  final Color backgroundColor;
 
   OnboardingData({
     required this.title,
     required this.description,
     required this.illustration,
-    required this.backgroundColor,
   });
 }

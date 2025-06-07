@@ -50,7 +50,7 @@ class _SplashPageState extends State<SplashPage>
 
     // Navigate to onboarding
     if (mounted) {
-      context.go(AppRoutes.cuisineSelection);
+      context.go(AppRoutes.login);
     }
   }
 
@@ -62,15 +62,20 @@ class _SplashPageState extends State<SplashPage>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [DesignTheme.primaryColor, DesignTheme.primaryLightColor],
+            colors: [
+              theme.colorScheme.primary,
+              theme.colorScheme.primary.withOpacity(0.8),
+            ],
           ),
         ),
         child: AnimatedBuilder(
@@ -98,9 +103,9 @@ class _SplashPageState extends State<SplashPage>
                           ),
                         ],
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.restaurant,
-                        color: DesignTheme.primaryColor,
+                        color: theme.colorScheme.primary,
                         size: 60,
                       ),
                     ),

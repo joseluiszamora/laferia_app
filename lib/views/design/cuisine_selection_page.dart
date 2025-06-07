@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:laferia/core/routes/app_routes.dart';
-import 'package:laferia/core/themes/design_theme.dart';
 import 'package:laferia/views/design/components/custom_buttons.dart';
 
 class CuisineSelectionPage extends StatefulWidget {
@@ -32,15 +31,17 @@ class _CuisineSelectionPageState extends State<CuisineSelectionPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: DesignTheme.backgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: DesignTheme.backgroundColor,
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back,
-            color: DesignTheme.textPrimaryColor,
+            color: theme.textTheme.titleMedium?.color,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -54,21 +55,21 @@ class _CuisineSelectionPageState extends State<CuisineSelectionPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     "Choose your preferred cuisine",
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: DesignTheme.textPrimaryColor,
+                      color: theme.textTheme.headlineMedium?.color,
                       fontFamily: 'Kodchasan',
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
+                  Text(
                     "Don't worry! You can always change this later.",
                     style: TextStyle(
                       fontSize: 16,
-                      color: DesignTheme.textSecondaryColor,
+                      color: theme.textTheme.bodyMedium?.color,
                       fontFamily: 'Kodchasan',
                     ),
                   ),
@@ -76,20 +77,20 @@ class _CuisineSelectionPageState extends State<CuisineSelectionPage> {
                   // Search bar
                   Container(
                     decoration: BoxDecoration(
-                      color: DesignTheme.cardColor,
+                      color: theme.cardColor,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: DesignTheme.grayLightColor),
+                      border: Border.all(color: theme.colorScheme.outline),
                     ),
                     child: TextField(
                       decoration: InputDecoration(
                         hintText: "Search for something...",
-                        hintStyle: const TextStyle(
-                          color: DesignTheme.textSecondaryColor,
+                        hintStyle: TextStyle(
+                          color: theme.textTheme.bodyMedium?.color,
                           fontFamily: 'Kodchasan',
                         ),
-                        prefixIcon: const Icon(
+                        prefixIcon: Icon(
                           Icons.search,
-                          color: DesignTheme.textSecondaryColor,
+                          color: theme.textTheme.bodyMedium?.color,
                         ),
                         border: InputBorder.none,
                         contentPadding: const EdgeInsets.symmetric(
@@ -133,14 +134,14 @@ class _CuisineSelectionPageState extends State<CuisineSelectionPage> {
                         decoration: BoxDecoration(
                           color:
                               isSelected
-                                  ? DesignTheme.primaryColor.withOpacity(0.1)
-                                  : DesignTheme.cardColor,
+                                  ? theme.colorScheme.primary.withOpacity(0.1)
+                                  : theme.cardColor,
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
                             color:
                                 isSelected
-                                    ? DesignTheme.primaryColor
-                                    : DesignTheme.grayLightColor,
+                                    ? theme.colorScheme.primary
+                                    : theme.colorScheme.outline,
                             width: isSelected ? 2 : 1,
                           ),
                         ),
@@ -159,8 +160,8 @@ class _CuisineSelectionPageState extends State<CuisineSelectionPage> {
                                 fontWeight: FontWeight.w500,
                                 color:
                                     isSelected
-                                        ? DesignTheme.primaryColor
-                                        : DesignTheme.textPrimaryColor,
+                                        ? theme.colorScheme.primary
+                                        : theme.textTheme.titleMedium?.color,
                                 fontFamily: 'Kodchasan',
                               ),
                             ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:laferia/core/themes/design_theme.dart';
 
 class CustomTextField extends StatefulWidget {
   final String label;
@@ -40,6 +39,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Container(
       margin:
           widget.margin ??
@@ -47,15 +48,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            widget.label,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: DesignTheme.textPrimaryColor,
-              fontFamily: 'Kodchasan',
-            ),
-          ),
+          Text(widget.label, style: theme.textTheme.labelLarge),
           const SizedBox(height: 8),
           TextFormField(
             controller: widget.controller,
@@ -67,45 +60,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             maxLines: widget.maxLines,
             decoration: InputDecoration(
               hintText: widget.hint ?? widget.label,
-              hintStyle: const TextStyle(
-                color: DesignTheme.textSecondaryColor,
-                fontSize: 16,
-              ),
-              filled: true,
-              fillColor: DesignTheme.cardColor,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 18,
-              ),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(color: DesignTheme.grayLightColor),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(color: DesignTheme.grayLightColor),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(
-                  color: DesignTheme.primaryColor,
-                  width: 2,
-                ),
-              ),
-              errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(
-                  color: DesignTheme.errorColor,
-                  width: 2,
-                ),
-              ),
-              focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(
-                  color: DesignTheme.errorColor,
-                  width: 2,
-                ),
-              ),
+              border: OutlineInputBorder(),
               prefixIcon: widget.prefixIcon,
               suffixIcon:
                   widget.isPassword
@@ -114,7 +69,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                           _obscureText
                               ? Icons.visibility
                               : Icons.visibility_off,
-                          color: DesignTheme.textSecondaryColor,
+                          color: theme.colorScheme.onSurface.withOpacity(0.6),
                         ),
                         onPressed: () {
                           setState(() {

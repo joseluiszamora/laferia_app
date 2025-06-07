@@ -27,15 +27,17 @@ class _LocationSetupPageState extends State<LocationSetupPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: DesignTheme.backgroundColor,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: DesignTheme.backgroundColor,
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back,
-            color: DesignTheme.textPrimaryColor,
+            color: theme.textTheme.titleMedium?.color,
           ),
           onPressed: () => Navigator.pop(context),
         ),
@@ -50,12 +52,12 @@ class _LocationSetupPageState extends State<LocationSetupPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       "Setup your delivery location",
                       style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: DesignTheme.textPrimaryColor,
+                        color: theme.textTheme.headlineMedium?.color,
                         fontFamily: 'Kodchasan',
                       ),
                     ),
@@ -65,7 +67,7 @@ class _LocationSetupPageState extends State<LocationSetupPage> {
                       width: double.infinity,
                       height: 200,
                       decoration: BoxDecoration(
-                        color: DesignTheme.grayLightColor.withOpacity(0.3),
+                        color: theme.colorScheme.outline.withOpacity(0.3),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Stack(
@@ -78,13 +80,13 @@ class _LocationSetupPageState extends State<LocationSetupPage> {
                                 Icon(
                                   Icons.map_outlined,
                                   size: 48,
-                                  color: DesignTheme.textSecondaryColor,
+                                  color: theme.textTheme.bodyMedium?.color,
                                 ),
                                 const SizedBox(height: 8),
-                                const Text(
+                                Text(
                                   "Map View",
                                   style: TextStyle(
-                                    color: DesignTheme.textSecondaryColor,
+                                    color: theme.textTheme.bodyMedium?.color,
                                     fontFamily: 'Kodchasan',
                                   ),
                                 ),
@@ -92,10 +94,10 @@ class _LocationSetupPageState extends State<LocationSetupPage> {
                             ),
                           ),
                           // Location marker
-                          const Center(
+                          Center(
                             child: Icon(
                               Icons.location_pin,
-                              color: DesignTheme.primaryColor,
+                              color: theme.colorScheme.primary,
                               size: 32,
                             ),
                           ),
@@ -105,7 +107,7 @@ class _LocationSetupPageState extends State<LocationSetupPage> {
                             right: 16,
                             child: FloatingActionButton.small(
                               onPressed: _getCurrentLocation,
-                              backgroundColor: DesignTheme.primaryColor,
+                              backgroundColor: theme.colorScheme.primary,
                               child: const Icon(
                                 Icons.my_location,
                                 color: Colors.white,
@@ -121,9 +123,9 @@ class _LocationSetupPageState extends State<LocationSetupPage> {
                       label: "Primary address",
                       hint: "Enter your address",
                       controller: _addressController,
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Icons.location_on_outlined,
-                        color: DesignTheme.textSecondaryColor,
+                        color: theme.textTheme.bodyMedium?.color,
                       ),
                       margin: EdgeInsets.zero,
                     ),
@@ -133,20 +135,20 @@ class _LocationSetupPageState extends State<LocationSetupPage> {
                       label: "Landmark detail",
                       hint: "Enter landmark",
                       controller: _landmarkController,
-                      prefixIcon: const Icon(
+                      prefixIcon: Icon(
                         Icons.place_outlined,
-                        color: DesignTheme.textSecondaryColor,
+                        color: theme.textTheme.bodyMedium?.color,
                       ),
                       margin: EdgeInsets.zero,
                     ),
                     const SizedBox(height: 24),
                     // Address type selection
-                    const Text(
+                    Text(
                       "Address type",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
-                        color: DesignTheme.textPrimaryColor,
+                        color: theme.textTheme.titleMedium?.color,
                         fontFamily: 'Kodchasan',
                       ),
                     ),
@@ -260,6 +262,8 @@ class _AddressTypeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -268,14 +272,14 @@ class _AddressTypeButton extends StatelessWidget {
         decoration: BoxDecoration(
           color:
               isSelected
-                  ? DesignTheme.primaryColor.withOpacity(0.1)
-                  : DesignTheme.cardColor,
+                  ? theme.colorScheme.primary.withOpacity(0.1)
+                  : theme.cardColor,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color:
                 isSelected
-                    ? DesignTheme.primaryColor
-                    : DesignTheme.grayLightColor,
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.outline,
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -285,8 +289,8 @@ class _AddressTypeButton extends StatelessWidget {
               icon,
               color:
                   isSelected
-                      ? DesignTheme.primaryColor
-                      : DesignTheme.textSecondaryColor,
+                      ? theme.colorScheme.primary
+                      : theme.textTheme.bodyMedium?.color,
               size: 24,
             ),
             const SizedBox(height: 8),
@@ -297,8 +301,8 @@ class _AddressTypeButton extends StatelessWidget {
                 fontWeight: FontWeight.w500,
                 color:
                     isSelected
-                        ? DesignTheme.primaryColor
-                        : DesignTheme.textPrimaryColor,
+                        ? theme.colorScheme.primary
+                        : theme.textTheme.titleMedium?.color,
                 fontFamily: 'Kodchasan',
               ),
             ),
