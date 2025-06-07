@@ -3,17 +3,11 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:laferia/core/layouts/layout_main.dart';
 import 'package:laferia/core/providers/theme_provider.dart';
 import 'package:laferia/core/constants/app_colors.dart';
-import 'package:laferia/maps/examples/quick_provider_change_example.dart';
-import 'package:laferia/maps/map_provider_switcher_example.dart';
 import 'package:laferia/views/categorias/categorias_page.dart';
 import 'package:laferia/views/design/design_pages.dart';
-import 'package:laferia/views/home/home_page.dart';
 import 'package:laferia/views/home/home_page_with_map.dart';
 import 'package:laferia/views/home/ofertas_page.dart';
 import 'package:laferia/views/maps/main_map.dart';
-import 'package:laferia/views/maps/maps_page.dart';
-import 'package:laferia/views/maps/modern_offline_map_screen.dart';
-import 'package:laferia/views/maps/simple_offline_map_screen.dart';
 import 'package:laferia/views/navigation/components/header_section.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
@@ -43,7 +37,7 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
       const DesignPagesPage(),
     ];
 
-    List<String> titles = ['Inicio', 'Categorias', 'Ofertas', 'Mapa', 'Diseño'];
+    List<String> titles = ['Inicio', 'Categorías', 'Ofertas', 'Mapa', 'UI'];
 
     return Scaffold(
       key: _scaffoldKey,
@@ -70,15 +64,15 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
         ),
         child: SafeArea(
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6),
             child: GNav(
               curve: Curves.easeIn,
               rippleColor: Colors.grey[300]!,
               hoverColor: Colors.red[100]!,
-              gap: 8,
+              gap: 4,
               activeColor: AppColors.primary,
-              iconSize: 30,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              iconSize: 24,
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               duration: Duration(milliseconds: 400),
               tabBackgroundColor: Colors.grey[100]!,
               color:
@@ -87,10 +81,10 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
                       : Colors.white,
               tabs: [
                 GButton(icon: LineIcons.home, text: 'Inicio'),
-                GButton(icon: LineIcons.userCircle, text: 'Categorias'),
+                GButton(icon: LineIcons.userCircle, text: 'Categorías'),
                 GButton(icon: LineIcons.handshake, text: 'Ofertas'),
                 GButton(icon: LineIcons.map, text: 'Mapa'),
-                GButton(icon: LineIcons.photoVideo, text: 'Diseño'),
+                GButton(icon: LineIcons.photoVideo, text: 'UI'),
               ],
               selectedIndex: _pageSelected,
               onTabChange: (index) {
