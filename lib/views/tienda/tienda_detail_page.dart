@@ -6,9 +6,9 @@ import '../../core/blocs/productos/productos_bloc.dart';
 import '../../core/blocs/productos/productos_event.dart';
 import '../../core/blocs/productos/productos_state.dart';
 import '../../core/blocs/comentarios/comentarios.dart';
-import 'components/producto_card.dart';
-import 'components/comentarios_section.dart';
-import 'producto_detail_page.dart';
+import '../home/components/producto_card.dart';
+import '../home/components/comentarios_section.dart';
+import '../home/producto_detail_page.dart';
 
 class TiendaDetailPage extends StatelessWidget {
   final Tienda tienda;

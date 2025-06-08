@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../core/models/producto.dart';
 import '../../core/blocs/ofertas/ofertas_bloc.dart';
-import 'components/ofertar_producto_dialog.dart';
+import '../oferta/components/ofertar_producto_dialog.dart';
 
 class ProductoDetailPage extends StatelessWidget {
   final Producto producto;
