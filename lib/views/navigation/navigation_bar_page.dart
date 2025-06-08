@@ -7,7 +7,7 @@ import 'package:laferia/views/categorias/categorias_page.dart';
 import 'package:laferia/views/design/design_pages.dart';
 import 'package:laferia/views/home/home_page.dart';
 import 'package:laferia/views/home/home_page_with_map.dart';
-import 'package:laferia/views/home/ofertas_page.dart';
+import 'package:laferia/views/oferta/ofertas_page.dart';
 import 'package:laferia/views/maps/main_map.dart';
 import 'package:laferia/views/navigation/components/header_section.dart';
 import 'package:line_icons/line_icons.dart';
