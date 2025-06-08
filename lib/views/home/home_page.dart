@@ -371,7 +371,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildBannerSection(ThemeData theme) {
     return SizedBox(
-      height: 160,
+      height: 170,
       child: PageView.builder(
         controller: _bannerController,
         onPageChanged: (index) {
