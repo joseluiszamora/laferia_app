@@ -5,6 +5,7 @@ import 'package:laferia/core/providers/theme_provider.dart';
 import 'package:laferia/core/constants/app_colors.dart';
 import 'package:laferia/views/categorias/categorias_page.dart';
 import 'package:laferia/views/design/design_pages.dart';
+import 'package:laferia/views/home/home_page.dart';
 import 'package:laferia/views/home/home_page_with_map.dart';
 import 'package:laferia/views/home/ofertas_page.dart';
 import 'package:laferia/views/maps/main_map.dart';
@@ -20,7 +21,7 @@ class NavigationBarPage extends StatefulWidget {
 }
 
 class _NavigationBarPageState extends State<NavigationBarPage> {
-  int _pageSelected = 1;
+  int _pageSelected = 2;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -31,7 +32,8 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
     List<Widget> pages = [
       const HomePageWithMap(),
       const CategoriasPage(),
-      const OfertasPage(),
+      const HomePage(),
+      // const OfertasPage(),
       // const MapsPage(),
       const MainMap(),
       const DesignPagesPage(),

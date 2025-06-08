@@ -1,7 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:laferia/views/navigation/navigation_bar_page.dart';
 import 'package:laferia/views/splash/splash_page.dart';
-import 'package:laferia/views/design/splash_page.dart' as design_splash;
 import 'package:laferia/views/design/onboarding_page.dart';
 import 'package:laferia/views/design/login_page.dart';
 import 'package:laferia/views/design/register_page.dart';
@@ -20,10 +19,14 @@ import 'app_routes.dart';
 
 GoRouter appRouter() => GoRouter(
   // Cambiar initialLocation a la página de diseño
-  initialLocation: AppRoutes.navigation,
+  initialLocation: AppRoutes.splash,
   routes: publicRoutes(),
   redirect: (context, state) {
+    final isSplashRoute = state.matchedLocation == AppRoutes.splash;
     // final isDesignPageRoute = state.matchedLocation == AppRoutes.designPages;
+
+    // Si está en splash, permitir
+    if (isSplashRoute) return null;
 
     // // Si está en design pages, permitir
     // if (isDesignPageRoute) return null;
@@ -44,11 +47,6 @@ List<RouteBase> publicRoutes() => [
     path: AppRoutes.designPages,
     name: 'DesignPages',
     builder: (context, state) => const DesignPagesPage(),
-  ),
-  GoRoute(
-    path: AppRoutes.designSplash,
-    name: 'DesignSplash',
-    builder: (context, state) => const design_splash.SplashPage(),
   ),
   GoRoute(
     path: AppRoutes.onboarding,
