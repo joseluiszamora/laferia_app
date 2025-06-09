@@ -7,7 +7,6 @@ import 'package:laferia/views/categorias/categorias_page.dart';
 import 'package:laferia/views/design/design_pages.dart';
 import 'package:laferia/views/home/home_page.dart';
 import 'package:laferia/views/home/home_page_with_map.dart';
-import 'package:laferia/views/oferta/ofertas_page.dart';
 import 'package:laferia/views/maps/main_map.dart';
 import 'package:laferia/views/navigation/components/header_section.dart';
 import 'package:line_icons/line_icons.dart';
@@ -39,13 +38,15 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
       const DesignPagesPage(),
     ];
 
-    List<String> titles = ['Inicio', 'Categorías', 'Ofertas', 'Mapa', 'UI'];
+    List<String> titles = ['Categorías', 'Ofertas', 'Inicio', 'Mapa', 'UI'];
 
     return Scaffold(
       key: _scaffoldKey,
       appBar: HeaderSection(
         title: titles[_pageSelected],
         openDrawer: () => _scaffoldKey.currentState?.openDrawer(),
+        isMainPage:
+            _pageSelected == 2, // Check if the current page is the main page
       ),
       drawer: _buildDrawer(context),
       body: AnimatedSwitcher(
@@ -82,9 +83,9 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
                       ? AppColors.primary
                       : Colors.white,
               tabs: [
-                GButton(icon: LineIcons.home, text: 'Inicio'),
                 GButton(icon: LineIcons.userCircle, text: 'Categorías'),
                 GButton(icon: LineIcons.handshake, text: 'Ofertas'),
+                GButton(icon: LineIcons.home, text: 'Inicio'),
                 GButton(icon: LineIcons.map, text: 'Mapa'),
                 GButton(icon: LineIcons.photoVideo, text: 'UI'),
               ],
