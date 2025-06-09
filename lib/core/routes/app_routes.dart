@@ -35,7 +35,12 @@ class AppRoutes {
   /* <---- HOME PAGE -----> */
   static const homePage = '/home_page';
 
-  /* <---- HOME PAGE WITH MAP -----> */
+  /* <---- GENERADOS POR IA -----> */
   static const homePageWithMap = '/home_page_with_map';
   static const tiendasList = '/tiendas_list';
+
+  static const rubrosList = '/rubros_list';
+  // static const categoriasList = '/tiendas_list';
+  // static const subcategoriasList = '/tiendas_list';
+  // static const productosList = '/tiendas_list';
 }

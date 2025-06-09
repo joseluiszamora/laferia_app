@@ -25,3 +25,33 @@ class SelectProducto extends ProductosEvent {
   @override
   List<Object> get props => [producto];
 }
+
+/// Evento para cargar productos por subcategoría
+class LoadProductosBySubcategoria extends ProductosEvent {
+  final String subcategoriaId;
+
+  const LoadProductosBySubcategoria(this.subcategoriaId);
+
+  @override
+  List<Object> get props => [subcategoriaId];
+}
+
+/// Evento para cargar productos por categoría
+class LoadProductosByCategoria extends ProductosEvent {
+  final String categoriaId;
+
+  const LoadProductosByCategoria(this.categoriaId);
+
+  @override
+  List<Object> get props => [categoriaId];
+}
+
+/// Evento para cargar productos por rubro
+class LoadProductosByRubro extends ProductosEvent {
+  final String rubroId;
+
+  const LoadProductosByRubro(this.rubroId);
+
+  @override
+  List<Object> get props => [rubroId];
+}

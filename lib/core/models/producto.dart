@@ -9,6 +9,7 @@ class Producto extends Equatable {
   final String caracteristicas;
   final String? imagenUrl;
   final String categoria; // Mantener por compatibilidad
+  final String rubroId;
   final String categoriaId;
   final String subcategoriaId;
   final bool disponible;
@@ -22,6 +23,7 @@ class Producto extends Equatable {
     required this.caracteristicas,
     this.imagenUrl,
     this.categoria = '', // Mantener por compatibilidad
+    required this.rubroId,
     required this.categoriaId,
     required this.subcategoriaId,
     this.disponible = true,
@@ -37,6 +39,7 @@ class Producto extends Equatable {
       caracteristicas: json['caracteristicas'] ?? '',
       imagenUrl: json['imagen_url'],
       categoria: json['categoria'] ?? '', // Mantener por compatibilidad
+      rubroId: json['rubro_id'] ?? '',
       categoriaId: json['categoria_id'] ?? '',
       subcategoriaId: json['subcategoria_id'] ?? '',
       disponible: json['disponible'] ?? true,
@@ -53,6 +56,7 @@ class Producto extends Equatable {
       'caracteristicas': caracteristicas,
       'imagen_url': imagenUrl,
       'categoria': categoria, // Mantener por compatibilidad
+      'rubro_id': rubroId,
       'categoria_id': categoriaId,
       'subcategoria_id': subcategoriaId,
       'disponible': disponible,
@@ -69,6 +73,7 @@ class Producto extends Equatable {
     caracteristicas,
     imagenUrl,
     categoria,
+    rubroId,
     categoriaId,
     subcategoriaId,
     disponible,
@@ -102,6 +107,7 @@ class Producto extends Equatable {
     String? caracteristicas,
     String? imagenUrl,
     String? categoria,
+    String? rubroId,
     String? categoriaId,
     String? subcategoriaId,
     bool? disponible,
@@ -115,6 +121,7 @@ class Producto extends Equatable {
       caracteristicas: caracteristicas ?? this.caracteristicas,
       imagenUrl: imagenUrl ?? this.imagenUrl,
       categoria: categoria ?? this.categoria,
+      rubroId: rubroId ?? this.rubroId,
       categoriaId: categoriaId ?? this.categoriaId,
       subcategoriaId: subcategoriaId ?? this.subcategoriaId,
       disponible: disponible ?? this.disponible,

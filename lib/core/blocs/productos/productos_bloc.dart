@@ -7,6 +7,9 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
   ProductosBloc() : super(ProductosInitial()) {
     on<LoadProductos>(_onLoadProductos);
     on<SelectProducto>(_onSelectProducto);
+    on<LoadProductosBySubcategoria>(_onLoadProductosBySubcategoria);
+    on<LoadProductosByCategoria>(_onLoadProductosByCategoria);
+    on<LoadProductosByRubro>(_onLoadProductosByRubro);
   }
 
   void _onLoadProductos(
@@ -38,247 +41,338 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
     }
   }
 
+  void _onLoadProductosBySubcategoria(
+    LoadProductosBySubcategoria event,
+    Emitter<ProductosState> emit,
+  ) async {
+    emit(ProductosLoading());
+
+    try {
+      // Simular carga de datos
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // Filtrar productos por subcategoría
+      final productos =
+          _getMockProductos()
+              .where(
+                (producto) => producto.subcategoriaId == event.subcategoriaId,
+              )
+              .toList();
+
+      emit(ProductosLoaded(productos: productos));
+    } catch (e) {
+      emit(ProductosError('Error al cargar productos por subcategoría: $e'));
+    }
+  }
+
+  void _onLoadProductosByCategoria(
+    LoadProductosByCategoria event,
+    Emitter<ProductosState> emit,
+  ) async {
+    emit(ProductosLoading());
+
+    try {
+      // Simular carga de datos
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // Filtrar productos por categoría
+      final productos =
+          _getMockProductos()
+              .where((producto) => producto.categoriaId == event.categoriaId)
+              .toList();
+
+      emit(ProductosLoaded(productos: productos));
+    } catch (e) {
+      emit(ProductosError('Error al cargar productos por categoría: $e'));
+    }
+  }
+
+  void _onLoadProductosByRubro(
+    LoadProductosByRubro event,
+    Emitter<ProductosState> emit,
+  ) async {
+    emit(ProductosLoading());
+
+    try {
+      // Simular carga de datos
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // Filtrar productos por rubro
+      final productos =
+          _getMockProductos()
+              .where((producto) => producto.rubroId == event.rubroId)
+              .toList();
+
+      emit(ProductosLoaded(productos: productos));
+    } catch (e) {
+      emit(ProductosError('Error al cargar productos por rubro: $e'));
+    }
+  }
+
   List<Producto> _getMockProductos() {
     return [
-      // Productos para puesto_001 (Juan Pérez - Ropa usada americana)
+      // Productos de Ropa (Rubro 3)
       const Producto(
         id: "prod_001",
         nombre: "Jeans Levis 501",
         precio: 80,
-        precioOferta: 65, // Oferta especial
+        precioOferta: 65,
         aceptaOfertas: true,
         caracteristicas: "Talla 32, usado, buen estado, color azul clásico",
         imagenUrl:
             "https://via.placeholder.com/300x300/4285F4/FFFFFF?text=Jeans",
-        categoria: "Ropa usada", // Mantener por compatibilidad
-        categoriaId: "prod_cat_001", // Pantalones
-        subcategoriaId: "prod_sub_001", // Jeans Levi's
+        categoria: "Ropa nueva",
+        rubroId: "3", // Ropa
+        categoriaId: "3_1", // Ropa nueva
+        subcategoriaId: "3_1_1", // Jeans
         disponible: true,
       ),
       const Producto(
         id: "prod_002",
-        nombre: "Camisa Tommy Hilfiger",
+        nombre: "Camisa Ralph Lauren",
         precio: 45,
         aceptaOfertas: true,
-        caracteristicas: "Talla M, algodón 100%, como nueva",
+        caracteristicas: "Talla M, seminueva, color blanco",
         imagenUrl:
             "https://via.placeholder.com/300x300/34A853/FFFFFF?text=Camisa",
-        categoria: "Ropa usada", // Mantener por compatibilidad
-        categoriaId: "prod_cat_002", // Camisas y Blusas
-        subcategoriaId: "prod_sub_004", // Camisas de Vestir
+        categoria: "Ropa nueva",
+        rubroId: "3", // Ropa
+        categoriaId: "3_1", // Ropa nueva
+        subcategoriaId: "3_1_2", // Camisas
         disponible: true,
       ),
       const Producto(
         id: "prod_003",
-        nombre: "Chaqueta Nike",
+        nombre: "Vestido floral",
         precio: 120,
-        precioOferta: 95, // Oferta por liquidación
+        precioOferta: 95,
         aceptaOfertas: false,
-        caracteristicas: "Talla L, impermeable, deportiva",
+        caracteristicas: "Talla S, nuevo con etiquetas, estampado floral",
         imagenUrl:
-            "https://via.placeholder.com/300x300/EA4335/FFFFFF?text=Chaqueta",
-        categoria: "Ropa usada", // Mantener por compatibilidad
-        categoriaId: "prod_cat_002", // Camisas y Blusas
-        subcategoriaId: "prod_sub_005", // Polos y T-Shirts
-        disponible: false,
-      ),
-
-      // Productos para puesto_002 (María González - Comida rápida)
-      const Producto(
-        id: "prod_004",
-        nombre: "Chicharrón de Cerdo",
-        precio: 25,
-        precioOferta: 20, // Oferta de medio día
-        aceptaOfertas: false,
-        caracteristicas: "Porción de 200g, crujiente, con papa y ensalada",
-        imagenUrl:
-            "https://via.placeholder.com/300x300/FBBC04/FFFFFF?text=Chicharron",
-        categoria: "Comida rápida", // Mantener por compatibilidad
-        categoriaId: "prod_cat_003", // Comidas Preparadas
-        subcategoriaId: "prod_sub_007", // Chicharrón de Cerdo
+            "https://via.placeholder.com/300x300/FF9800/FFFFFF?text=Vestido",
+        categoria: "Ropa nueva",
+        rubroId: "3", // Ropa
+        categoriaId: "3_1", // Ropa nueva
+        subcategoriaId: "3_1_3", // Vestidos
         disponible: true,
       ),
       const Producto(
-        id: "prod_005",
-        nombre: "Chicharrón de Pollo",
-        precio: 20,
-        aceptaOfertas: false,
-        caracteristicas: "Porción de 250g, dorado, con papas fritas",
+        id: "prod_004",
+        nombre: "Jeans usados vintage",
+        precio: 25,
+        aceptaOfertas: true,
+        caracteristicas: "Talla 30, estilo vintage, buen estado",
         imagenUrl:
-            "https://via.placeholder.com/300x300/FF6D01/FFFFFF?text=Pollo",
-        categoria: "Comida rápida", // Mantener por compatibilidad
-        categoriaId: "prod_cat_003", // Comidas Preparadas
-        subcategoriaId: "prod_sub_008", // Chicharrón de Pollo
+            "https://via.placeholder.com/300x300/6F42C1/FFFFFF?text=Vintage",
+        categoria: "Ropa usada",
+        rubroId: "3", // Ropa
+        categoriaId: "3_2", // Ropa usada
+        subcategoriaId: "3_2_1", // Ropa casual
+        disponible: true,
+      ),
+
+      // Productos de Electrónica (Rubro 4)
+      const Producto(
+        id: "prod_005",
+        nombre: "iPhone 13",
+        precio: 650,
+        aceptaOfertas: true,
+        caracteristicas: "128GB, color azul, estado excelente, con caja",
+        imagenUrl:
+            "https://via.placeholder.com/300x300/007BFF/FFFFFF?text=iPhone",
+        categoria: "Smartphones",
+        rubroId: "4", // Electrónica y tecnología
+        categoriaId: "4_1", // Smartphones
+        subcategoriaId: "4_1_2", // iPhone
         disponible: true,
       ),
       const Producto(
         id: "prod_006",
-        nombre: "Papas Fritas Especiales",
-        precio: 12,
-        precioOferta: 10, // Combo especial
-        aceptaOfertas: false,
-        caracteristicas: "Papas cortadas finas, doradas, con salsa",
+        nombre: "Samsung Galaxy S21",
+        precio: 450,
+        precioOferta: 380,
+        aceptaOfertas: true,
+        caracteristicas: "256GB, color negro, seminuevo",
         imagenUrl:
-            "https://via.placeholder.com/300x300/9C27B0/FFFFFF?text=Papas",
-        categoria: "Comida rápida", // Mantener por compatibilidad
-        categoriaId: "prod_cat_003", // Comidas Preparadas
-        subcategoriaId: "prod_sub_009", // Papas Fritas
+            "https://via.placeholder.com/300x300/6F42C1/FFFFFF?text=Samsung",
+        categoria: "Smartphones",
+        rubroId: "4", // Electrónica y tecnología
+        categoriaId: "4_1", // Smartphones
+        subcategoriaId: "4_1_1", // Android
         disponible: true,
       ),
-
-      // Productos para puesto_003 (Carlos Mamani - Autopartes)
       const Producto(
         id: "prod_007",
-        nombre: "Filtro de Aceite",
-        precio: 35,
-        aceptaOfertas: true,
-        caracteristicas: "Compatible con Toyota, Nissan, Honda",
+        nombre: "MacBook Air M1",
+        precio: 850,
+        aceptaOfertas: false,
+        caracteristicas: "8GB RAM, 256GB SSD, estado excelente",
         imagenUrl:
-            "https://via.placeholder.com/300x300/607D8B/FFFFFF?text=Filtro",
-        categoria: "Autopartes", // Mantener por compatibilidad
-        categoriaId: "prod_cat_004", // Repuestos Automotrices
-        subcategoriaId: "prod_sub_010", // Filtros
+            "https://via.placeholder.com/300x300/17A2B8/FFFFFF?text=MacBook",
+        categoria: "Computadoras",
+        rubroId: "4", // Electrónica y tecnología
+        categoriaId: "4_2", // Computadoras
+        subcategoriaId: "4_2_1", // Laptops
         disponible: true,
       ),
       const Producto(
         id: "prod_008",
-        nombre: "Pastillas de Freno",
-        precio: 120,
-        precioOferta: 100, // Liquidación de stock
+        nombre: "PC Gamer Intel i7",
+        precio: 1200,
         aceptaOfertas: true,
-        caracteristicas: "Cerámicas, larga duración, para vehículos medianos",
-        imagenUrl:
-            "https://via.placeholder.com/300x300/795548/FFFFFF?text=Frenos",
-        categoria: "Autopartes", // Mantener por compatibilidad
-        categoriaId: "prod_cat_004", // Repuestos Automotrices
-        subcategoriaId: "prod_sub_011", // Frenos
-        disponible: true,
-      ),
-      const Producto(
-        id: "prod_009",
-        nombre: "Aceite de Motor 5W-30",
-        precio: 85,
-        aceptaOfertas: false,
-        caracteristicas: "4 litros, sintético, para motores a gasolina",
-        imagenUrl:
-            "https://via.placeholder.com/300x300/FF9800/FFFFFF?text=Aceite",
-        categoria: "Autopartes", // Mantener por compatibilidad
-        categoriaId: "prod_cat_004", // Repuestos Automotrices
-        subcategoriaId: "prod_sub_012", // Aceites y Lubricantes
+        caracteristicas: "16GB RAM, RTX 3060, SSD 512GB",
+        imagenUrl: "https://via.placeholder.com/300x300/28A745/FFFFFF?text=PC",
+        categoria: "Computadoras",
+        rubroId: "4", // Electrónica y tecnología
+        categoriaId: "4_2", // Computadoras
+        subcategoriaId: "4_2_2", // PC Escritorio
         disponible: true,
       ),
 
-      // Productos para puesto_004 (Ana Torres - Artesanías)
+      // Productos de Vehículos (Rubro 2)
+      const Producto(
+        id: "prod_009",
+        nombre: "Toyota Corolla 2018",
+        precio: 12000,
+        aceptaOfertas: true,
+        caracteristicas: "Automático, 80,000 km, excelente estado",
+        imagenUrl:
+            "https://via.placeholder.com/300x300/28A745/FFFFFF?text=Toyota",
+        categoria: "Autos",
+        rubroId: "2", // Vehículos
+        categoriaId: "2_1", // Autos
+        subcategoriaId: "2_1_2", // Sedán
+        disponible: true,
+      ),
       const Producto(
         id: "prod_010",
-        nombre: "Tejido Andino",
-        precio: 150,
-        caracteristicas: "Lana de alpaca, diseño tradicional",
+        nombre: "Honda Civic Hatchback",
+        precio: 15000,
+        aceptaOfertas: true,
+        caracteristicas: "Manual, 60,000 km, color rojo",
         imagenUrl:
-            "https://via.placeholder.com/300x300/E91E63/FFFFFF?text=Tejido",
-        categoria: "Artesanías", // Mantener por compatibilidad
-        categoriaId: "prod_cat_005", // Artesanías Tradicionales
-        subcategoriaId: "prod_sub_013", // Textiles Andinos
+            "https://via.placeholder.com/300x300/DC3545/FFFFFF?text=Honda",
+        categoria: "Autos",
+        rubroId: "2", // Vehículos
+        categoriaId: "2_1", // Autos
+        subcategoriaId: "2_1_1", // Hatchback
         disponible: true,
       ),
       const Producto(
         id: "prod_011",
-        nombre: "Cerámica Decorativa",
-        precio: 75,
-        caracteristicas: "Hecha a mano, motivos prehispánicos",
+        nombre: "Yamaha FZ 150",
+        precio: 3500,
+        aceptaOfertas: true,
+        caracteristicas: "Deportiva, 25,000 km, excelente motor",
         imagenUrl:
-            "https://via.placeholder.com/300x300/FF9800/FFFFFF?text=Cerámica",
-        categoria: "Artesanías", // Mantener por compatibilidad
-        categoriaId: "prod_cat_005", // Artesanías Tradicionales
-        subcategoriaId: "prod_sub_014", // Cerámica
-        disponible: true,
-      ),
-      const Producto(
-        id: "prod_012",
-        nombre: "Joyería en Plata",
-        precio: 200,
-        caracteristicas: "Plata 925, diseño exclusivo",
-        imagenUrl:
-            "https://via.placeholder.com/300x300/9E9E9E/FFFFFF?text=Joyería",
-        categoria: "Artesanías", // Mantener por compatibilidad
-        categoriaId: "prod_cat_005", // Artesanías Tradicionales
-        subcategoriaId: "prod_sub_015", // Joyería Artesanal
+            "https://via.placeholder.com/300x300/FFC107/FFFFFF?text=Yamaha",
+        categoria: "Motos",
+        rubroId: "2", // Vehículos
+        categoriaId: "2_2", // Motos
+        subcategoriaId: "2_2_1", // Motos deportivas
         disponible: true,
       ),
 
-      // Productos para puesto_005 (Roberto Silva - Zapatos y calzado)
+      // Productos de Autopartes (Rubro 1)
+      const Producto(
+        id: "prod_012",
+        nombre: "Batería Bosch 12V",
+        precio: 120,
+        aceptaOfertas: true,
+        caracteristicas: "Para auto, nueva, 2 años de garantía",
+        imagenUrl:
+            "https://via.placeholder.com/300x300/FFC107/FFFFFF?text=Bateria",
+        categoria: "Baterías",
+        rubroId: "1", // Autopartes y repuestos
+        categoriaId: "1_1", // Baterías
+        subcategoriaId: "1_1_1", // Baterías de auto
+        disponible: true,
+      ),
       const Producto(
         id: "prod_013",
-        nombre: "Botas de Cuero",
-        precio: 180,
-        caracteristicas: "Cuero genuino, número 42, color marrón",
+        nombre: "Batería de moto 12V",
+        precio: 65,
+        aceptaOfertas: true,
+        caracteristicas: "Para motocicleta, nueva, marca YTX",
         imagenUrl:
-            "https://via.placeholder.com/300x300/8BC34A/FFFFFF?text=Botas",
-        categoria: "Calzado", // Mantener por compatibilidad
-        categoriaId: "prod_cat_006", // Calzado
-        subcategoriaId: "prod_sub_016", // Botas
+            "https://via.placeholder.com/300x300/FF9800/FFFFFF?text=BatMoto",
+        categoria: "Baterías",
+        rubroId: "1", // Autopartes y repuestos
+        categoriaId: "1_1", // Baterías
+        subcategoriaId: "1_1_2", // Baterías de moto
         disponible: true,
       ),
       const Producto(
         id: "prod_014",
-        nombre: "Zapatillas Deportivas",
-        precio: 95,
-        caracteristicas: "Número 40, para running, muy cómodas",
+        nombre: "Pastillas de freno Brembo",
+        precio: 85,
+        aceptaOfertas: false,
+        caracteristicas: "Para Toyota Corolla, nuevas, calidad premium",
         imagenUrl:
-            "https://via.placeholder.com/300x300/00BCD4/FFFFFF?text=Zapatillas",
-        categoria: "Calzado", // Mantener por compatibilidad
-        categoriaId: "prod_cat_006", // Calzado
-        subcategoriaId: "prod_sub_017", // Calzado Deportivo
+            "https://via.placeholder.com/300x300/6C757D/FFFFFF?text=Frenos",
+        categoria: "Frenos",
+        rubroId: "1", // Autopartes y repuestos
+        categoriaId: "1_2", // Frenos
+        subcategoriaId: "1_2_1", // Pastillas de freno
         disponible: true,
       ),
       const Producto(
         id: "prod_015",
-        nombre: "Sandalias de Verano",
-        precio: 45,
-        caracteristicas: "Número 38, perfectas para el calor",
+        nombre: "Llantas Michelin R15",
+        precio: 280,
+        precioOferta: 240,
+        aceptaOfertas: true,
+        caracteristicas: "Set de 4 llantas, 90% de vida útil",
         imagenUrl:
-            "https://via.placeholder.com/300x300/FFEB3B/FFFFFF?text=Sandalias",
-        categoria: "Calzado", // Mantener por compatibilidad
-        categoriaId: "prod_cat_006", // Calzado
-        subcategoriaId: "prod_sub_018", // Sandalias
-        disponible: false,
+            "https://via.placeholder.com/300x300/495057/FFFFFF?text=Llantas",
+        categoria: "Llantas",
+        rubroId: "1", // Autopartes y repuestos
+        categoriaId: "1_3", // Llantas
+        subcategoriaId: "1_3_1", // Llantas de auto
+        disponible: true,
       ),
 
-      // Productos para puesto_006 (Carlos Fernández - Muebles y decoración)
+      // Productos de Muebles (Rubro 5)
       const Producto(
         id: "prod_016",
-        nombre: "Mesa de Comedor",
+        nombre: "Sofá de 3 plazas",
         precio: 450,
-        caracteristicas: "Madera de pino, 6 personas, barnizada",
+        aceptaOfertas: true,
+        caracteristicas: "Tela gris, muy cómodo, como nuevo",
         imagenUrl:
-            "https://via.placeholder.com/300x300/8D6E63/FFFFFF?text=Mesa",
-        categoria: "Muebles", // Mantener por compatibilidad
-        categoriaId: "prod_cat_007", // Muebles
-        subcategoriaId: "prod_sub_019", // Mesas
+            "https://via.placeholder.com/300x300/20C997/FFFFFF?text=Sofa",
+        categoria: "Muebles de sala",
+        rubroId: "5", // Muebles y madera
+        categoriaId: "5_1", // Muebles de sala
+        subcategoriaId: "5_1_1", // Sofás
         disponible: true,
       ),
       const Producto(
         id: "prod_017",
-        nombre: "Sillas de Madera",
-        precio: 80,
-        caracteristicas: "Juego de 4, tapizado en cuero sintético",
+        nombre: "Mesa de centro moderna",
+        precio: 180,
+        aceptaOfertas: true,
+        caracteristicas: "Vidrio templado, patas de acero, excelente estado",
         imagenUrl:
-            "https://via.placeholder.com/300x300/795548/FFFFFF?text=Sillas",
-        categoria: "Muebles", // Mantener por compatibilidad
-        categoriaId: "prod_cat_007", // Muebles
-        subcategoriaId: "prod_sub_020", // Sillas
+            "https://via.placeholder.com/300x300/FD7E14/FFFFFF?text=Mesa",
+        categoria: "Muebles de sala",
+        rubroId: "5", // Muebles y madera
+        categoriaId: "5_1", // Muebles de sala
+        subcategoriaId: "5_1_2", // Mesas de centro
         disponible: true,
       ),
       const Producto(
         id: "prod_018",
-        nombre: "Ropero 3 Puertas",
-        precio: 650,
-        caracteristicas: "Melaminico blanco, con espejo central",
+        nombre: "Mesa de comedor familiar",
+        precio: 380,
+        aceptaOfertas: true,
+        caracteristicas: "Madera maciza, 6 personas, barnizada",
         imagenUrl:
-            "https://via.placeholder.com/300x300/607D8B/FFFFFF?text=Ropero",
-        categoria: "Muebles", // Mantener por compatibilidad
-        categoriaId: "prod_cat_007", // Muebles
-        subcategoriaId: "prod_sub_021", // Roperos y Armarios
+            "https://via.placeholder.com/300x300/8D6E63/FFFFFF?text=Comedor",
+        categoria: "Muebles de cocina",
+        rubroId: "5", // Muebles y madera
+        categoriaId: "5_2", // Muebles de cocina
+        subcategoriaId: "5_2_2", // Mesas de comedor
         disponible: true,
       ),
     ];
