@@ -158,45 +158,72 @@ class _CategoriasPageContent extends StatelessWidget {
                   );
                 }
 
-                final categorias = rubro.categorias;
+                // Manejar el estado CategoriasLoaded
+                if (state is CategoriasLoaded) {
+                  final categorias = state.categorias;
 
-                if (categorias.isEmpty) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.category_outlined,
-                          size: 64,
-                          color: Colors.grey[400],
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No hay categorías disponibles',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Este rubro aún no tiene categorías configuradas',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                      ],
-                    ),
+                  if (categorias.isEmpty) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.category_outlined,
+                            size: 64,
+                            color: Colors.grey[400],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'No hay categorías disponibles',
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Este rubro aún no tiene categorías configuradas',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+
+                  return ListView.builder(
+                    padding: const EdgeInsets.all(16.0),
+                    itemCount: categorias.length,
+                    itemBuilder: (context, index) {
+                      final categoria = categorias[index];
+                      return CategoriaCard(
+                        categoria: categoria,
+                        onTap:
+                            () =>
+                                _navigateToSubcategoriasPage(context, categoria),
+                      );
+                    },
                   );
                 }
 
-                return ListView.builder(
-                  padding: const EdgeInsets.all(16.0),
-                  itemCount: categorias.length,
-                  itemBuilder: (context, index) {
-                    final categoria = categorias[index];
-                    return CategoriaCard(
-                      categoria: categoria,
-                      onTap:
-                          () =>
-                              _navigateToSubcategoriasPage(context, categoria),
-                    );
-                  },
+                // Estado por defecto si no hay categorías cargadas
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.category_outlined,
+                        size: 64,
+                        color: Colors.grey[400],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'No hay categorías disponibles',
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Este rubro aún no tiene categorías configuradas',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
                 );
               },
             ),

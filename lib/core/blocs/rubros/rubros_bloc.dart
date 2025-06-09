@@ -123,19 +123,20 @@ class RubrosBloc extends Bloc<RubrosEvent, RubrosState> {
     try {
       await Future.delayed(const Duration(milliseconds: 300));
 
-      if (state is RubrosLoaded) {
-        final currentState = state as RubrosLoaded;
-        final rubro = currentState.rubros.firstWhere(
-          (r) => r.id == event.rubroId,
-        );
+      // Necesitamos obtener los rubros de alguna manera
+      // Opción 1: Cargar todos los rubros primero
+      final rubros = _getMockRubros();
+      final rubro = rubros.firstWhere(
+        (r) => r.id == event.rubroId,
+        orElse: () => throw Exception('Rubro no encontrado'),
+      );
 
-        emit(
-          CategoriasLoaded(
-            rubroId: event.rubroId,
-            categorias: rubro.categorias,
-          ),
-        );
-      }
+      emit(
+        CategoriasLoaded(
+          rubroId: event.rubroId,
+          categorias: rubro.categorias,
+        ),
+      );
     } catch (e) {
       emit(RubrosError('Error al cargar las categorías: $e'));
     }
@@ -150,36 +151,35 @@ class RubrosBloc extends Bloc<RubrosEvent, RubrosState> {
     try {
       await Future.delayed(const Duration(milliseconds: 300));
 
-      if (state is RubrosLoaded) {
-        final currentState = state as RubrosLoaded;
+      // Necesitamos obtener los rubros de alguna manera
+      final rubros = _getMockRubros();
 
-        // Buscar la categoría en todos los rubros
-        Categoria? categoria;
-        String? rubroId;
+      // Buscar la categoría en todos los rubros
+      Categoria? categoria;
+      String? rubroId;
 
-        for (final rubro in currentState.rubros) {
-          try {
-            categoria = rubro.categorias.firstWhere(
-              (cat) => cat.id == event.categoriaId,
-            );
-            rubroId = rubro.id;
-            break;
-          } catch (e) {
-            continue;
-          }
-        }
-
-        if (categoria != null && rubroId != null) {
-          emit(
-            SubcategoriasLoaded(
-              rubroId: rubroId,
-              categoriaId: event.categoriaId,
-              subcategorias: categoria.subcategorias,
-            ),
+      for (final rubro in rubros) {
+        try {
+          categoria = rubro.categorias.firstWhere(
+            (cat) => cat.id == event.categoriaId,
           );
-        } else {
-          emit(const RubrosError('Categoría no encontrada'));
+          rubroId = rubro.id;
+          break;
+        } catch (e) {
+          continue;
         }
+      }
+
+      if (categoria != null && rubroId != null) {
+        emit(
+          SubcategoriasLoaded(
+            rubroId: rubroId,
+            categoriaId: event.categoriaId,
+            subcategorias: categoria.subcategorias,
+          ),
+        );
+      } else {
+        emit(const RubrosError('Categoría no encontrada'));
       }
     } catch (e) {
       emit(RubrosError('Error al cargar las subcategorías: $e'));
