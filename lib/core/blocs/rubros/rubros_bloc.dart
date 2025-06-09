@@ -132,10 +132,7 @@ class RubrosBloc extends Bloc<RubrosEvent, RubrosState> {
       );
 
       emit(
-        CategoriasLoaded(
-          rubroId: event.rubroId,
-          categorias: rubro.categorias,
-        ),
+        CategoriasLoaded(rubroId: event.rubroId, categorias: rubro.categorias),
       );
     } catch (e) {
       emit(RubrosError('Error al cargar las categorías: $e'));

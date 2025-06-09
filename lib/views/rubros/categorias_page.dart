@@ -195,8 +195,10 @@ class _CategoriasPageContent extends StatelessWidget {
                       return CategoriaCard(
                         categoria: categoria,
                         onTap:
-                            () =>
-                                _navigateToSubcategoriasPage(context, categoria),
+                            () => _navigateToSubcategoriasPage(
+                              context,
+                              categoria,
+                            ),
                       );
                     },
                   );
