@@ -34,4 +34,8 @@ class AppRoutes {
 
   /* <---- HOME PAGE -----> */
   static const homePage = '/home_page';
+
+  /* <---- HOME PAGE WITH MAP -----> */
+  static const homePageWithMap = '/home_page_with_map';
+  static const tiendasList = '/tiendas_list';
 }

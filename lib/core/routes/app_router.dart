@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:laferia/views/home/home_page_with_map.dart';
 import 'package:laferia/views/navigation/navigation_bar_page.dart';
 import 'package:laferia/views/splash/splash_page.dart';
 import 'package:laferia/views/design/onboarding_page.dart';
@@ -14,6 +15,7 @@ import 'package:laferia/views/design/cart_page.dart';
 import 'package:laferia/views/design/profile_page.dart';
 import 'package:laferia/views/design/payment_methods_page.dart';
 import 'package:laferia/views/design/order_history_page.dart';
+import 'package:laferia/views/tienda/tienda_list_page.dart';
 
 import 'app_routes.dart';
 
@@ -121,5 +123,17 @@ List<RouteBase> publicRoutes() => [
     path: AppRoutes.navigation,
     name: 'Inicio',
     builder: (context, state) => const NavigationBarPage(),
+  ),
+
+  // Paginas de diseño
+  GoRoute(
+    path: AppRoutes.homePageWithMap,
+    name: 'Inicio Map',
+    builder: (context, state) => const HomePageWithMap(),
+  ),
+  GoRoute(
+    path: AppRoutes.tiendasList,
+    name: 'Tiendas',
+    builder: (context, state) => const TiendaListPage(),
   ),
 ];

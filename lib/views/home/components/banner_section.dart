@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:laferia/core/routes/app_routes.dart';
 
 class BannerSection extends StatefulWidget {
   const BannerSection({super.key});
@@ -16,16 +18,16 @@ class _BannerSectionState extends State<BannerSection> {
 
   final List<BannerItem> _banners = [
     BannerItem(
-      title: "Happy Sunday",
-      subtitle: "Get 50%+ Discount!",
-      buttonText: "Get Now",
+      title: "Home Mapa",
+      subtitle: "Home Page con Mapa",
+      buttonText: "Vamo",
       backgroundColor: Color(0xFFFF8C69),
       imageUrl: "🥝", // Placeholder emoji
     ),
     BannerItem(
-      title: "Fresh Fruits",
-      subtitle: "Healthy & Delicious",
-      buttonText: "Order Now",
+      title: "Tiendas",
+      subtitle: "Tiendas List",
+      buttonText: "Vamos",
       backgroundColor: Color(0xFF4CAF50),
       imageUrl: "🍓",
     ),
@@ -67,9 +69,15 @@ class _BannerSectionState extends State<BannerSection> {
   }
 
   void _navigateToBannerOffer(BannerItem banner) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Opening offer: ${banner.title}')));
+    if (banner.title == "Home Mapa") {
+      context.go(AppRoutes.homePageWithMap);
+    } else if (banner.title == "Tiendas") {
+      context.go(AppRoutes.tiendasList);
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Opening offer: ${banner.title}')));
+    }
   }
 
   @override
