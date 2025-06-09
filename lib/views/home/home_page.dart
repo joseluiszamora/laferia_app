@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:laferia/views/home/components/banner_section.dart';
+import 'package:laferia/views/home/components/search_section.dart';
+import 'package:laferia/views/home/components/welcome_section.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -10,8 +12,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final TextEditingController _searchController = TextEditingController();
-
   final List<CategoryItem> _categories = [
     CategoryItem(name: "Burger", emoji: "🍔", isPopular: true),
     CategoryItem(name: "Hot Dog", emoji: "🌭", isPopular: false),
@@ -58,105 +58,6 @@ class _HomePageState extends State<HomePage> {
       restaurant: "Green Garden",
     ),
   ];
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  void _performSearch(String query) {
-    if (query.isNotEmpty) {
-      // TODO: Implement actual search functionality
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Searching for: "$query"'),
-          action: SnackBarAction(
-            label: 'View Results',
-            onPressed: () {
-              // Navigate to search results
-            },
-          ),
-        ),
-      );
-    }
-  }
-
-  void _showSearchFilters() {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder:
-          (context) => Container(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Search Filters",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).textTheme.headlineMedium?.color,
-                    fontFamily: 'Kodchasan',
-                  ),
-                ),
-                const SizedBox(height: 20),
-                ListTile(
-                  leading: const Icon(Icons.location_on),
-                  title: const Text("Nearby restaurants"),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _filterByLocation();
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.star),
-                  title: const Text("Highly rated"),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _filterByRating();
-                  },
-                ),
-                ListTile(
-                  leading: const Icon(Icons.local_offer),
-                  title: const Text("Special offers"),
-                  onTap: () {
-                    Navigator.pop(context);
-                    _filterByOffers();
-                  },
-                ),
-              ],
-            ),
-          ),
-    );
-  }
-
-  void _filterByLocation() {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Showing nearby restaurants')));
-  }
-
-  void _filterByRating() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Showing highly rated restaurants')),
-    );
-  }
-
-  void _filterByOffers() {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Showing special offers')));
-  }
 
   void _navigateToCategory(String category) {
     ScaffoldMessenger.of(
@@ -213,11 +114,11 @@ class _HomePageState extends State<HomePage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Welcome section
-              _buildWelcomeSection(theme),
+              WelcomeSection(),
               const SizedBox(height: 24),
 
               // Search bar
-              _buildSearchBar(theme),
+              SearchSection(),
               const SizedBox(height: 24),
 
               // Banner section
@@ -237,83 +138,6 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 20),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildWelcomeSection(ThemeData theme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Providing the best",
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: theme.textTheme.headlineMedium?.color,
-            fontFamily: 'Kodchasan',
-          ),
-        ),
-        Row(
-          children: [
-            Text(
-              "foods for you! ",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: theme.textTheme.headlineMedium?.color,
-                fontFamily: 'Kodchasan',
-              ),
-            ),
-            Text("😋", style: TextStyle(fontSize: 24)),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSearchBar(ThemeData theme) {
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: theme.colorScheme.outline.withOpacity(0.3)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: TextField(
-        controller: _searchController,
-        onSubmitted: _performSearch,
-        decoration: InputDecoration(
-          hintText: "Search for restaurants, food...",
-          hintStyle: TextStyle(
-            color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6),
-            fontFamily: 'Kodchasan',
-          ),
-          prefixIcon: Icon(
-            Icons.search,
-            color: theme.textTheme.bodyMedium?.color?.withOpacity(0.6),
-          ),
-          suffixIcon: GestureDetector(
-            onTap: _showSearchFilters,
-            child: Icon(Icons.tune, color: theme.colorScheme.primary),
-          ),
-          border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 20,
-            vertical: 16,
-          ),
-        ),
-        style: TextStyle(
-          color: theme.textTheme.bodyMedium?.color,
-          fontSize: 16,
-          fontFamily: 'Kodchasan',
         ),
       ),
     );
