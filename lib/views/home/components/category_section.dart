@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../core/blocs/rubros/rubros.dart';
+import '../../../core/models/rubro.dart';
+import '../../rubros/categorias_page.dart';
+import '../../rubros/rubros_page.dart';
 
 class CategorySection extends StatelessWidget {
   const CategorySection({super.key});
@@ -7,14 +12,6 @@ class CategorySection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final List<CategoryItem> categories = [
-      CategoryItem(name: "Burgerx", emoji: "🍔", isPopular: true),
-      CategoryItem(name: "Hot Dog", emoji: "🌭", isPopular: false),
-      CategoryItem(name: "Pizza", emoji: "🍕", isPopular: true),
-      CategoryItem(name: "Sushi", emoji: "🍣", isPopular: false),
-      CategoryItem(name: "Drinks", emoji: "🥤", isPopular: false),
-    ];
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -22,7 +19,7 @@ class CategorySection extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
-              "Buscar por categorias",
+              "Buscar por categorías",
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -31,7 +28,7 @@ class CategorySection extends StatelessWidget {
               ),
             ),
             TextButton(
-              onPressed: () => _navigateToAllCategories(context),
+              onPressed: () => _navigateToAllRubros(context),
               child: Text(
                 "Ver Más",
                 style: TextStyle(
@@ -46,58 +43,105 @@ class CategorySection extends StatelessWidget {
         const SizedBox(height: 16),
         SizedBox(
           height: 100,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: categories.length,
-            itemBuilder: (context, index) {
-              final category = categories[index];
-              return Container(
-                width: 80,
-                margin: const EdgeInsets.only(right: 16),
-                child: GestureDetector(
-                  onTap: () => _navigateToCategory(context, category.name),
+          child: BlocBuilder<RubrosBloc, RubrosState>(
+            builder: (context, state) {
+              if (state is RubrosLoading) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (state is RubrosError) {
+                return Center(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color:
-                              category.isPopular
-                                  ? theme.colorScheme.primary.withOpacity(0.1)
-                                  : theme.cardColor,
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color:
-                                category.isPopular
-                                    ? theme.colorScheme.primary
-                                    : theme.colorScheme.outline.withOpacity(
-                                      0.3,
-                                    ),
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            category.emoji,
-                            style: const TextStyle(fontSize: 24),
-                          ),
-                        ),
-                      ),
+                      Icon(Icons.error_outline, size: 32, color: Colors.grey),
                       const SizedBox(height: 8),
                       Text(
-                        category.name,
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w500,
-                          color: theme.textTheme.bodyMedium?.color,
-                          fontFamily: 'Kodchasan',
-                        ),
-                        textAlign: TextAlign.center,
+                        'Error al cargar rubros',
+                        style: TextStyle(color: Colors.grey, fontSize: 12),
                       ),
                     ],
                   ),
-                ),
-              );
+                );
+              }
+
+              if (state is RubrosLoaded) {
+                // Tomar solo los primeros 5 rubros para mostrar en el home
+                final rubros = state.rubros.take(5).toList();
+
+                if (rubros.isEmpty) {
+                  return Center(
+                    child: Text(
+                      'No hay rubros disponibles',
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: rubros.length,
+                  itemBuilder: (context, index) {
+                    final rubro = rubros[index];
+                    return Container(
+                      width: 80,
+                      margin: const EdgeInsets.only(right: 16),
+                      child: GestureDetector(
+                        onTap: () => _navigateToRubro(context, rubro),
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 60,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color:
+                                    index < 2
+                                        ? theme.colorScheme.primary.withOpacity(
+                                          0.1,
+                                        )
+                                        : theme.cardColor,
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color:
+                                      index < 2
+                                          ? theme.colorScheme.primary
+                                          : theme.colorScheme.outline
+                                              .withOpacity(0.3),
+                                ),
+                              ),
+                              child: Center(
+                                child: Icon(
+                                  _getIconData(rubro.icono),
+                                  size: 24,
+                                  color:
+                                      index < 2
+                                          ? theme.colorScheme.primary
+                                          : theme.textTheme.bodyMedium?.color,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              rubro.nombre,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                color: theme.textTheme.bodyMedium?.color,
+                                fontFamily: 'Kodchasan',
+                              ),
+                              textAlign: TextAlign.center,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              }
+
+              return const SizedBox.shrink();
             },
           ),
         ),
@@ -105,30 +149,52 @@ class CategorySection extends StatelessWidget {
     );
   }
 
-  void _navigateToCategory(BuildContext context, String category) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Navigating to $category category')));
-  }
-
-  void _navigateToAllCategories(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Showing all food categories...'),
-        action: SnackBarAction(label: 'Filter', onPressed: () {}),
-      ),
+  void _navigateToRubro(BuildContext context, Rubro rubro) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => CategoriasPage(rubro: rubro)),
     );
   }
-}
 
-class CategoryItem {
-  final String name;
-  final String emoji;
-  final bool isPopular;
+  void _navigateToAllRubros(BuildContext context) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => const RubrosPage()));
+  }
 
-  CategoryItem({
-    required this.name,
-    required this.emoji,
-    required this.isPopular,
-  });
+  IconData _getIconData(String iconName) {
+    switch (iconName) {
+      case 'car_repair':
+        return Icons.car_repair;
+      case 'directions_car':
+        return Icons.directions_car;
+      case 'checkroom':
+        return Icons.checkroom;
+      case 'devices':
+        return Icons.devices;
+      case 'chair':
+        return Icons.chair;
+      case 'battery_alert':
+        return Icons.battery_alert;
+      case 'disc_full':
+        return Icons.disc_full;
+      case 'tire_repair':
+        return Icons.tire_repair;
+      case 'motorcycle':
+        return Icons.motorcycle;
+      case 'new_releases':
+        return Icons.new_releases;
+      case 'recycling':
+        return Icons.recycling;
+      case 'smartphone':
+        return Icons.smartphone;
+      case 'computer':
+        return Icons.computer;
+      case 'weekend':
+        return Icons.weekend;
+      case 'kitchen':
+        return Icons.kitchen;
+      default:
+        return Icons.category;
+    }
+  }
 }

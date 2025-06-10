@@ -188,7 +188,7 @@ class RubrosBloc extends Bloc<RubrosEvent, RubrosState> {
     return [
       Rubro(
         id: '1',
-        nombre: 'Autopartes y repuestos',
+        nombre: 'Autopartes y Repuestos',
         descripcion: 'Todo para el mantenimiento y reparación de vehículos',
         icono: 'car_repair',
         categorias: [
@@ -387,7 +387,7 @@ class RubrosBloc extends Bloc<RubrosEvent, RubrosState> {
       ),
       Rubro(
         id: '4',
-        nombre: 'Electrónica y tecnología',
+        nombre: 'Electrónica y Tecnología',
         descripcion: 'Dispositivos electrónicos y tecnológicos',
         icono: 'devices',
         categorias: [
