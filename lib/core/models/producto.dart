@@ -7,12 +7,13 @@ class Producto extends Equatable {
   final double? precioOferta;
   final bool aceptaOfertas;
   final String caracteristicas;
-  final String? imagenUrl;
+  final List<String> imagenesUrl;
   final String categoria; // Mantener por compatibilidad
   final String rubroId;
   final String categoriaId;
   final String subcategoriaId;
   final bool disponible;
+  final bool esFavorito;
 
   const Producto({
     required this.id,
@@ -21,12 +22,13 @@ class Producto extends Equatable {
     this.precioOferta,
     this.aceptaOfertas = false,
     required this.caracteristicas,
-    this.imagenUrl,
+    this.imagenesUrl = const [],
     this.categoria = '', // Mantener por compatibilidad
     required this.rubroId,
     required this.categoriaId,
     required this.subcategoriaId,
     this.disponible = true,
+    this.esFavorito = false,
   });
 
   factory Producto.fromJson(Map<String, dynamic> json) {
@@ -37,12 +39,18 @@ class Producto extends Equatable {
       precioOferta: json['precio_oferta']?.toDouble(),
       aceptaOfertas: json['acepta_ofertas'] ?? false,
       caracteristicas: json['caracteristicas'] ?? '',
-      imagenUrl: json['imagen_url'],
+      imagenesUrl:
+          json['imagenes_url'] != null
+              ? List<String>.from(json['imagenes_url'])
+              : (json['imagen_url'] != null
+                  ? [json['imagen_url']]
+                  : []), // Compatibilidad con imagen_url antigua
       categoria: json['categoria'] ?? '', // Mantener por compatibilidad
       rubroId: json['rubro_id'] ?? '',
       categoriaId: json['categoria_id'] ?? '',
       subcategoriaId: json['subcategoria_id'] ?? '',
       disponible: json['disponible'] ?? true,
+      esFavorito: json['es_favorito'] ?? false,
     );
   }
 
@@ -54,12 +62,17 @@ class Producto extends Equatable {
       'precio_oferta': precioOferta,
       'acepta_ofertas': aceptaOfertas,
       'caracteristicas': caracteristicas,
-      'imagen_url': imagenUrl,
+      'imagenes_url': imagenesUrl,
+      'imagen_url':
+          imagenesUrl.isNotEmpty
+              ? imagenesUrl.first
+              : null, // Mantener compatibilidad
       'categoria': categoria, // Mantener por compatibilidad
       'rubro_id': rubroId,
       'categoria_id': categoriaId,
       'subcategoria_id': subcategoriaId,
       'disponible': disponible,
+      'es_favorito': esFavorito,
     };
   }
 
@@ -71,12 +84,13 @@ class Producto extends Equatable {
     precioOferta,
     aceptaOfertas,
     caracteristicas,
-    imagenUrl,
+    imagenesUrl,
     categoria,
     rubroId,
     categoriaId,
     subcategoriaId,
     disponible,
+    esFavorito,
   ];
 
   /// Obtiene el precio efectivo del producto (precio de oferta si existe, sino el precio normal)
@@ -97,6 +111,16 @@ class Producto extends Equatable {
     return precio - precioOferta!;
   }
 
+  /// Obtiene la primera imagen disponible o null si no hay imágenes
+  String? get imagenPrincipal =>
+      imagenesUrl.isNotEmpty ? imagenesUrl.first : null;
+
+  /// Indica si el producto tiene imágenes
+  bool get tieneImagenes => imagenesUrl.isNotEmpty;
+
+  /// Obtiene el número total de imágenes
+  int get cantidadImagenes => imagenesUrl.length;
+
   /// Método copyWith para crear copias del producto con algunos campos modificados
   Producto copyWith({
     String? id,
@@ -105,12 +129,13 @@ class Producto extends Equatable {
     double? precioOferta,
     bool? aceptaOfertas,
     String? caracteristicas,
-    String? imagenUrl,
+    List<String>? imagenesUrl,
     String? categoria,
     String? rubroId,
     String? categoriaId,
     String? subcategoriaId,
     bool? disponible,
+    bool? esFavorito,
   }) {
     return Producto(
       id: id ?? this.id,
@@ -119,12 +144,13 @@ class Producto extends Equatable {
       precioOferta: precioOferta ?? this.precioOferta,
       aceptaOfertas: aceptaOfertas ?? this.aceptaOfertas,
       caracteristicas: caracteristicas ?? this.caracteristicas,
-      imagenUrl: imagenUrl ?? this.imagenUrl,
+      imagenesUrl: imagenesUrl ?? this.imagenesUrl,
       categoria: categoria ?? this.categoria,
       rubroId: rubroId ?? this.rubroId,
       categoriaId: categoriaId ?? this.categoriaId,
       subcategoriaId: subcategoriaId ?? this.subcategoriaId,
       disponible: disponible ?? this.disponible,
+      esFavorito: esFavorito ?? this.esFavorito,
     );
   }
 }
