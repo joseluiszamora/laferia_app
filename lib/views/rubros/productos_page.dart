@@ -5,6 +5,7 @@ import '../../core/blocs/service_locator.dart';
 import '../../core/models/rubro.dart';
 import '../../core/models/categoria.dart';
 import '../../core/models/producto.dart';
+import '../producto/producto_detail_page.dart';
 
 class ProductosPage extends StatelessWidget {
   final Rubro rubro;
@@ -281,11 +282,9 @@ class _ProductCard extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         onTap: () {
-          // TODO: Navegar a detalle del producto
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Ver detalles de ${producto.nombre}'),
-              duration: const Duration(seconds: 2),
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => ProductoDetailPage(producto: producto),
             ),
           );
         },
@@ -305,34 +304,127 @@ class _ProductCard extends StatelessWidget {
                     topRight: Radius.circular(12),
                   ),
                 ),
-                child:
-                    producto.imagenUrl != null
-                        ? ClipRRect(
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(12),
-                            topRight: Radius.circular(12),
-                          ),
-                          child: Image.network(
-                            producto.imagenUrl!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Center(
+                child: Stack(
+                  children: [
+                    // Imagen principal del producto
+                    ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
+                      ),
+                      child:
+                          producto.tieneImagenes
+                              ? Image.network(
+                                producto.imagenPrincipal!,
+                                width: double.infinity,
+                                height: double.infinity,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return const Center(
+                                    child: Icon(
+                                      Icons.image_not_supported,
+                                      size: 40,
+                                      color: Colors.grey,
+                                    ),
+                                  );
+                                },
+                              )
+                              : const Center(
                                 child: Icon(
-                                  Icons.image_not_supported,
+                                  Icons.inventory_2,
                                   size: 40,
                                   color: Colors.grey,
                                 ),
-                              );
-                            },
+                              ),
+                    ),
+
+                    // Badge de múltiples imágenes
+                    if (producto.cantidadImagenes > 1)
+                      Positioned(
+                        top: 8,
+                        left: 8,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
                           ),
-                        )
-                        : const Center(
-                          child: Icon(
-                            Icons.inventory_2,
-                            size: 40,
-                            color: Colors.grey,
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.6),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.photo_library,
+                                color: Colors.white,
+                                size: 12,
+                              ),
+                              const SizedBox(width: 2),
+                              Text(
+                                '${producto.cantidadImagenes}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
+                      ),
+
+                    // Badge de favorito
+                    if (producto.esFavorito)
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.2),
+                                blurRadius: 4,
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.favorite,
+                            color: Colors.red,
+                            size: 16,
+                          ),
+                        ),
+                      ),
+
+                    // Badge de oferta
+                    if (producto.tieneOferta)
+                      Positioned(
+                        bottom: 8,
+                        right: 8,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '-${producto.porcentajeDescuento.round()}%',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
             // Información del producto
@@ -343,21 +435,36 @@ class _ProductCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      producto.nombre,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                    // Nombre del producto y estado de favorito
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            producto.nombre,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (producto.esFavorito)
+                          const Icon(
+                            Icons.favorite,
+                            color: Colors.red,
+                            size: 16,
+                          ),
+                      ],
                     ),
                     const SizedBox(height: 4),
+
+                    // Sección de precios
                     if (producto.tieneOferta) ...[
                       Row(
                         children: [
                           Text(
-                            '\$${producto.precio.toStringAsFixed(2)}',
+                            'Bs. ${producto.precio.toStringAsFixed(0)}',
                             style: const TextStyle(
                               fontSize: 12,
                               color: Colors.grey,
@@ -386,7 +493,7 @@ class _ProductCard extends StatelessWidget {
                         ],
                       ),
                       Text(
-                        '\$${producto.precioEfectivo.toStringAsFixed(2)}',
+                        'Bs. ${producto.precioEfectivo.toStringAsFixed(0)}',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -395,13 +502,67 @@ class _ProductCard extends StatelessWidget {
                       ),
                     ] else ...[
                       Text(
-                        '\$${producto.precio.toStringAsFixed(2)}',
+                        'Bs. ${producto.precio.toStringAsFixed(0)}',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
+
+                    const SizedBox(height: 4),
+
+                    // Información adicional
+                    Row(
+                      children: [
+                        // Estado de disponibilidad
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                                producto.disponible
+                                    ? Colors.green.shade100
+                                    : Colors.red.shade100,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            producto.disponible ? 'Disponible' : 'Agotado',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color:
+                                  producto.disponible
+                                      ? Colors.green.shade700
+                                      : Colors.red.shade700,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        // Acepta ofertas
+                        if (producto.aceptaOfertas)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.orange.shade100,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              'Acepta ofertas',
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.orange.shade700,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
                   ],
                 ),
               ),

@@ -57,28 +57,135 @@ class _ProductImageSection extends StatelessWidget {
       height: 300,
       width: double.infinity,
       decoration: BoxDecoration(color: Colors.grey.shade100),
-      child:
-          producto.imagenUrl != null
-              ? Image.network(
-                producto.imagenUrl!,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return _buildPlaceholderImage();
-                },
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Center(
-                    child: CircularProgressIndicator(
-                      value:
-                          loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                              : null,
-                    ),
+      child: Stack(
+        children: [
+          // Imágenes del producto
+          producto.tieneImagenes
+              ? PageView.builder(
+                itemCount: producto.imagenesUrl.length,
+                itemBuilder: (context, index) {
+                  return Image.network(
+                    producto.imagenesUrl[index],
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return _buildPlaceholderImage();
+                    },
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Center(
+                        child: CircularProgressIndicator(
+                          value:
+                              loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                  : null,
+                        ),
+                      );
+                    },
                   );
                 },
               )
               : _buildPlaceholderImage(),
+
+          // Indicador de múltiples imágenes
+          if (producto.cantidadImagenes > 1)
+            Positioned(
+              bottom: 16,
+              left: 0,
+              right: 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  producto.cantidadImagenes,
+                  (index) => Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.8),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+          // Botón de favorito
+          Positioned(
+            top: 16,
+            right: 16,
+            child: GestureDetector(
+              onTap: () => _toggleFavorite(context),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  producto.esFavorito ? Icons.favorite : Icons.favorite_border,
+                  color: producto.esFavorito ? Colors.red : Colors.grey,
+                  size: 24,
+                ),
+              ),
+            ),
+          ),
+
+          // Badge de cantidad de imágenes
+          if (producto.cantidadImagenes > 1)
+            Positioned(
+              top: 16,
+              left: 16,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.6),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.photo_library,
+                      color: Colors.white,
+                      size: 16,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${producto.cantidadImagenes}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _toggleFavorite(BuildContext context) {
+    // Implementar lógica para cambiar favorito
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          producto.esFavorito
+              ? '${producto.nombre} removido de favoritos'
+              : '${producto.nombre} agregado a favoritos',
+        ),
+        duration: const Duration(seconds: 2),
+      ),
     );
   }
 
@@ -227,6 +334,32 @@ class _ProductInfoSection extends StatelessWidget {
             icon: Icons.info_outline,
             title: 'ID del Producto',
             content: producto.id,
+          ),
+
+          const SizedBox(height: 12),
+
+          // Información de imágenes y favorito
+          Row(
+            children: [
+              Expanded(
+                child: _InfoCard(
+                  icon: Icons.photo_library,
+                  title: 'Imágenes',
+                  content: '${producto.cantidadImagenes} disponibles',
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _InfoCard(
+                  icon:
+                      producto.esFavorito
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                  title: 'Estado',
+                  content: producto.esFavorito ? 'En favoritos' : 'No favorito',
+                ),
+              ),
+            ],
           ),
         ],
       ),

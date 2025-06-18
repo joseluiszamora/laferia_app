@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../../../core/services/producto_service.dart';
+import '../../../core/models/producto.dart';
+import '../../producto/producto_detail_page.dart';
 
 class RecommendedSection extends StatelessWidget {
   const RecommendedSection({super.key});
@@ -7,44 +10,9 @@ class RecommendedSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final List<FoodItem> recommendedItems = [
-      FoodItem(
-        id: "1",
-        name: "Caesar Salad",
-        price: 12.99,
-        rating: 4.8,
-        imageUrl: "🥗",
-        isFavorite: false,
-        restaurant: "Healthy Bites",
-      ),
-      FoodItem(
-        id: "2",
-        name: "Pasta Carbonara",
-        price: 15.50,
-        rating: 4.9,
-        imageUrl: "🍝",
-        isFavorite: true,
-        restaurant: "Italian Corner",
-      ),
-      FoodItem(
-        id: "3",
-        name: "Grilled Chicken",
-        price: 18.75,
-        rating: 4.7,
-        imageUrl: "🍗",
-        isFavorite: false,
-        restaurant: "Grill Master",
-      ),
-      FoodItem(
-        id: "4",
-        name: "Vegetable Bowl",
-        price: 14.25,
-        rating: 4.6,
-        imageUrl: "🥙",
-        isFavorite: true,
-        restaurant: "Green Garden",
-      ),
-    ];
+    // Obtener productos recomendados del servicio
+    final List<Producto> recommendedProducts =
+        ProductoService.productosRecomendados;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -79,151 +47,239 @@ class RecommendedSection extends StatelessWidget {
           height: 220,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: recommendedItems.length,
+            itemCount: recommendedProducts.length,
             itemBuilder: (context, index) {
-              final item = recommendedItems[index];
+              final producto = recommendedProducts[index];
               return Container(
                 width: 160,
                 margin: const EdgeInsets.only(right: 16),
-                decoration: BoxDecoration(
-                  color: theme.cardColor,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: theme.colorScheme.outline.withOpacity(0.3),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Image section
-                    Container(
-                      height: 100,
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.primary.withOpacity(0.1),
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(16),
-                          topRight: Radius.circular(16),
-                        ),
+                child: GestureDetector(
+                  onTap: () => _navigateToProductDetail(context, producto),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: theme.cardColor,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: theme.colorScheme.outline.withOpacity(0.3),
                       ),
-                      child: Stack(
-                        children: [
-                          Center(
-                            child: Text(
-                              item.imageUrl,
-                              style: const TextStyle(fontSize: 40),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 10,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Image section
+                        Container(
+                          height: 100,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary.withOpacity(0.1),
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(16),
+                              topRight: Radius.circular(16),
                             ),
                           ),
-                          Positioned(
-                            top: 8,
-                            right: 8,
-                            child: GestureDetector(
-                              onTap: () {
-                                // setState(() {
-                                //   item.isFavorite = !item.isFavorite;
-                                // });
-                              },
-                              child: Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.black.withOpacity(0.1),
-                                      blurRadius: 4,
+                          child: Stack(
+                            children: [
+                              Center(
+                                child:
+                                    producto.tieneImagenes
+                                        ? ClipRRect(
+                                          borderRadius: const BorderRadius.only(
+                                            topLeft: Radius.circular(16),
+                                            topRight: Radius.circular(16),
+                                          ),
+                                          child: Image.network(
+                                            producto.imagenPrincipal!,
+                                            width: double.infinity,
+                                            height: 100,
+                                            fit: BoxFit.cover,
+                                            errorBuilder: (
+                                              context,
+                                              error,
+                                              stackTrace,
+                                            ) {
+                                              return Icon(
+                                                Icons.image_not_supported,
+                                                size: 40,
+                                                color:
+                                                    theme.colorScheme.primary,
+                                              );
+                                            },
+                                          ),
+                                        )
+                                        : Icon(
+                                          Icons.shopping_bag,
+                                          size: 40,
+                                          color: theme.colorScheme.primary,
+                                        ),
+                              ),
+                              // Badge de oferta
+                              if (producto.tieneOferta)
+                                Positioned(
+                                  top: 8,
+                                  left: 8,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 2,
                                     ),
-                                  ],
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      '-${producto.porcentajeDescuento.round()}%',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
                                 ),
-                                child: Icon(
-                                  item.isFavorite
-                                      ? Icons.favorite
-                                      : Icons.favorite_border,
-                                  color:
-                                      item.isFavorite
-                                          ? Colors.red
-                                          : Colors.grey,
-                                  size: 16,
+                              // Botón de favorito
+                              Positioned(
+                                top: 8,
+                                right: 8,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    _toggleFavorite(context, producto);
+                                  },
+                                  child: Container(
+                                    padding: const EdgeInsets.all(4),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      shape: BoxShape.circle,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: Colors.black.withOpacity(0.1),
+                                          blurRadius: 4,
+                                        ),
+                                      ],
+                                    ),
+                                    child: Icon(
+                                      producto.esFavorito
+                                          ? Icons.favorite
+                                          : Icons.favorite_border,
+                                      color:
+                                          producto.esFavorito
+                                              ? Colors.red
+                                              : Colors.grey,
+                                      size: 16,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                    // Content section
-                    Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item.name,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: theme.textTheme.titleMedium?.color,
-                              fontFamily: 'Kodchasan',
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            item.restaurant,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: theme.textTheme.bodySmall?.color,
-                              fontFamily: 'Kodchasan',
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        ),
+                        // Content section
+                        Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "\$${item.price.toStringAsFixed(2)}",
+                                producto.nombre,
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
-                                  color: theme.colorScheme.primary,
+                                  color: theme.textTheme.titleMedium?.color,
                                   fontFamily: 'Kodchasan',
                                 ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
+                              const SizedBox(height: 4),
+                              Text(
+                                producto.categoria,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: theme.textTheme.bodySmall?.color,
+                                  fontFamily: 'Kodchasan',
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 8),
                               Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Icon(
-                                    Icons.star,
-                                    size: 14,
-                                    color: Colors.orange,
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      if (producto.tieneOferta) ...[
+                                        Text(
+                                          "\$${producto.precio.toStringAsFixed(0)}",
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey,
+                                            decoration:
+                                                TextDecoration.lineThrough,
+                                            fontFamily: 'Kodchasan',
+                                          ),
+                                        ),
+                                        Text(
+                                          "\$${producto.precioEfectivo.toStringAsFixed(0)}",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: theme.colorScheme.primary,
+                                            fontFamily: 'Kodchasan',
+                                          ),
+                                        ),
+                                      ] else
+                                        Text(
+                                          "\$${producto.precio.toStringAsFixed(0)}",
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                            color: theme.colorScheme.primary,
+                                            fontFamily: 'Kodchasan',
+                                          ),
+                                        ),
+                                    ],
                                   ),
-                                  const SizedBox(width: 2),
-                                  Text(
-                                    item.rating.toString(),
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: theme.textTheme.bodySmall?.color,
-                                      fontFamily: 'Kodchasan',
+                                  if (producto.aceptaOfertas)
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 6,
+                                        vertical: 2,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.green.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                        border: Border.all(
+                                          color: Colors.green,
+                                          width: 1,
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'Oferta',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.green,
+                                          fontWeight: FontWeight.w500,
+                                          fontFamily: 'Kodchasan',
+                                        ),
+                                      ),
                                     ),
-                                  ),
                                 ],
                               ),
                             ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               );
             },
@@ -233,32 +289,35 @@ class RecommendedSection extends StatelessWidget {
     );
   }
 
-  void _navigateToAllRecommended(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Showing all recommended items...'),
-        action: SnackBarAction(label: 'Sort', onPressed: () {}),
+  void _navigateToProductDetail(BuildContext context, Producto producto) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ProductoDetailPage(producto: producto),
       ),
     );
   }
-}
 
-class FoodItem {
-  final String id;
-  final String name;
-  final double price;
-  final double rating;
-  final String imageUrl;
-  final String restaurant;
-  bool isFavorite;
+  void _toggleFavorite(BuildContext context, Producto producto) {
+    // Aquí podrías implementar la lógica para cambiar el estado de favorito
+    // Por ahora solo mostramos un mensaje
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          producto.esFavorito
+              ? '${producto.nombre} removido de favoritos'
+              : '${producto.nombre} agregado a favoritos',
+        ),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
 
-  FoodItem({
-    required this.id,
-    required this.name,
-    required this.price,
-    required this.rating,
-    required this.imageUrl,
-    required this.restaurant,
-    required this.isFavorite,
-  });
+  void _navigateToAllRecommended(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text('Mostrando todos los productos recomendados...'),
+        action: SnackBarAction(label: 'Filtrar', onPressed: () {}),
+      ),
+    );
+  }
 }

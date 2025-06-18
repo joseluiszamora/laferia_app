@@ -11,7 +11,7 @@ class ProductoService {
       aceptaOfertas: true,
       caracteristicas: "Talla 32, usado, buen estado, color azul clásico",
       imagenesUrl: [
-        "https://via.placeholder.com/300x300/4285F4/FFFFFF?text=Jeans",
+        "https://marathon.vtexassets.com/arquivos/ids/484898-800-auto?v=638424305425670000&width=800&height=auto&aspect=true",
       ],
       categoria: "Ropa nueva",
       rubroId: "3", // Ropa
@@ -27,7 +27,8 @@ class ProductoService {
       aceptaOfertas: true,
       caracteristicas: "Talla M, seminueva, color blanco",
       imagenesUrl: [
-        "https://via.placeholder.com/300x300/34A853/FFFFFF?text=Camisa",
+        "https://cdn.aboutstatic.com/file/images/ca690ab03410e720b3c788cb190d896d.png?bg=F4F4F5&quality=75&trim=1&height=480&width=360",
+        "https://saleoutpe.com/cdn/shop/files/Diseno_sin_titulo_-_2025-05-10T113619.786.png?v=1746894994",
       ],
       categoria: "Ropa nueva",
       rubroId: "3", // Ropa
@@ -306,4 +307,45 @@ class ProductoService {
       esFavorito: false,
     ),
   ];
+
+  /// Obtiene una lista de productos recomendados
+  static List<Producto> get productosRecomendados {
+    // Filtrar productos con ofertas, favoritos y bien valorados
+    final recomendados =
+        obtenerProductos
+            .where((producto) {
+              return producto.tieneOferta ||
+                  producto.esFavorito ||
+                  producto.precio < 100; // Productos económicos
+            })
+            .take(5)
+            .toList();
+
+    // Si no hay suficientes, completar con productos disponibles
+    if (recomendados.length < 5) {
+      final faltantes = obtenerProductos
+          .where((p) => !recomendados.contains(p) && p.disponible)
+          .take(5 - recomendados.length);
+      recomendados.addAll(faltantes);
+    }
+
+    return recomendados;
+  }
+
+  /// Obtiene productos por categoría específica
+  static List<Producto> obtenerProductosPorCategoria(String categoriaId) {
+    return obtenerProductos
+        .where((producto) => producto.categoriaId == categoriaId)
+        .toList();
+  }
+
+  /// Obtiene productos favoritos
+  static List<Producto> get productosFavoritos {
+    return obtenerProductos.where((producto) => producto.esFavorito).toList();
+  }
+
+  /// Obtiene productos en oferta
+  static List<Producto> get productosEnOferta {
+    return obtenerProductos.where((producto) => producto.tieneOferta).toList();
+  }
 }

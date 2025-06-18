@@ -53,30 +53,76 @@ class _OfertarProductoDialogState extends State<OfertarProductoDialog> {
               ),
               child: Row(
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(6),
-                    child:
-                        widget.producto.imagenUrl != null
-                            ? Image.network(
-                              widget.producto.imagenUrl!,
-                              width: 50,
-                              height: 50,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Container(
+                  Stack(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(6),
+                        child:
+                            widget.producto.tieneImagenes
+                                ? Image.network(
+                                  widget.producto.imagenPrincipal!,
+                                  width: 50,
+                                  height: 50,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      width: 50,
+                                      height: 50,
+                                      color: Colors.grey.shade300,
+                                      child: const Icon(Icons.image, size: 25),
+                                    );
+                                  },
+                                )
+                                : Container(
                                   width: 50,
                                   height: 50,
                                   color: Colors.grey.shade300,
                                   child: const Icon(Icons.image, size: 25),
-                                );
-                              },
-                            )
-                            : Container(
-                              width: 50,
-                              height: 50,
-                              color: Colors.grey.shade300,
-                              child: const Icon(Icons.image, size: 25),
+                                ),
+                      ),
+                      // Badge de favorito
+                      if (widget.producto.esFavorito)
+                        Positioned(
+                          top: 2,
+                          right: 2,
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(8),
                             ),
+                            child: const Icon(
+                              Icons.favorite,
+                              color: Colors.white,
+                              size: 12,
+                            ),
+                          ),
+                        ),
+                      // Badge de múltiples imágenes
+                      if (widget.producto.cantidadImagenes > 1)
+                        Positioned(
+                          bottom: 2,
+                          left: 2,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 1,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.7),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              '${widget.producto.cantidadImagenes}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -90,6 +136,46 @@ class _OfertarProductoDialogState extends State<OfertarProductoDialog> {
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            if (widget.producto.esFavorito) ...[
+                              Icon(
+                                Icons.favorite,
+                                size: 12,
+                                color: Colors.red.shade600,
+                              ),
+                              const SizedBox(width: 2),
+                            ],
+                            if (widget.producto.cantidadImagenes > 1) ...[
+                              Icon(
+                                Icons.photo_library,
+                                size: 12,
+                                color: Colors.grey.shade600,
+                              ),
+                              const SizedBox(width: 2),
+                              Text(
+                                '${widget.producto.cantidadImagenes}',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.grey.shade600,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                            ],
+                            Expanded(
+                              child: Text(
+                                widget.producto.categoria,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: Colors.grey.shade600,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 4),
                         if (widget.producto.tieneOferta) ...[
