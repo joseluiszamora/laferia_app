@@ -108,11 +108,11 @@ assets:
     // Descargar tiles básicos de La Paz
     await TileCacheService.instance.preloadArea(
       northEast_lat: -16.490,
-      northEast_lng: -68.120,
-      southWest_lat: -16.510,
-      southWest_lng: -68.140,
-      zoomLevels: [12, 13, 14],
-      urlTemplate: OfflineMapConfig.getDefaultTileUrl(),
+      northEast_lng: -68.160,
+      southWest_lat: -16.500,
+      southWest_lng: -68.180,
+      zoomLevels: [10, 11, 12, 13, 14, 15, 16, 17],
+      urlTemplate: OfflineMapConfig.getPreferedTileUrl(),
     );
 
     print(

@@ -120,29 +120,33 @@ class MapNavigationHelper {
                       ),
                     ),
                   ),
-                  SizedBox(width: 8),
-                  ElevatedButton.icon(
-                    onPressed: () => openMapManager(context),
-                    icon: Icon(Icons.settings),
-                    label: Text('Config'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white24,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  SizedBox(width: 2),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => openMapManager(context),
+                      icon: Icon(Icons.settings),
+                      label: Text('Config'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white24,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     ),
                   ),
-                  SizedBox(width: 8),
-                  ElevatedButton.icon(
-                    onPressed: () => openProviderSwitcher(context),
-                    icon: Icon(Icons.layers),
-                    label: Text('Estilo'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange.shade600,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  SizedBox(width: 2),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => openProviderSwitcher(context),
+                      icon: Icon(Icons.layers),
+                      label: Text('Estilo'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange.shade600,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     ),
                   ),

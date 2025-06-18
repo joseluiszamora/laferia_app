@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:laferia/maps/default_tiles_service.dart';
 import 'package:laferia/maps/tile_cache_service.dart';
 import 'package:laferia/maps/offline_map_config.dart';
 
@@ -10,9 +11,9 @@ class OfflineMapManager extends StatefulWidget {
 }
 
 class _OfflineMapManagerState extends State<OfflineMapManager> {
-  String selectedArea = 'centro_lapaz';
-  String selectedZoomConfig = 'basico';
-  String selectedProvider = 'openstreetmap';
+  String selectedArea = '16_de_julio';
+  String selectedZoomConfig = 'completo';
+  String selectedProvider = 'cartodb_voyager';
   bool isDownloading = false;
   double downloadProgress = 0.0;
   int downloadedTiles = 0;
@@ -32,6 +33,18 @@ class _OfflineMapManagerState extends State<OfflineMapManager> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              ElevatedButton.icon(
+                onPressed: () async {
+                  await DefaultTilesService.downloadTilesForAssets();
+                },
+                icon: Icon(Icons.download_for_offline),
+                label: Text('Forzar descarga de Area'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue.shade600,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                ),
+              ),
               _buildConfigurationSection(),
               SizedBox(height: 20),
               _buildDownloadSection(),
@@ -176,13 +189,15 @@ class _OfflineMapManagerState extends State<OfflineMapManager> {
                     ),
                   ),
                   SizedBox(width: 12),
-                  ElevatedButton.icon(
-                    onPressed: _estimateDownload,
-                    icon: Icon(Icons.calculate),
-                    label: Text('Estimar'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.orange.shade600,
-                      foregroundColor: Colors.white,
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: _estimateDownload,
+                      icon: Icon(Icons.calculate),
+                      label: Text('Estimar'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange.shade600,
+                        foregroundColor: Colors.white,
+                      ),
                     ),
                   ),
                 ],
@@ -253,13 +268,15 @@ class _OfflineMapManagerState extends State<OfflineMapManager> {
                   ),
                 ),
                 SizedBox(width: 12),
-                ElevatedButton.icon(
-                  onPressed: () => setState(() {}),
-                  icon: Icon(Icons.refresh),
-                  label: Text('Actualizar'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green.shade600,
-                    foregroundColor: Colors.white,
+                Expanded(
+                  child: ElevatedButton.icon(
+                    onPressed: () => setState(() {}),
+                    icon: Icon(Icons.refresh),
+                    label: Text('Actualizar'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green.shade600,
+                      foregroundColor: Colors.white,
+                    ),
                   ),
                 ),
               ],

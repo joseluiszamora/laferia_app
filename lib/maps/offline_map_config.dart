@@ -49,6 +49,10 @@ class OfflineMapConfig {
     return tileProviders[defaultProvider] ?? tileProviders['openstreetmap']!;
   }
 
+  static String getPreferedTileUrl() {
+    return tileProviders['cartodb_voyager']!;
+  }
+
   static List<String> getDefaultSubdomains() {
     return providerSubdomains[defaultProvider] ?? [];
   }
@@ -95,6 +99,12 @@ class OfflineMapConfig {
       'south': -16.600,
       'east': -68.000,
       'west': -68.250,
+    },
+    '16_de_julio': {
+      'north': -16.490,
+      'south': -16.500,
+      'east': -68.160,
+      'west': -68.180,
     },
   };
 

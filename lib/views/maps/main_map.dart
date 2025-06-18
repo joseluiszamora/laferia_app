@@ -24,7 +24,8 @@ class _MainMapState extends State<MainMap> with TickerProviderStateMixin {
   bool _showControls = true;
   bool _isChangingProvider = false;
   double _currentZoom = 14.0;
-  LatLng _currentCenter = const LatLng(-16.5000, -68.1193); // La Paz, Bolivia
+  // LatLng _currentCenter = const LatLng(-16.5000, -68.1193); // La Paz, Bolivia
+  LatLng _currentCenter = const LatLng(-16.4953, -68.1700); // Feria 16 de julio
 
   @override
   void initState() {
@@ -66,7 +67,7 @@ class _MainMapState extends State<MainMap> with TickerProviderStateMixin {
   }
 
   void _zoomIn() {
-    final newZoom = (_currentZoom + 1.0).clamp(1.0, 18.0);
+    final newZoom = (_currentZoom + 1.0).clamp(1.0, 25.0);
     mapController.move(_currentCenter, newZoom);
     setState(() {
       _currentZoom = newZoom;
@@ -74,7 +75,7 @@ class _MainMapState extends State<MainMap> with TickerProviderStateMixin {
   }
 
   void _zoomOut() {
-    final newZoom = (_currentZoom - 1.0).clamp(1.0, 18.0);
+    final newZoom = (_currentZoom - 1.0).clamp(1.0, 25.0);
     mapController.move(_currentCenter, newZoom);
     setState(() {
       _currentZoom = newZoom;
@@ -225,7 +226,7 @@ class _MainMapState extends State<MainMap> with TickerProviderStateMixin {
               IconButton(
                 icon: const Icon(Icons.add, color: Colors.blueGrey),
                 tooltip: 'Acercar',
-                onPressed: _currentZoom < 18.0 ? _zoomIn : null,
+                onPressed: _currentZoom < 25.0 ? _zoomIn : null,
               ),
               Container(
                 height: 1,
@@ -298,7 +299,7 @@ class _MainMapState extends State<MainMap> with TickerProviderStateMixin {
       subdomains: currentProviderInfo.subdomains,
       tileProvider: CustomCachedTileProvider(),
       userAgentPackageName: 'com.laferia.app',
-      maxZoom: 18,
+      maxZoom: 25,
       minZoom: 1,
     );
   }
@@ -351,7 +352,7 @@ class _MainMapState extends State<MainMap> with TickerProviderStateMixin {
                       initialCenter: _currentCenter,
                       initialZoom: _currentZoom,
                       minZoom: 1.0,
-                      maxZoom: 18.0,
+                      maxZoom: 25.0,
                       onPositionChanged: (position, hasGesture) {
                         if (hasGesture) {
                           setState(() {
