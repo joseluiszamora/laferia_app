@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'location_button.dart';
+import '../../../location/location_button.dart';
 
 class ZoomCenterControls extends StatelessWidget {
   const ZoomCenterControls({
