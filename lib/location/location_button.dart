@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/blocs/location/location.dart';
+import '../core/blocs/location/location.dart';
 
 class LocationButton extends StatelessWidget {
   final VoidCallback? onLocationFound;
