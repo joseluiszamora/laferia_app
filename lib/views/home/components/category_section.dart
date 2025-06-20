@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../core/blocs/rubros/rubros.dart';
-import '../../../core/models/rubro.dart';
 import '../../rubros/categorias_page.dart';
 import '../../rubros/rubros_page.dart';
 

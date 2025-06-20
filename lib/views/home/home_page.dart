@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:laferia/core/blocs/categorias/categorias_bloc.dart';
+import 'package:laferia/core/blocs/categorias/categorias_event.dart';
 
-import '../../core/blocs/rubros/rubros.dart';
 import 'package:laferia/views/home/components/banner_section.dart';
 import 'package:laferia/views/home/components/category_section.dart';
 import 'package:laferia/views/home/components/quick_actions_section.dart';
@@ -15,7 +16,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => RubrosBloc()..add(const LoadRubros()),
+      create: (context) => CategoriasBloc()..add(LoadMainCategorias()),
       child: const _HomePageContent(),
     );
   }

@@ -10,6 +10,8 @@ abstract class CategoriasEvent extends Equatable {
 
 class LoadCategorias extends CategoriasEvent {}
 
+class LoadMainCategorias extends CategoriasEvent {}
+
 class SelectCategoria extends CategoriasEvent {
   final Categoria categoria;
 
@@ -20,7 +22,7 @@ class SelectCategoria extends CategoriasEvent {
 }
 
 class SelectSubcategoria extends CategoriasEvent {
-  final Subcategoria subcategoria;
+  final Categoria subcategoria;
 
   const SelectSubcategoria(this.subcategoria);
 

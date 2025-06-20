@@ -15,7 +15,7 @@ class CategoriasLoading extends CategoriasState {}
 class CategoriasLoaded extends CategoriasState {
   final List<Categoria> categorias;
   final Categoria? selectedCategoria;
-  final Subcategoria? selectedSubcategoria;
+  final Categoria? selectedSubcategoria;
 
   const CategoriasLoaded({
     required this.categorias,
@@ -26,7 +26,7 @@ class CategoriasLoaded extends CategoriasState {
   CategoriasLoaded copyWith({
     List<Categoria>? categorias,
     Categoria? selectedCategoria,
-    Subcategoria? selectedSubcategoria,
+    Categoria? selectedSubcategoria,
   }) {
     return CategoriasLoaded(
       categorias: categorias ?? this.categorias,
