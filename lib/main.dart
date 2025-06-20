@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:laferia/core/blocs/categorias/categorias_bloc.dart';
 import 'package:laferia/core/blocs/comentarios/comentarios_bloc.dart';
+import 'package:laferia/core/blocs/location/location_bloc.dart';
 import 'package:laferia/core/blocs/ofertas/ofertas_bloc.dart';
 import 'package:laferia/core/blocs/productos/productos_bloc.dart';
 import 'package:laferia/core/blocs/rubros/rubros_bloc.dart';
@@ -35,6 +36,7 @@ class BlocsProviders extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => getIt<CategoriasBloc>(), lazy: true),
         BlocProvider(create: (context) => getIt<ComentariosBloc>(), lazy: true),
+        BlocProvider(create: (context) => getIt<LocationBloc>(), lazy: true),
         BlocProvider(create: (context) => getIt<OfertasBloc>(), lazy: true),
         BlocProvider(create: (context) => getIt<ProductosBloc>(), lazy: true),
         BlocProvider(create: (context) => getIt<RubrosBloc>(), lazy: true),
