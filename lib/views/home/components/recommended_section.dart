@@ -95,7 +95,7 @@ class RecommendedSection extends StatelessWidget {
                                             topRight: Radius.circular(16),
                                           ),
                                           child: Image.network(
-                                            producto.imagenPrincipal!,
+                                            producto.imagenPrincipal?.url ?? '',
                                             width: double.infinity,
                                             height: 100,
                                             fit: BoxFit.cover,
@@ -164,13 +164,8 @@ class RecommendedSection extends StatelessWidget {
                                       ],
                                     ),
                                     child: Icon(
-                                      producto.esFavorito
-                                          ? Icons.favorite
-                                          : Icons.favorite_border,
-                                      color:
-                                          producto.esFavorito
-                                              ? Colors.red
-                                              : Colors.grey,
+                                      Icons.favorite_border,
+                                      color: Colors.red,
                                       size: 16,
                                     ),
                                   ),
@@ -186,7 +181,7 @@ class RecommendedSection extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                producto.nombre,
+                                producto.name,
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
@@ -198,7 +193,7 @@ class RecommendedSection extends StatelessWidget {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                producto.categoria,
+                                producto.categoriaId,
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: theme.textTheme.bodySmall?.color,
@@ -218,7 +213,7 @@ class RecommendedSection extends StatelessWidget {
                                     children: [
                                       if (producto.tieneOferta) ...[
                                         Text(
-                                          "\$${producto.precio.toStringAsFixed(0)}",
+                                          "\$${producto.price.toStringAsFixed(0)}",
                                           style: TextStyle(
                                             fontSize: 12,
                                             color: Colors.grey,
@@ -228,7 +223,7 @@ class RecommendedSection extends StatelessWidget {
                                           ),
                                         ),
                                         Text(
-                                          "\$${producto.precioEfectivo.toStringAsFixed(0)}",
+                                          "\$${producto.priceEfectivo.toStringAsFixed(0)}",
                                           style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold,
@@ -238,7 +233,7 @@ class RecommendedSection extends StatelessWidget {
                                         ),
                                       ] else
                                         Text(
-                                          "\$${producto.precio.toStringAsFixed(0)}",
+                                          "\$${producto.price.toStringAsFixed(0)}",
                                           style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold,
@@ -248,7 +243,7 @@ class RecommendedSection extends StatelessWidget {
                                         ),
                                     ],
                                   ),
-                                  if (producto.aceptaOfertas)
+                                  if (producto.acceptOffers)
                                     Container(
                                       padding: const EdgeInsets.symmetric(
                                         horizontal: 6,
@@ -302,11 +297,12 @@ class RecommendedSection extends StatelessWidget {
     // Por ahora solo mostramos un mensaje
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          producto.esFavorito
-              ? '${producto.nombre} removido de favoritos'
-              : '${producto.nombre} agregado a favoritos',
-        ),
+        // content: Text(
+        //   producto.esFavorito
+        //       ? '${producto.nombre} removido de favoritos'
+        //       : '${producto.nombre} agregado a favoritos',
+        // ),
+        content: Text('${producto.name} agregado a favoritos'),
         duration: const Duration(seconds: 2),
       ),
     );

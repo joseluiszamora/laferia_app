@@ -34,7 +34,7 @@ class _OfertarProductoDialogState extends State<OfertarProductoDialog> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final precioMaximo = widget.producto.precioEfectivo;
+    final precioMaximo = widget.producto.priceEfectivo;
 
     return AlertDialog(
       title: const Text('Hacer una oferta'),
@@ -60,7 +60,7 @@ class _OfertarProductoDialogState extends State<OfertarProductoDialog> {
                         child:
                             widget.producto.tieneImagenes
                                 ? Image.network(
-                                  widget.producto.imagenPrincipal!,
+                                  widget.producto.imagenPrincipal?.url ?? '',
                                   width: 50,
                                   height: 50,
                                   fit: BoxFit.cover,
@@ -81,7 +81,7 @@ class _OfertarProductoDialogState extends State<OfertarProductoDialog> {
                                 ),
                       ),
                       // Badge de favorito
-                      if (widget.producto.esFavorito)
+                      if (widget.producto.isFavorite)
                         Positioned(
                           top: 2,
                           right: 2,
@@ -130,7 +130,7 @@ class _OfertarProductoDialogState extends State<OfertarProductoDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.producto.nombre,
+                          widget.producto.name,
                           style: theme.textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -140,7 +140,7 @@ class _OfertarProductoDialogState extends State<OfertarProductoDialog> {
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            if (widget.producto.esFavorito) ...[
+                            if (widget.producto.isFavorite) ...[
                               Icon(
                                 Icons.favorite,
                                 size: 12,
@@ -166,7 +166,7 @@ class _OfertarProductoDialogState extends State<OfertarProductoDialog> {
                             ],
                             Expanded(
                               child: Text(
-                                widget.producto.categoria,
+                                widget.producto.categoriaId,
                                 style: TextStyle(
                                   fontSize: 10,
                                   color: Colors.grey.shade600,
@@ -180,7 +180,7 @@ class _OfertarProductoDialogState extends State<OfertarProductoDialog> {
                         const SizedBox(height: 4),
                         if (widget.producto.tieneOferta) ...[
                           Text(
-                            'Precio original: Bs. ${widget.producto.precio.toStringAsFixed(0)}',
+                            'Precio original: Bs. ${widget.producto.price.toStringAsFixed(0)}',
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey.shade600,

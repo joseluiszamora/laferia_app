@@ -315,7 +315,7 @@ class _ProductCard extends StatelessWidget {
                       child:
                           producto.tieneImagenes
                               ? Image.network(
-                                producto.imagenPrincipal!,
+                                producto.imagenPrincipal?.url ?? '',
                                 width: double.infinity,
                                 height: double.infinity,
                                 fit: BoxFit.cover,
@@ -375,7 +375,7 @@ class _ProductCard extends StatelessWidget {
                       ),
 
                     // Badge de favorito
-                    if (producto.esFavorito)
+                    if (producto.isFavorite)
                       Positioned(
                         top: 8,
                         right: 8,
@@ -440,7 +440,7 @@ class _ProductCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            producto.nombre,
+                            producto.name,
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w600,
@@ -449,7 +449,7 @@ class _ProductCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        if (producto.esFavorito)
+                        if (producto.isFavorite)
                           const Icon(
                             Icons.favorite,
                             color: Colors.red,
@@ -464,7 +464,7 @@ class _ProductCard extends StatelessWidget {
                       Row(
                         children: [
                           Text(
-                            'Bs. ${producto.precio.toStringAsFixed(0)}',
+                            'Bs. ${producto.price.toStringAsFixed(0)}',
                             style: const TextStyle(
                               fontSize: 12,
                               color: Colors.grey,
@@ -493,7 +493,7 @@ class _ProductCard extends StatelessWidget {
                         ],
                       ),
                       Text(
-                        'Bs. ${producto.precioEfectivo.toStringAsFixed(0)}',
+                        'Bs. ${producto.priceEfectivo.toStringAsFixed(0)}',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -502,7 +502,7 @@ class _ProductCard extends StatelessWidget {
                       ),
                     ] else ...[
                       Text(
-                        'Bs. ${producto.precio.toStringAsFixed(0)}',
+                        'Bs. ${producto.price.toStringAsFixed(0)}',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -523,17 +523,17 @@ class _ProductCard extends StatelessWidget {
                           ),
                           decoration: BoxDecoration(
                             color:
-                                producto.disponible
+                                producto.isAvailable
                                     ? Colors.green.shade100
                                     : Colors.red.shade100,
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
-                            producto.disponible ? 'Disponible' : 'Agotado',
+                            producto.isAvailable ? 'Disponible' : 'Agotado',
                             style: TextStyle(
                               fontSize: 10,
                               color:
-                                  producto.disponible
+                                  producto.isAvailable
                                       ? Colors.green.shade700
                                       : Colors.red.shade700,
                               fontWeight: FontWeight.w600,
@@ -542,7 +542,7 @@ class _ProductCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 4),
                         // Acepta ofertas
-                        if (producto.aceptaOfertas)
+                        if (producto.acceptOffers)
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 6,

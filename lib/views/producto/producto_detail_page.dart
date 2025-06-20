@@ -15,7 +15,7 @@ class ProductoDetailPage extends StatelessWidget {
       create: (context) => OfertasBloc(),
       child: Scaffold(
         appBar: AppBar(
-          title: Text(producto.nombre),
+          title: Text(producto.name),
           elevation: 0,
           actions: [
             IconButton(
@@ -65,7 +65,7 @@ class _ProductImageSection extends StatelessWidget {
                 itemCount: producto.imagenesUrl.length,
                 itemBuilder: (context, index) {
                   return Image.network(
-                    producto.imagenesUrl[index],
+                    producto.imagenesUrl[index].url,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return _buildPlaceholderImage();
@@ -130,8 +130,8 @@ class _ProductImageSection extends StatelessWidget {
                   ],
                 ),
                 child: Icon(
-                  producto.esFavorito ? Icons.favorite : Icons.favorite_border,
-                  color: producto.esFavorito ? Colors.red : Colors.grey,
+                  producto.isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: producto.isFavorite ? Colors.red : Colors.grey,
                   size: 24,
                 ),
               ),
@@ -180,9 +180,9 @@ class _ProductImageSection extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          producto.esFavorito
-              ? '${producto.nombre} removido de favoritos'
-              : '${producto.nombre} agregado a favoritos',
+          producto.isFavorite
+              ? '${producto.name} removido de favoritos'
+              : '${producto.name} agregado a favoritos',
         ),
         duration: const Duration(seconds: 2),
       ),
@@ -225,7 +225,7 @@ class _ProductInfoSection extends StatelessWidget {
         children: [
           // Nombre del producto
           Text(
-            producto.nombre,
+            producto.name,
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -248,7 +248,7 @@ class _ProductInfoSection extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color:
-                      producto.disponible
+                      producto.isAvailable
                           ? Colors.green.shade100
                           : Colors.red.shade100,
                   borderRadius: BorderRadius.circular(20),
@@ -257,19 +257,19 @@ class _ProductInfoSection extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      producto.disponible ? Icons.check_circle : Icons.cancel,
+                      producto.isAvailable ? Icons.check_circle : Icons.cancel,
                       size: 16,
                       color:
-                          producto.disponible
+                          producto.isAvailable
                               ? Colors.green.shade700
                               : Colors.red.shade700,
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      producto.disponible ? 'Disponible' : 'Agotado',
+                      producto.isAvailable ? 'Disponible' : 'Agotado',
                       style: TextStyle(
                         color:
-                            producto.disponible
+                            producto.isAvailable
                                 ? Colors.green.shade700
                                 : Colors.red.shade700,
                         fontWeight: FontWeight.w600,
@@ -292,7 +292,7 @@ class _ProductInfoSection extends StatelessWidget {
               border: Border.all(color: theme.primaryColor.withOpacity(0.3)),
             ),
             child: Text(
-              producto.categoria,
+              producto.categoriaId,
               style: TextStyle(
                 color: theme.primaryColor,
                 fontWeight: FontWeight.w600,
@@ -322,7 +322,7 @@ class _ProductInfoSection extends StatelessWidget {
               border: Border.all(color: Colors.grey.shade200),
             ),
             child: Text(
-              producto.caracteristicas,
+              producto.description,
               style: theme.textTheme.bodyLarge?.copyWith(height: 1.5),
             ),
           ),
@@ -352,11 +352,11 @@ class _ProductInfoSection extends StatelessWidget {
               Expanded(
                 child: _InfoCard(
                   icon:
-                      producto.esFavorito
+                      producto.isFavorite
                           ? Icons.favorite
                           : Icons.favorite_border,
                   title: 'Estado',
-                  content: producto.esFavorito ? 'En favoritos' : 'No favorito',
+                  content: producto.isFavorite ? 'En favoritos' : 'No favorito',
                 ),
               ),
             ],
@@ -379,7 +379,7 @@ class _ProductInfoSection extends StatelessWidget {
             ),
           ),
           Text(
-            'Bs. ${producto.precio.toStringAsFixed(0)}',
+            'Bs. ${producto.price.toStringAsFixed(0)}',
             style: theme.textTheme.titleLarge?.copyWith(
               color: Colors.grey.shade600,
               decoration: TextDecoration.lineThrough,
@@ -416,7 +416,7 @@ class _ProductInfoSection extends StatelessWidget {
             ],
           ),
           Text(
-            'Bs. ${producto.precioEfectivo.toStringAsFixed(0)}',
+            'Bs. ${producto.priceEfectivo.toStringAsFixed(0)}',
             style: theme.textTheme.headlineMedium?.copyWith(
               color: Colors.red.shade600,
               fontWeight: FontWeight.bold,
@@ -431,7 +431,7 @@ class _ProductInfoSection extends StatelessWidget {
             ),
           ),
           Text(
-            'Bs. ${producto.precio.toStringAsFixed(0)}',
+            'Bs. ${producto.price.toStringAsFixed(0)}',
             style: theme.textTheme.headlineMedium?.copyWith(
               color: theme.primaryColor,
               fontWeight: FontWeight.bold,
@@ -440,7 +440,7 @@ class _ProductInfoSection extends StatelessWidget {
         ],
 
         // Acepta ofertas
-        if (producto.aceptaOfertas) ...[
+        if (producto.acceptOffers) ...[
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -594,7 +594,7 @@ class _BottomActionBar extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Precio normal: Bs. ${producto.precio.toStringAsFixed(0)}',
+                            'Precio normal: Bs. ${producto.price.toStringAsFixed(0)}',
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey.shade600,
@@ -602,7 +602,7 @@ class _BottomActionBar extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            'Precio de oferta: Bs. ${producto.precioEfectivo.toStringAsFixed(0)}',
+                            'Precio de oferta: Bs. ${producto.priceEfectivo.toStringAsFixed(0)}',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.red.shade600,
@@ -643,7 +643,7 @@ class _BottomActionBar extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton.icon(
                     onPressed:
-                        producto.disponible
+                        producto.isAvailable
                             ? () => _contactSeller(context)
                             : null,
                     icon: const Icon(Icons.chat),
@@ -657,7 +657,7 @@ class _BottomActionBar extends StatelessWidget {
                 const SizedBox(width: 8),
 
                 // Botón de ofertar (si acepta ofertas)
-                if (producto.aceptaOfertas && producto.disponible)
+                if (producto.acceptOffers && producto.isAvailable)
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () => _showOfertarDialog(context),
@@ -671,20 +671,20 @@ class _BottomActionBar extends StatelessWidget {
                     ),
                   ),
 
-                if (producto.aceptaOfertas && producto.disponible)
+                if (producto.acceptOffers && producto.isAvailable)
                   const SizedBox(width: 8),
 
                 // Botón de consultar precio
                 Expanded(
-                  flex: producto.aceptaOfertas ? 1 : 2,
+                  flex: producto.acceptOffers ? 1 : 2,
                   child: ElevatedButton.icon(
                     onPressed:
-                        producto.disponible
+                        producto.isAvailable
                             ? () => _consultPrice(context)
                             : null,
                     icon: const Icon(Icons.price_check),
                     label: Text(
-                      producto.aceptaOfertas ? 'Consultar' : 'Consultar Precio',
+                      producto.acceptOffers ? 'Consultar' : 'Consultar Precio',
                     ),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -709,7 +709,7 @@ class _BottomActionBar extends StatelessWidget {
             // Aquí se podría manejar la oferta enviada
             // Por ejemplo, guardarla en una base de datos local o enviarla a un servidor
             debugPrint(
-              'Oferta de Bs. ${oferta.toStringAsFixed(0)} enviada para ${producto.nombre}',
+              'Oferta de Bs. ${oferta.toStringAsFixed(0)} enviada para ${producto.name}',
             );
           },
         );
@@ -738,9 +738,9 @@ class _BottomActionBar extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Producto: ${producto.nombre}'),
+              Text('Producto: ${producto.name}'),
               const SizedBox(height: 8),
-              Text('Precio actual: Bs. ${producto.precio.toStringAsFixed(0)}'),
+              Text('Precio actual: Bs. ${producto.price.toStringAsFixed(0)}'),
               const SizedBox(height: 16),
               const Text(
                 '¿Deseas contactar al vendedor para más información sobre este producto?',

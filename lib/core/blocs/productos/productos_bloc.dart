@@ -53,12 +53,13 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
       await Future.delayed(const Duration(milliseconds: 500));
 
       // Filtrar productos por subcategoría
-      final productos =
-          ProductoService.obtenerProductos
-              .where(
-                (producto) => producto.subcategoriaId == event.subcategoriaId,
-              )
-              .toList();
+      // final productos =
+      //     ProductoService.obtenerProductos
+      //         .where(
+      //           (producto) => producto.subcategoriaId == event.subcategoriaId,
+      //         )
+      //         .toList();
+      final productos = ProductoService.obtenerProductos.toList();
 
       emit(ProductosLoaded(productos: productos));
     } catch (e) {
@@ -99,10 +100,11 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
       await Future.delayed(const Duration(milliseconds: 500));
 
       // Filtrar productos por rubro
-      final productos =
-          ProductoService.obtenerProductos
-              .where((producto) => producto.rubroId == event.rubroId)
-              .toList();
+      // final productos =
+      //     ProductoService.obtenerProductos
+      //         .where((producto) => producto.rubroId == event.rubroId)
+      //         .toList();
+      final productos = ProductoService.obtenerProductos.toList();
 
       emit(ProductosLoaded(productos: productos));
     } catch (e) {

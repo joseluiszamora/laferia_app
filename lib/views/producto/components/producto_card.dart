@@ -40,7 +40,7 @@ class ProductoCard extends StatelessWidget {
                       // Imagen principal del producto
                       producto.tieneImagenes
                           ? Image.network(
-                            producto.imagenPrincipal!,
+                            producto.imagenPrincipal!.url,
                             width: double.infinity,
                             height: double.infinity,
                             fit: BoxFit.cover,
@@ -101,7 +101,7 @@ class ProductoCard extends StatelessWidget {
                         ),
 
                       // Badge de favorito
-                      if (producto.esFavorito)
+                      if (producto.isFavorite)
                         Positioned(
                           top: 8,
                           right: 8,
@@ -167,7 +167,7 @@ class ProductoCard extends StatelessWidget {
                   children: [
                     // Nombre del producto
                     Text(
-                      producto.nombre,
+                      producto.name,
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         fontSize: 12, // Reducido el tamaño de fuente
@@ -195,17 +195,17 @@ class ProductoCard extends StatelessWidget {
                               ),
                               decoration: BoxDecoration(
                                 color:
-                                    producto.disponible
+                                    producto.isAvailable
                                         ? Colors.green.shade100
                                         : Colors.red.shade100,
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
-                                producto.disponible ? 'Disponible' : 'Agotado',
+                                producto.isAvailable ? 'Disponible' : 'Agotado',
                                 style: TextStyle(
                                   fontSize: 8,
                                   color:
-                                      producto.disponible
+                                      producto.isAvailable
                                           ? Colors.green.shade700
                                           : Colors.red.shade700,
                                   fontWeight: FontWeight.w600,
@@ -214,7 +214,7 @@ class ProductoCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             // Acepta ofertas
-                            if (producto.aceptaOfertas)
+                            if (producto.acceptOffers)
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 4,
@@ -242,7 +242,7 @@ class ProductoCard extends StatelessWidget {
                     // Características
                     Expanded(
                       child: Text(
-                        producto.caracteristicas,
+                        producto.description,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: Colors.grey.shade600,
                           fontSize: 10, // Reducido el tamaño de fuente
@@ -266,7 +266,7 @@ class ProductoCard extends StatelessWidget {
                         ), // Reducido de 8 a 6
                       ),
                       child: Text(
-                        producto.categoria,
+                        producto.categoriaId,
                         style: TextStyle(
                           fontSize: 8, // Reducido de 10 a 8
                           color: theme.primaryColor,
@@ -313,7 +313,7 @@ class ProductoCard extends StatelessWidget {
         children: [
           // Precio original tachado
           Text(
-            'Bs. ${producto.precio.toStringAsFixed(0)}',
+            'Bs. ${producto.price.toStringAsFixed(0)}',
             style: TextStyle(
               fontSize: 10,
               color: Colors.grey.shade600,
@@ -324,7 +324,7 @@ class ProductoCard extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Bs. ${producto.precioEfectivo.toStringAsFixed(0)}',
+                'Bs. ${producto.priceEfectivo.toStringAsFixed(0)}',
                 style: theme.textTheme.titleSmall?.copyWith(
                   color: Colors.red.shade600,
                   fontWeight: FontWeight.bold,
@@ -354,7 +354,7 @@ class ProductoCard extends StatelessWidget {
     } else {
       // Mostrar precio normal
       return Text(
-        'Bs. ${producto.precio.toStringAsFixed(0)}',
+        'Bs. ${producto.price.toStringAsFixed(0)}',
         style: theme.textTheme.titleSmall?.copyWith(
           color: theme.primaryColor,
           fontWeight: FontWeight.bold,
