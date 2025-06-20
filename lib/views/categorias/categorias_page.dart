@@ -110,7 +110,7 @@ class CategoriaCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(25),
                       ),
                       child: Icon(
-                        _getIconData(categoria.icono),
+                        _getIconData(categoria.icon),
                         color: theme.primaryColor,
                         size: 28,
                       ),
@@ -121,7 +121,7 @@ class CategoriaCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            categoria.nombre,
+                            categoria.name,
                             style: theme.textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: isSelected ? theme.primaryColor : null,
@@ -129,7 +129,7 @@ class CategoriaCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            categoria.descripcion,
+                            categoria.description,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: Colors.grey.shade600,
                             ),
@@ -173,7 +173,7 @@ class CategoriaCard extends StatelessWidget {
                               ),
                             ),
                             child: Text(
-                              subcategoria.nombre,
+                              subcategoria.name,
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.primaryColor,
                                 fontWeight: FontWeight.w500,

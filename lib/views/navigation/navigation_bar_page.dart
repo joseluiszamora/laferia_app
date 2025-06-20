@@ -10,7 +10,6 @@ import 'package:laferia/views/home/home_page.dart';
 import 'package:laferia/views/home/home_page_with_map.dart';
 import 'package:laferia/views/maps/main_map.dart';
 import 'package:laferia/views/navigation/components/header_section.dart';
-import 'package:laferia/views/rubros/rubros_page.dart';
 import 'package:laferia/views/tiendas-maps/markers_maps_page.dart';
 import 'package:laferia/views/tiendas-maps/tiendas_maps_page.dart';
 import 'package:latlong2/latlong.dart';
@@ -35,8 +34,7 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
     //* Pages List
     List<Widget> pages = [
       const HomePageWithMap(),
-      const RubrosPage(),
-      // const CategoriasPage(),
+      const CategoriasPage(),
       const HomePage(),
       // const OfertasPage(),
       // const MapsPage(),

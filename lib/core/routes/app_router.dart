@@ -1,7 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:laferia/views/home/home_page_with_map.dart';
 import 'package:laferia/views/navigation/navigation_bar_page.dart';
-import 'package:laferia/views/rubros/rubros_page.dart';
 import 'package:laferia/views/splash/splash_page.dart';
 import 'package:laferia/views/design/onboarding_page.dart';
 import 'package:laferia/views/design/login_page.dart';
@@ -138,10 +137,5 @@ List<RouteBase> publicRoutes() => [
     path: AppRoutes.tiendasList,
     name: 'Tiendas',
     builder: (context, state) => const TiendaListPage(),
-  ),
-  GoRoute(
-    path: AppRoutes.rubrosList,
-    name: 'Rubros',
-    builder: (context, state) => const RubrosPage(),
   ),
 ];

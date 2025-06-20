@@ -1,10 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../rubros/categorias_page.dart';
-import '../../rubros/rubros_page.dart';
+import '../../../core/blocs/categorias/categorias_bloc.dart';
+import '../../../core/blocs/categorias/categorias_event.dart';
+import '../../../core/blocs/categorias/categorias_state.dart';
+import '../../../core/models/categoria.dart';
 
-class CategorySection extends StatelessWidget {
+class CategorySection extends StatefulWidget {
   const CategorySection({super.key});
+
+  @override
+  State<CategorySection> createState() => _CategorySectionState();
+}
+
+class _CategorySectionState extends State<CategorySection> {
+  @override
+  void initState() {
+    super.initState();
+    // Cargar las categorías principales al inicializar el widget
+    context.read<CategoriasBloc>().add(LoadMainCategorias());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +40,7 @@ class CategorySection extends StatelessWidget {
               ),
             ),
             TextButton(
-              onPressed: () => _navigateToAllRubros(context),
+              onPressed: () => _navigateToAllCategorias(context),
               child: Text(
                 "Ver Más",
                 style: TextStyle(
@@ -41,13 +55,13 @@ class CategorySection extends StatelessWidget {
         const SizedBox(height: 16),
         SizedBox(
           height: 100,
-          child: BlocBuilder<RubrosBloc, RubrosState>(
+          child: BlocBuilder<CategoriasBloc, CategoriasState>(
             builder: (context, state) {
-              if (state is RubrosLoading) {
+              if (state is CategoriasLoading) {
                 return const Center(child: CircularProgressIndicator());
               }
 
-              if (state is RubrosError) {
+              if (state is CategoriasError) {
                 return Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -55,7 +69,7 @@ class CategorySection extends StatelessWidget {
                       Icon(Icons.error_outline, size: 32, color: Colors.grey),
                       const SizedBox(height: 8),
                       Text(
-                        'Error al cargar rubros',
+                        'Error al cargar categorías',
                         style: TextStyle(color: Colors.grey, fontSize: 12),
                       ),
                     ],
@@ -63,14 +77,14 @@ class CategorySection extends StatelessWidget {
                 );
               }
 
-              if (state is RubrosLoaded) {
-                // Tomar solo los primeros 5 rubros para mostrar en el home
-                final rubros = state.rubros.take(5).toList();
+              if (state is CategoriasLoaded) {
+                // Tomar solo las primeras 5 categorías para mostrar en el home
+                final categorias = state.categorias.take(5).toList();
 
-                if (rubros.isEmpty) {
+                if (categorias.isEmpty) {
                   return Center(
                     child: Text(
-                      'No hay rubros disponibles',
+                      'No hay categorías disponibles',
                       style: TextStyle(color: Colors.grey, fontSize: 12),
                     ),
                   );
@@ -78,49 +92,49 @@ class CategorySection extends StatelessWidget {
 
                 return ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: rubros.length,
+                  itemCount: categorias.length,
                   itemBuilder: (context, index) {
-                    final rubro = rubros[index];
+                    final categoria = categorias[index];
                     return Container(
                       width: 80,
                       margin: const EdgeInsets.only(right: 16),
                       child: GestureDetector(
-                        onTap: () => _navigateToRubro(context, rubro),
+                        onTap: () => _navigateToCategoria(context, categoria),
                         child: Column(
                           children: [
                             Container(
                               width: 60,
                               height: 50,
                               decoration: BoxDecoration(
-                                color:
-                                    index < 2
-                                        ? theme.colorScheme.primary.withOpacity(
-                                          0.1,
-                                        )
-                                        : theme.cardColor,
+                                color: Color(
+                                  int.parse(
+                                    categoria.color.replaceFirst('#', '0xFF'),
+                                  ),
+                                ).withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
-                                  color:
-                                      index < 2
-                                          ? theme.colorScheme.primary
-                                          : theme.colorScheme.outline
-                                              .withOpacity(0.3),
+                                  color: Color(
+                                    int.parse(
+                                      categoria.color.replaceFirst('#', '0xFF'),
+                                    ),
+                                  ),
                                 ),
                               ),
                               child: Center(
                                 child: Icon(
-                                  _getIconData(rubro.icono),
+                                  _getIconData(categoria.icon),
                                   size: 24,
-                                  color:
-                                      index < 2
-                                          ? theme.colorScheme.primary
-                                          : theme.textTheme.bodyMedium?.color,
+                                  color: Color(
+                                    int.parse(
+                                      categoria.color.replaceFirst('#', '0xFF'),
+                                    ),
+                                  ),
                                 ),
                               ),
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              rubro.nombre,
+                              categoria.name,
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w500,
@@ -147,28 +161,34 @@ class CategorySection extends StatelessWidget {
     );
   }
 
-  void _navigateToRubro(BuildContext context, Rubro rubro) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (context) => CategoriasPage(rubro: rubro)),
-    );
+  void _navigateToCategoria(BuildContext context, Categoria categoria) {
+    // TODO: Navegar a la página de productos de la categoría
+    // Navigator.of(context).push(
+    //   MaterialPageRoute(builder: (context) => ProductosPage(categoria: categoria)),
+    // );
   }
 
-  void _navigateToAllRubros(BuildContext context) {
-    Navigator.of(
-      context,
-    ).push(MaterialPageRoute(builder: (context) => const RubrosPage()));
+  void _navigateToAllCategorias(BuildContext context) {
+    // TODO: Navegar a la página de todas las categorías
+    // Navigator.of(context).push(
+    //   MaterialPageRoute(builder: (context) => const CategoriasPage()),
+    // );
   }
 
   IconData _getIconData(String iconName) {
     switch (iconName) {
-      case 'car_repair':
-        return Icons.car_repair;
-      case 'directions_car':
-        return Icons.directions_car;
+      case 'restaurant':
+        return Icons.restaurant;
       case 'checkroom':
         return Icons.checkroom;
       case 'devices':
         return Icons.devices;
+      case 'palette':
+        return Icons.palette;
+      case 'home':
+        return Icons.home;
+      case 'build':
+        return Icons.build;
       case 'chair':
         return Icons.chair;
       case 'battery_alert':
