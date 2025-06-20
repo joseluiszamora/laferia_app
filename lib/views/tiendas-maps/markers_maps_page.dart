@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:laferia/core/services/tienda_service.dart';
 import 'package:laferia/maps/custom_cached_tile_provider.dart';
 import 'package:laferia/maps/default_tiles_service.dart';
 import 'package:laferia/maps/map_provider_helper.dart';
 import 'package:laferia/maps/offline_map_config.dart';
 import 'package:laferia/maps/tile_cache_service.dart';
+import 'package:laferia/views/tiendas-maps/components/tienda_info.dart';
+import 'package:laferia/views/tiendas-maps/components/tienda_marker.dart';
 import 'package:laferia/views/tiendas-maps/components/zoom_center_controls.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -36,6 +39,9 @@ class _MarkersMapsPageState extends State<MarkersMapsPage>
   final double _minZoom = 1.0;
   final double _maxZoom = 19.0;
 
+  // Lista de markers de ejemplo
+  late List<Marker> _markers;
+
   @override
   void initState() {
     super.initState();
@@ -46,7 +52,40 @@ class _MarkersMapsPageState extends State<MarkersMapsPage>
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
+    _initializeMarkers();
     _initializeMap();
+  }
+
+  void _initializeMarkers() {
+    _markers =
+        TiendaService.obtenerTiendas.map((tienda) {
+          return Marker(
+            point: LatLng(tienda.ubicacion.lat, tienda.ubicacion.lng),
+            width: 60,
+            height: 60,
+            child: TiendaMarker(
+              icon: tienda.iconoPorRubro,
+              color: tienda.colorPorRubro,
+              label: tienda.nombre,
+              onTap:
+                  () => _showMarkerInfo(
+                    tienda.nombre,
+                    tienda.rubroPrincipal,
+                    tienda.colorPorRubro,
+                  ),
+            ),
+          );
+        }).toList();
+  }
+
+  void _showMarkerInfo(String title, String description, Color color) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder:
+          (context) =>
+              TiendaInfo(title: title, description: description, color: color),
+    );
   }
 
   @override
@@ -129,7 +168,7 @@ class _MarkersMapsPageState extends State<MarkersMapsPage>
                         }
                       },
                     ),
-                    children: [_buildTileLayer()],
+                    children: [_buildTileLayer(), _buildMarkersLayer()],
                   ),
                   // Controles de zoom in/out y centrado
                   widget.showControls
@@ -186,5 +225,9 @@ class _MarkersMapsPageState extends State<MarkersMapsPage>
       maxZoom: _maxZoom,
       minZoom: _minZoom,
     );
+  }
+
+  Widget _buildMarkersLayer() {
+    return MarkerLayer(markers: _markers);
   }
 }
