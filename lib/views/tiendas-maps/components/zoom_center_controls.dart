@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'location_button.dart';
 
 class ZoomCenterControls extends StatelessWidget {
   const ZoomCenterControls({
@@ -6,11 +7,13 @@ class ZoomCenterControls extends StatelessWidget {
     required this.zoomIn,
     required this.zoomOut,
     required this.onCenter,
+    this.onLocationFound,
   });
 
   final Function() zoomIn;
   final Function() zoomOut;
   final Function() onCenter;
+  final VoidCallback? onLocationFound;
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +72,8 @@ class ZoomCenterControls extends StatelessWidget {
             onPressed: onCenter,
           ),
         ),
+        const SizedBox(height: 8),
+        LocationButton(onLocationFound: onLocationFound),
       ],
     );
   }
