@@ -3,6 +3,7 @@ import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:laferia/core/layouts/layout_main.dart';
 import 'package:laferia/core/providers/theme_provider.dart';
 import 'package:laferia/core/constants/app_colors.dart';
+import 'package:laferia/core/services/tienda_service.dart';
 import 'package:laferia/views/categorias/categorias_page.dart';
 import 'package:laferia/views/design/design_pages.dart';
 import 'package:laferia/views/home/home_page.dart';
@@ -49,6 +50,7 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
         showControls: true,
         defaultCenter: LatLng(-16.4953, -68.1700),
         initialZoom: 15.0,
+        tiendasMarkers: TiendaService.obtenerTiendas,
       ),
       const DesignPagesPage(),
     ];

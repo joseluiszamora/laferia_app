@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:laferia/core/services/tienda_service.dart';
+import 'package:laferia/core/models/tienda.dart';
 import 'package:laferia/maps/custom_cached_tile_provider.dart';
 import 'package:laferia/maps/default_tiles_service.dart';
 import 'package:laferia/maps/map_provider_helper.dart';
@@ -17,11 +17,13 @@ class MarkersMapsPage extends StatefulWidget {
     required this.showControls,
     required this.defaultCenter,
     required this.initialZoom,
+    required this.tiendasMarkers,
   });
 
   final bool showControls;
   final LatLng defaultCenter;
   final double initialZoom;
+  final List<Tienda> tiendasMarkers;
 
   @override
   State<MarkersMapsPage> createState() => _MarkersMapsPageState();
@@ -58,7 +60,7 @@ class _MarkersMapsPageState extends State<MarkersMapsPage>
 
   void _initializeMarkers() {
     _markers =
-        TiendaService.obtenerTiendas.map((tienda) {
+        widget.tiendasMarkers.map((tienda) {
           return Marker(
             point: LatLng(tienda.ubicacion.lat, tienda.ubicacion.lng),
             width: 60,
@@ -67,24 +69,22 @@ class _MarkersMapsPageState extends State<MarkersMapsPage>
               icon: tienda.iconoPorRubro,
               color: tienda.colorPorRubro,
               label: tienda.nombre,
-              onTap:
-                  () => _showMarkerInfo(
-                    tienda.nombre,
-                    tienda.rubroPrincipal,
-                    tienda.colorPorRubro,
-                  ),
+              onTap: () => _showMarkerInfo(tienda),
             ),
           );
         }).toList();
   }
 
-  void _showMarkerInfo(String title, String description, Color color) {
+  void _showMarkerInfo(Tienda tienda) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       builder:
-          (context) =>
-              TiendaInfo(title: title, description: description, color: color),
+          (context) => TiendaInfo(
+            title: tienda.nombre,
+            description: tienda.horarioAtencion,
+            color: tienda.colorPorRubro,
+          ),
     );
   }
 
