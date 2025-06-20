@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:laferia/core/blocs/location/location.dart';
 import 'package:laferia/core/models/tienda.dart';
 import 'package:laferia/maps/custom_cached_tile_provider.dart';
 import 'package:laferia/maps/default_tiles_service.dart';
@@ -8,6 +10,7 @@ import 'package:laferia/maps/offline_map_config.dart';
 import 'package:laferia/maps/tile_cache_service.dart';
 import 'package:laferia/views/tiendas-maps/components/tienda_info.dart';
 import 'package:laferia/views/tiendas-maps/components/tienda_marker.dart';
+import 'package:laferia/location/user_location_marker.dart';
 import 'package:laferia/views/tiendas-maps/components/zoom_center_controls.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -43,6 +46,7 @@ class _MarkersMapsPageState extends State<MarkersMapsPage>
 
   // Lista de markers de ejemplo
   late List<Marker> _markers;
+  Marker? _userLocationMarker;
 
   @override
   void initState() {
@@ -86,6 +90,48 @@ class _MarkersMapsPageState extends State<MarkersMapsPage>
             color: tienda.colorPorRubro,
           ),
     );
+  }
+
+  void _updateUserLocationMarker(LatLng position, {double accuracy = 0.0}) {
+    setState(() {
+      _userLocationMarker = Marker(
+        point: position,
+        width: 60,
+        height: 60,
+        child: UserLocationMarker(
+          size: 20,
+          accuracy: accuracy,
+          onTap: () => _centerOnUserLocation(),
+        ),
+      );
+    });
+  }
+
+  void _centerOnUserLocation() {
+    final locationBloc = context.read<LocationBloc>();
+    final locationState = locationBloc.state;
+
+    if (locationState is LocationLoaded) {
+      final userLocation = LatLng(
+        locationState.position.latitude,
+        locationState.position.longitude,
+      );
+      mapController.move(userLocation, 16.0);
+      setState(() {
+        _currentCenter = userLocation;
+        _currentZoom = 16.0;
+      });
+    } else if (locationState is LocationTracking) {
+      final userLocation = LatLng(
+        locationState.currentPosition.latitude,
+        locationState.currentPosition.longitude,
+      );
+      mapController.move(userLocation, 16.0);
+      setState(() {
+        _currentCenter = userLocation;
+        _currentZoom = 16.0;
+      });
+    }
   }
 
   @override
@@ -146,55 +192,79 @@ class _MarkersMapsPageState extends State<MarkersMapsPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body:
-          _isLoading
-              ? _mapLoading()
-              : Stack(
-                children: [
-                  FlutterMap(
-                    mapController: mapController,
-                    options: MapOptions(
-                      initialCenter: widget.defaultCenter,
-                      initialZoom: _currentZoom,
-                      minZoom: _minZoom,
-                      maxZoom: _maxZoom,
-                      onPositionChanged: (position, hasGesture) {
-                        if (hasGesture) {
-                          setState(() {
-                            _currentCenter = position.center;
-                            _currentZoom = position.zoom;
-                          });
-                        }
-                      },
+    return BlocListener<LocationBloc, LocationState>(
+      listener: (context, state) {
+        if (state is LocationLoaded) {
+          final userLocation = LatLng(
+            state.position.latitude,
+            state.position.longitude,
+          );
+          _updateUserLocationMarker(
+            userLocation,
+            accuracy: state.position.accuracy,
+          );
+        } else if (state is LocationTracking) {
+          final userLocation = LatLng(
+            state.currentPosition.latitude,
+            state.currentPosition.longitude,
+          );
+          _updateUserLocationMarker(
+            userLocation,
+            accuracy: state.currentPosition.accuracy,
+          );
+        }
+      },
+      child: Scaffold(
+        body:
+            _isLoading
+                ? _mapLoading()
+                : Stack(
+                  children: [
+                    FlutterMap(
+                      mapController: mapController,
+                      options: MapOptions(
+                        initialCenter: widget.defaultCenter,
+                        initialZoom: _currentZoom,
+                        minZoom: _minZoom,
+                        maxZoom: _maxZoom,
+                        onPositionChanged: (position, hasGesture) {
+                          if (hasGesture) {
+                            setState(() {
+                              _currentCenter = position.center;
+                              _currentZoom = position.zoom;
+                            });
+                          }
+                        },
+                      ),
+                      children: [_buildTileLayer(), _buildMarkersLayer()],
                     ),
-                    children: [_buildTileLayer(), _buildMarkersLayer()],
-                  ),
-                  // Controles de zoom in/out y centrado
-                  widget.showControls
-                      ? Positioned(
-                        bottom: 16,
-                        right: 16,
-                        child: AnimatedBuilder(
-                          animation: _controlsAnimationController,
-                          builder: (context, child) {
-                            return Transform.scale(
-                              scale: _controlsAnimationController.value,
-                              child: Opacity(
-                                opacity: _controlsAnimationController.value,
-                                child: ZoomCenterControls(
-                                  zoomIn: _zoomIn,
-                                  zoomOut: _zoomOut,
-                                  onCenter: _centerOnDefault,
+                    // Controles de zoom in/out y centrado
+                    widget.showControls
+                        ? Positioned(
+                          bottom: 16,
+                          right: 16,
+                          child: AnimatedBuilder(
+                            animation: _controlsAnimationController,
+                            builder: (context, child) {
+                              return Transform.scale(
+                                scale: _controlsAnimationController.value,
+                                child: Opacity(
+                                  opacity: _controlsAnimationController.value,
+                                  child: ZoomCenterControls(
+                                    zoomIn: _zoomIn,
+                                    zoomOut: _zoomOut,
+                                    onCenter: _centerOnDefault,
+                                    onLocationFound: _centerOnUserLocation,
+                                  ),
                                 ),
-                              ),
-                            );
-                          },
-                        ),
-                      )
-                      : SizedBox.shrink(),
-                ],
-              ),
+                              );
+                            },
+                          ),
+                        )
+                        : SizedBox.shrink(),
+                  ],
+                ),
+      ),
     );
   }
 
@@ -228,6 +298,10 @@ class _MarkersMapsPageState extends State<MarkersMapsPage>
   }
 
   Widget _buildMarkersLayer() {
-    return MarkerLayer(markers: _markers);
+    final allMarkers = <Marker>[..._markers];
+    if (_userLocationMarker != null) {
+      allMarkers.add(_userLocationMarker!);
+    }
+    return MarkerLayer(markers: allMarkers);
   }
 }
