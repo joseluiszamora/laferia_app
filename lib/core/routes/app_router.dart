@@ -17,12 +17,14 @@ import 'package:laferia/views/design/profile_page.dart';
 import 'package:laferia/views/design/payment_methods_page.dart';
 import 'package:laferia/views/design/order_history_page.dart';
 import 'package:laferia/views/tienda/tienda_list_page.dart';
+import 'package:laferia/views/tiendas-maps/tiendas_maps_page.dart';
 
 import 'app_routes.dart';
 
 GoRouter appRouter() => GoRouter(
   // Cambiar initialLocation a la página de diseño
-  initialLocation: AppRoutes.splash,
+  // initialLocation: AppRoutes.splash,
+  initialLocation: AppRoutes.navigation,
   routes: publicRoutes(),
   redirect: (context, state) {
     final isSplashRoute = state.matchedLocation == AppRoutes.splash;

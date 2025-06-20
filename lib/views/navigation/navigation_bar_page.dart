@@ -10,6 +10,8 @@ import 'package:laferia/views/home/home_page_with_map.dart';
 import 'package:laferia/views/maps/main_map.dart';
 import 'package:laferia/views/navigation/components/header_section.dart';
 import 'package:laferia/views/rubros/rubros_page.dart';
+import 'package:laferia/views/tiendas-maps/tiendas_maps_page.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
 
@@ -21,7 +23,7 @@ class NavigationBarPage extends StatefulWidget {
 }
 
 class _NavigationBarPageState extends State<NavigationBarPage> {
-  int _pageSelected = 2;
+  int _pageSelected = 3;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -36,7 +38,12 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
       const HomePage(),
       // const OfertasPage(),
       // const MapsPage(),
-      const MainMap(),
+      // const MainMap(),
+      TiendasMapsPage(
+        showControls: true,
+        defaultCenter: LatLng(-16.4953, -68.1700),
+        initialZoom: 15.0,
+      ),
       const DesignPagesPage(),
     ];
 
