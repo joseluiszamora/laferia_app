@@ -295,11 +295,6 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      TextButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: const Text('Cancelar'),
-                      ),
-                      const SizedBox(width: 12),
                       ElevatedButton(
                         onPressed: _submitForm,
                         style: ElevatedButton.styleFrom(
@@ -307,6 +302,11 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
                           foregroundColor: Colors.white,
                         ),
                         child: Text(isEditing ? 'Actualizar' : 'Crear'),
+                      ),
+                      const SizedBox(width: 12),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text('Cancelar'),
                       ),
                     ],
                   ),
