@@ -2,23 +2,23 @@ import 'package:equatable/equatable.dart';
 
 class Categoria extends Equatable {
   final String id;
-  final String parentId;
+  final String? parentId;
   final String name;
   final String slug;
-  final String description;
-  final String icon;
-  final String color;
+  final String? description;
+  final String? icon;
+  final String? color;
   final String? imageUrl;
   final DateTime? createdAt;
 
   const Categoria({
     required this.id,
-    required this.parentId,
+    this.parentId,
     required this.name,
     required this.slug,
-    required this.description,
-    required this.icon,
-    required this.color,
+    this.description,
+    this.icon,
+    this.color,
     this.imageUrl,
     this.createdAt,
     this.subcategorias = const [],
@@ -66,4 +66,31 @@ class Categoria extends Equatable {
 
   /// Indica si la categoría está activa
   bool get activa => true;
+
+  /// Copia la categoría con nuevos valores
+  Categoria copyWith({
+    String? id,
+    String? parentId,
+    String? name,
+    String? slug,
+    String? description,
+    String? icon,
+    String? color,
+    String? imageUrl,
+    DateTime? createdAt,
+    List<Categoria>? subcategorias,
+  }) {
+    return Categoria(
+      id: id ?? this.id,
+      parentId: parentId ?? this.parentId,
+      name: name ?? this.name,
+      slug: slug ?? this.slug,
+      description: description ?? this.description,
+      icon: icon ?? this.icon,
+      color: color ?? this.color,
+      imageUrl: imageUrl ?? this.imageUrl,
+      createdAt: createdAt ?? this.createdAt,
+      subcategorias: subcategorias ?? this.subcategorias,
+    );
+  }
 }

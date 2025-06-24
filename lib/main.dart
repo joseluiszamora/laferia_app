@@ -12,12 +12,20 @@ import 'package:laferia/core/routes/app_router.dart';
 import 'package:laferia/core/themes/design_theme.dart';
 import 'package:laferia/maps/tile_cache_service.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await TileCacheService.instance.initialize();
 
   serviceLocatorInit();
+
+  await Supabase.initialize(
+    url: 'https://afjxzqifefsurzounxxq.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmanh6cWlmZWZzdXJ6b3VueHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5NDA5NTcsImV4cCI6MjA2NDUxNjk1N30.bJgDduYAg7Wb7_EfPtEDc-dCU4oJOPKB6Kr-sZCc54U',
+  );
+
   runApp(
     MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => ThemeProvider())],
