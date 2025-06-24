@@ -21,6 +21,8 @@ class CategoriasLoaded extends CategoriasState {
   final String? terminoBusqueda;
   final String? tipoFiltro; // 'todas', 'principales', 'subcategorias'
   final String? estadoFiltro; // 'activas', 'inactivas', 'todas'
+  final String?
+  categoriaPrincipalFiltro; // ID de categoría principal para filtrar subcategorías
 
   const CategoriasLoaded({
     required this.categorias,
@@ -31,6 +33,7 @@ class CategoriasLoaded extends CategoriasState {
     this.terminoBusqueda,
     this.tipoFiltro = 'todas',
     this.estadoFiltro = 'activas',
+    this.categoriaPrincipalFiltro,
   });
 
   CategoriasLoaded copyWith({
@@ -42,8 +45,10 @@ class CategoriasLoaded extends CategoriasState {
     String? terminoBusqueda,
     String? tipoFiltro,
     String? estadoFiltro,
+    String? categoriaPrincipalFiltro,
     bool clearCategoriaParaEditar = false,
     bool clearTerminoBusqueda = false,
+    bool clearCategoriaPrincipalFiltro = false,
   }) {
     return CategoriasLoaded(
       categorias: categorias ?? this.categorias,
@@ -60,6 +65,10 @@ class CategoriasLoaded extends CategoriasState {
               : (terminoBusqueda ?? this.terminoBusqueda),
       tipoFiltro: tipoFiltro ?? this.tipoFiltro,
       estadoFiltro: estadoFiltro ?? this.estadoFiltro,
+      categoriaPrincipalFiltro:
+          clearCategoriaPrincipalFiltro
+              ? null
+              : (categoriaPrincipalFiltro ?? this.categoriaPrincipalFiltro),
     );
   }
 
@@ -90,6 +99,24 @@ class CategoriasLoaded extends CategoriasState {
     }
     // Para 'activas' (default), mantener todas ya que todas están activas
 
+    // Aplicar filtro por categoría principal (mostrar solo sus subcategorías)
+    if (categoriaPrincipalFiltro != null &&
+        categoriaPrincipalFiltro!.isNotEmpty) {
+      resultado =
+          resultado.where((cat) {
+            // Mostrar la categoría principal seleccionada
+            if (cat.id == categoriaPrincipalFiltro) {
+              return true;
+            }
+            // Mostrar todas las subcategorías que pertenecen a esta categoría principal
+            return _perteneceACategoriaPrincipal(
+              cat,
+              categoriaPrincipalFiltro!,
+              todasLasCategorias,
+            );
+          }).toList();
+    }
+
     // Aplicar filtro de búsqueda
     if (terminoBusqueda != null && terminoBusqueda!.isNotEmpty) {
       resultado =
@@ -104,6 +131,40 @@ class CategoriasLoaded extends CategoriasState {
     return resultado;
   }
 
+  // Método auxiliar para verificar si una categoría pertenece a una categoría principal
+  bool _perteneceACategoriaPrincipal(
+    Categoria categoria,
+    String categoriaPrincipalId,
+    List<Categoria> todasLasCategorias,
+  ) {
+    if (categoria.parentId == null || categoria.parentId!.isEmpty) {
+      return false; // Es una categoría principal, no una subcategoría
+    }
+
+    // Verificar si es hija directa
+    if (categoria.parentId == categoriaPrincipalId) {
+      return true;
+    }
+
+    // Verificar si es hija indirecta (nieta, bisnieta, etc.)
+    String? currentParentId = categoria.parentId;
+    while (currentParentId != null && currentParentId.isNotEmpty) {
+      if (currentParentId == categoriaPrincipalId) {
+        return true;
+      }
+
+      final parent = todasLasCategorias.firstWhere(
+        (cat) => cat.id == currentParentId,
+        orElse: () => const Categoria(id: '', name: '', slug: ''),
+      );
+
+      if (parent.id.isEmpty) break;
+      currentParentId = parent.parentId;
+    }
+
+    return false;
+  }
+
   @override
   List<Object?> get props => [
     categorias,
@@ -114,6 +175,7 @@ class CategoriasLoaded extends CategoriasState {
     terminoBusqueda,
     tipoFiltro,
     estadoFiltro,
+    categoriaPrincipalFiltro,
   ];
 }
 

@@ -93,10 +93,14 @@ class CategoriasBloc extends Bloc<CategoriasEvent, CategoriasState> {
   ) {
     if (state is CategoriasLoaded) {
       final currentState = state as CategoriasLoaded;
-      final categoria = currentState.categorias.firstWhere(
-        (cat) => cat.id == event.categoriaId,
+
+      // Crear nuevo estado con la categoría principal para filtrar
+      final nuevoEstado = currentState.copyWith(
+        categoriaPrincipalFiltro: event.categoriaId,
       );
-      emit(currentState.copyWith(selectedCategoria: categoria));
+
+      // Emitir con las categorías filtradas calculadas dinámicamente
+      emit(nuevoEstado.copyWith(categorias: nuevoEstado.categoriasFiltradas));
     }
   }
 
@@ -203,6 +207,8 @@ class CategoriasBloc extends Bloc<CategoriasEvent, CategoriasState> {
       final nuevoEstado = currentState.copyWith(
         tipoFiltro: event.tipoFiltro ?? currentState.tipoFiltro,
         estadoFiltro: event.estadoFiltro ?? currentState.estadoFiltro,
+        clearCategoriaPrincipalFiltro:
+            true, // Limpiar filtro de categoría principal
       );
 
       // Emitir con las categorías filtradas calculadas dinámicamente
@@ -220,6 +226,7 @@ class CategoriasBloc extends Bloc<CategoriasEvent, CategoriasState> {
         estadoFiltro: 'activas',
         terminoBusqueda: '',
         clearTerminoBusqueda: true,
+        clearCategoriaPrincipalFiltro: true,
       );
 
       // Emitir con todas las categorías (sin filtros)
