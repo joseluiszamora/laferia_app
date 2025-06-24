@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:laferia/core/services/categoria_service.dart';
 import '../../../core/blocs/categorias/categorias_bloc.dart';
 import '../../../core/blocs/categorias/categorias_event.dart';
 import '../../../core/blocs/categorias/categorias_state.dart';
@@ -182,43 +183,12 @@ class _CategorySectionState extends State<CategorySection> {
   }
 
   IconData _getIconData(String iconName) {
-    switch (iconName) {
-      case 'restaurant':
-        return Icons.restaurant;
-      case 'checkroom':
-        return Icons.checkroom;
-      case 'devices':
-        return Icons.devices;
-      case 'palette':
-        return Icons.palette;
-      case 'home':
-        return Icons.home;
-      case 'build':
-        return Icons.build;
-      case 'chair':
-        return Icons.chair;
-      case 'battery_alert':
-        return Icons.battery_alert;
-      case 'disc_full':
-        return Icons.disc_full;
-      case 'tire_repair':
-        return Icons.tire_repair;
-      case 'motorcycle':
-        return Icons.motorcycle;
-      case 'new_releases':
-        return Icons.new_releases;
-      case 'recycling':
-        return Icons.recycling;
-      case 'smartphone':
-        return Icons.smartphone;
-      case 'computer':
-        return Icons.computer;
-      case 'weekend':
-        return Icons.weekend;
-      case 'kitchen':
-        return Icons.kitchen;
-      default:
-        return Icons.category;
-    }
+    final selectedIconData =
+        CategoriaService.availableIcons.firstWhere(
+          (icon) => icon['name'] == (iconName),
+          orElse: () => CategoriaService.availableIcons.first,
+        )['icon'];
+
+    return selectedIconData ?? Icons.category;
   }
 }
