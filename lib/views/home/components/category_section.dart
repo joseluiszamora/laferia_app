@@ -80,7 +80,7 @@ class _CategorySectionState extends State<CategorySection> {
 
               if (state is CategoriasLoaded) {
                 // Tomar solo las primeras 5 categorías para mostrar en el home
-                final categorias = state.categorias.take(5).toList();
+                final categorias = state.categorias.take(10).toList();
 
                 if (categorias.isEmpty) {
                   return Center(

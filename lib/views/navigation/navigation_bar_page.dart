@@ -36,8 +36,7 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
     //* Pages List
     List<Widget> pages = [
       const HomePageWithMap(),
-      // const CategoriasPage(),
-      const AdminDemoPage(),
+      const CategoriasPage(),
       // const TiendaListPage(),
       const HomePage(),
       // const OfertasPage(),
@@ -55,9 +54,17 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
         tiendasMarkers: TiendaService.obtenerTiendas,
       ),
       const DesignPagesPage(),
+      const AdminDemoPage(),
     ];
 
-    List<String> titles = ['Categorías', 'Ofertas', 'Inicio', 'Mapa', 'UI'];
+    List<String> titles = [
+      'Categorías',
+      'Ofertas',
+      'Inicio',
+      'Mapa',
+      'UI',
+      'Admin',
+    ];
 
     return Scaffold(
       key: _scaffoldKey,
@@ -107,6 +114,7 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
                 GButton(icon: LineIcons.home, text: 'Inicio'),
                 GButton(icon: LineIcons.map, text: 'Mapa'),
                 GButton(icon: LineIcons.photoVideo, text: 'UI'),
+                GButton(icon: Icons.admin_panel_settings, text: 'Admin'),
               ],
               selectedIndex: _pageSelected,
               onTabChange: (index) {
