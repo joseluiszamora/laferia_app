@@ -123,185 +123,197 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final dialogWidth = (screenWidth * 0.9).clamp(300.0, 600.0);
+
     return Dialog(
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.9,
-        constraints: const BoxConstraints(maxWidth: 600, maxHeight: 700),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Header
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: Colors.blueGrey[700],
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(8),
+      insetPadding: const EdgeInsets.all(16),
+      child: SizedBox(
+        width: dialogWidth,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxHeight: 700, minHeight: 300),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Header
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey[700],
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(8),
+                  ),
                 ),
-              ),
-              child: Row(
-                children: [
-                  Icon(isEditing ? Icons.edit : Icons.add, color: Colors.white),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      isEditing
-                          ? 'Editar Categoría'
-                          : isCreatingSubcategory
-                          ? 'Nueva Subcategoría'
-                          : 'Nueva Categoría',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                child: Row(
+                  children: [
+                    Icon(
+                      isEditing ? Icons.edit : Icons.add,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        isEditing
+                            ? 'Editar Categoría'
+                            : isCreatingSubcategory
+                            ? 'Nueva Subcategoría'
+                            : 'Nueva Categoría',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.close, color: Colors.white),
-                  ),
-                ],
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.close, color: Colors.white),
+                    ),
+                  ],
+                ),
               ),
-            ),
 
-            // Form
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Nombre
-                      TextFormField(
-                        controller: _nameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Nombre de la categoría *',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.label),
+              // Form
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Nombre
+                        TextFormField(
+                          controller: _nameController,
+                          decoration: const InputDecoration(
+                            labelText: 'Nombre de la categoría *',
+                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.label),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'El nombre es requerido';
+                            }
+                            return null;
+                          },
                         ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'El nombre es requerido';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
+                        const SizedBox(height: 16),
 
-                      // Slug
-                      TextFormField(
-                        controller: _slugController,
-                        decoration: const InputDecoration(
-                          labelText: 'Slug (URL amigable) *',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.link),
-                          helperText: 'Usado en URLs, debe ser único',
+                        // Slug
+                        TextFormField(
+                          controller: _slugController,
+                          decoration: const InputDecoration(
+                            labelText: 'Slug (URL amigable) *',
+                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.link),
+                            helperText: 'Usado en URLs, debe ser único',
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'El slug es requerido';
+                            }
+                            if (!RegExp(r'^[a-z0-9\-]+$').hasMatch(value)) {
+                              return 'Solo letras minúsculas, números y guiones';
+                            }
+                            return null;
+                          },
                         ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'El slug es requerido';
-                          }
-                          if (!RegExp(r'^[a-z0-9\-]+$').hasMatch(value)) {
-                            return 'Solo letras minúsculas, números y guiones';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
+                        const SizedBox(height: 16),
 
-                      // Descripción
-                      TextFormField(
-                        controller: _descriptionController,
-                        maxLines: 3,
-                        decoration: const InputDecoration(
-                          labelText: 'Descripción *',
-                          border: OutlineInputBorder(),
-                          prefixIcon: Icon(Icons.description),
+                        // Descripción
+                        TextFormField(
+                          controller: _descriptionController,
+                          maxLines: 3,
+                          decoration: const InputDecoration(
+                            labelText: 'Descripción *',
+                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.description),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.trim().isEmpty) {
+                              return 'La descripción es requerida';
+                            }
+                            return null;
+                          },
                         ),
-                        validator: (value) {
-                          if (value == null || value.trim().isEmpty) {
-                            return 'La descripción es requerida';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
+                        const SizedBox(height: 16),
 
-                      // Categoría padre (solo si no es subcategoría)
-                      if (!isCreatingSubcategory) ...[
+                        // Categoría padre (solo si no es subcategoría)
+                        if (!isCreatingSubcategory) ...[
+                          const Text(
+                            'Categoría Padre',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          _buildParentSelector(),
+                          const SizedBox(height: 16),
+                        ],
+
+                        // Selector de icono
                         const Text(
-                          'Categoría Padre',
+                          'Icono',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
                         const SizedBox(height: 8),
-                        _buildParentSelector(),
+                        _buildIconSelector(),
                         const SizedBox(height: 16),
+
+                        // Selector de color
+                        const Text(
+                          'Color',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        _buildColorSelector(),
+                        const SizedBox(height: 24),
+
+                        // Preview
+                        _buildPreview(),
                       ],
+                    ),
+                  ),
+                ),
+              ),
 
-                      // Selector de icono
-                      const Text(
-                        'Icono',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
+              // Actions
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  border: Border(top: BorderSide(color: Colors.grey[300]!)),
+                ),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: const Text('Cancelar'),
                       ),
-                      const SizedBox(height: 8),
-                      _buildIconSelector(),
-                      const SizedBox(height: 16),
-
-                      // Selector de color
-                      const Text(
-                        'Color',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
+                      const SizedBox(width: 12),
+                      ElevatedButton(
+                        onPressed: _submitForm,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.blueGrey[700],
+                          foregroundColor: Colors.white,
                         ),
+                        child: Text(isEditing ? 'Actualizar' : 'Crear'),
                       ),
-                      const SizedBox(height: 8),
-                      _buildColorSelector(),
-                      const SizedBox(height: 24),
-
-                      // Preview
-                      _buildPreview(),
                     ],
                   ),
                 ),
               ),
-            ),
-
-            // Actions
-            Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                border: Border(top: BorderSide(color: Colors.grey[300]!)),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Cancelar'),
-                  ),
-                  const SizedBox(width: 12),
-                  ElevatedButton(
-                    onPressed: _submitForm,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueGrey[700],
-                      foregroundColor: Colors.white,
-                    ),
-                    child: Text(isEditing ? 'Actualizar' : 'Crear'),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -312,7 +324,9 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
       builder: (context, state) {
         if (state is CategoriasLoaded) {
           final categoriasPrincipales =
-              state.categorias.where((cat) => cat.parentId == '0').toList();
+              state.categorias
+                  .where((cat) => cat.parentId == null || cat.parentId!.isEmpty)
+                  .toList();
 
           return DropdownButtonFormField<String>(
             value: _selectedParentId,
@@ -322,7 +336,7 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
             ),
             items: [
               const DropdownMenuItem(
-                value: '0',
+                value: null,
                 child: Text('Categoría Principal'),
               ),
               ...categoriasPrincipales.map((categoria) {
@@ -334,7 +348,7 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
             ],
             onChanged: (value) {
               setState(() {
-                _selectedParentId = value!;
+                _selectedParentId = value;
               });
             },
           );
@@ -347,6 +361,7 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
   Widget _buildIconSelector() {
     return Container(
       height: 120,
+      width: double.infinity,
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey[300]!),
         borderRadius: BorderRadius.circular(8),
@@ -390,8 +405,9 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
   }
 
   Widget _buildColorSelector() {
-    return Container(
+    return SizedBox(
       height: 60,
+      width: double.infinity,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         itemCount: _availableColors.length,

@@ -30,12 +30,6 @@ class CategoriasBloc extends Bloc<CategoriasEvent, CategoriasState> {
     try {
       final categorias = await SupabaseCategoriaService.getAllCategorias();
 
-      for (var categoria in categorias) {
-        print(
-          '📂 Categoría: ${categoria.name} (ID: ${categoria.id}, ParentID: ${categoria.parentId})',
-        );
-      }
-
       emit(CategoriasLoaded(categorias: categorias));
     } catch (e) {
       emit(CategoriasError('Error al cargar las categorías: $e'));
