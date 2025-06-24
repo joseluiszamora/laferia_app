@@ -27,7 +27,7 @@ class _AdminCategoriasPageState extends State<AdminCategoriasPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Administrar Categorías'),
-        backgroundColor: Colors.blueGrey[700],
+        backgroundColor: Colors.blue[700],
         foregroundColor: Colors.white,
         elevation: 0,
         actions: [

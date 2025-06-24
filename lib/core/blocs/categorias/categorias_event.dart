@@ -123,6 +123,21 @@ class BuscarCategorias extends CategoriasEvent {
   List<Object> get props => [termino];
 }
 
+class AplicarFiltros extends CategoriasEvent {
+  final String? tipoFiltro; // 'todas', 'principales', 'subcategorias'
+  final String? estadoFiltro; // 'activas', 'inactivas', 'todas'
+
+  const AplicarFiltros({this.tipoFiltro, this.estadoFiltro});
+
+  @override
+  List<Object> get props => [
+    if (tipoFiltro != null) tipoFiltro!,
+    if (estadoFiltro != null) estadoFiltro!,
+  ];
+}
+
+class LimpiarFiltros extends CategoriasEvent {}
+
 class LimpiarSeleccion extends CategoriasEvent {}
 
 class SeleccionarParaEditar extends CategoriasEvent {

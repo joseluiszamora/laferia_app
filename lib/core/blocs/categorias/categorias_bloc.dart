@@ -17,6 +17,8 @@ class CategoriasBloc extends Bloc<CategoriasEvent, CategoriasState> {
     on<ActualizarCategoria>(_onActualizarCategoria);
     on<EliminarCategoria>(_onEliminarCategoria);
     on<BuscarCategorias>(_onBuscarCategorias);
+    on<AplicarFiltros>(_onAplicarFiltros);
+    on<LimpiarFiltros>(_onLimpiarFiltros);
     on<LimpiarSeleccion>(_onLimpiarSeleccion);
     on<SeleccionarParaEditar>(_onSeleccionarParaEditar);
   }
@@ -30,7 +32,12 @@ class CategoriasBloc extends Bloc<CategoriasEvent, CategoriasState> {
     try {
       final categorias = await SupabaseCategoriaService.getAllCategorias();
 
-      emit(CategoriasLoaded(categorias: categorias));
+      emit(
+        CategoriasLoaded(
+          categorias: categorias,
+          todasLasCategorias: categorias,
+        ),
+      );
     } catch (e) {
       emit(CategoriasError('Error al cargar las categorías: $e'));
     }
@@ -44,7 +51,12 @@ class CategoriasBloc extends Bloc<CategoriasEvent, CategoriasState> {
 
     try {
       final categorias = await SupabaseCategoriaService.getMainCategorias();
-      emit(CategoriasLoaded(categorias: categorias));
+      emit(
+        CategoriasLoaded(
+          categorias: categorias,
+          todasLasCategorias: categorias,
+        ),
+      );
     } catch (e) {
       emit(CategoriasError('Error al cargar las categorías principales: $e'));
     }
@@ -113,8 +125,8 @@ class CategoriasBloc extends Bloc<CategoriasEvent, CategoriasState> {
       );
       emit(CategoriaCreada(categoriaCreada));
 
-      // Recargar la lista
-      add(LoadCategorias());
+      // Recargar la lista manteniendo filtros
+      _recargarCategorias(emit);
     } catch (e) {
       emit(CategoriaOperacionError('Error al crear la categoría: $e'));
     }
@@ -144,8 +156,8 @@ class CategoriasBloc extends Bloc<CategoriasEvent, CategoriasState> {
           );
       emit(CategoriaActualizada(categoriaGuardada));
 
-      // Recargar la lista
-      add(LoadCategorias());
+      // Recargar la lista manteniendo filtros
+      _recargarCategorias(emit);
     } catch (e) {
       emit(CategoriaOperacionError('Error al actualizar la categoría: $e'));
     }
@@ -161,8 +173,8 @@ class CategoriasBloc extends Bloc<CategoriasEvent, CategoriasState> {
       await SupabaseCategoriaService.eliminarCategoria(event.id);
       emit(CategoriaEliminada(event.id));
 
-      // Recargar la lista
-      add(LoadCategorias());
+      // Recargar la lista manteniendo filtros
+      _recargarCategorias(emit);
     } catch (e) {
       emit(CategoriaOperacionError('Error al eliminar la categoría: $e'));
     }
@@ -175,31 +187,43 @@ class CategoriasBloc extends Bloc<CategoriasEvent, CategoriasState> {
     if (state is CategoriasLoaded) {
       final currentState = state as CategoriasLoaded;
 
-      if (event.termino.isEmpty) {
-        // Si el término está vacío, mostrar todas las categorías
-        try {
-          final categorias = await SupabaseCategoriaService.getAllCategorias();
-          emit(
-            currentState.copyWith(categorias: categorias, terminoBusqueda: ''),
-          );
-        } catch (e) {
-          emit(CategoriaOperacionError('Error al cargar categorías: $e'));
-        }
-      } else {
-        // Buscar categorías que coincidan con el término
-        try {
-          final categoriasFiltradas =
-              await SupabaseCategoriaService.buscarCategorias(event.termino);
-          emit(
-            currentState.copyWith(
-              categorias: categoriasFiltradas,
-              terminoBusqueda: event.termino,
-            ),
-          );
-        } catch (e) {
-          emit(CategoriaOperacionError('Error al buscar categorías: $e'));
-        }
-      }
+      // Crear nuevo estado con término de búsqueda actualizado
+      final nuevoEstado = currentState.copyWith(terminoBusqueda: event.termino);
+
+      // Emitir con las categorías filtradas calculadas dinámicamente
+      emit(nuevoEstado.copyWith(categorias: nuevoEstado.categoriasFiltradas));
+    }
+  }
+
+  void _onAplicarFiltros(AplicarFiltros event, Emitter<CategoriasState> emit) {
+    if (state is CategoriasLoaded) {
+      final currentState = state as CategoriasLoaded;
+
+      // Crear nuevo estado con filtros actualizados
+      final nuevoEstado = currentState.copyWith(
+        tipoFiltro: event.tipoFiltro ?? currentState.tipoFiltro,
+        estadoFiltro: event.estadoFiltro ?? currentState.estadoFiltro,
+      );
+
+      // Emitir con las categorías filtradas calculadas dinámicamente
+      emit(nuevoEstado.copyWith(categorias: nuevoEstado.categoriasFiltradas));
+    }
+  }
+
+  void _onLimpiarFiltros(LimpiarFiltros event, Emitter<CategoriasState> emit) {
+    if (state is CategoriasLoaded) {
+      final currentState = state as CategoriasLoaded;
+
+      // Resetear todos los filtros
+      final nuevoEstado = currentState.copyWith(
+        tipoFiltro: 'todas',
+        estadoFiltro: 'activas',
+        terminoBusqueda: '',
+        clearTerminoBusqueda: true,
+      );
+
+      // Emitir con todas las categorías (sin filtros)
+      emit(nuevoEstado.copyWith(categorias: nuevoEstado.todasLasCategorias));
     }
   }
 
@@ -228,6 +252,28 @@ class CategoriasBloc extends Bloc<CategoriasEvent, CategoriasState> {
         (cat) => cat.id == event.categoriaId,
       );
       emit(currentState.copyWith(categoriaParaEditar: categoria));
+    }
+  }
+
+  // Método auxiliar para recargar categorías manteniendo filtros actuales
+  Future<void> _recargarCategorias(Emitter<CategoriasState> emit) async {
+    if (state is CategoriasLoaded) {
+      final currentState = state as CategoriasLoaded;
+
+      try {
+        final nuevasCategorias =
+            await SupabaseCategoriaService.getAllCategorias();
+
+        // Crear nuevo estado con las categorías actualizadas
+        final nuevoEstado = currentState.copyWith(
+          todasLasCategorias: nuevasCategorias,
+        );
+
+        // Emitir con las categorías filtradas basadas en los filtros actuales
+        emit(nuevoEstado.copyWith(categorias: nuevoEstado.categoriasFiltradas));
+      } catch (e) {
+        emit(CategoriaOperacionError('Error al recargar categorías: $e'));
+      }
     }
   }
 }

@@ -670,6 +670,7 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
               border: OutlineInputBorder(),
               prefixIcon: Icon(Icons.folder),
             ),
+            isExpanded: true, // Esto ayuda a manejar el overflow
             items: [
               const DropdownMenuItem(
                 value: null,
@@ -678,7 +679,11 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
               ...categoriasPrincipales.map((categoria) {
                 return DropdownMenuItem(
                   value: categoria.id,
-                  child: Text(categoria.name),
+                  child: Text(
+                    categoria.name,
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                  ),
                 );
               }),
             ],
