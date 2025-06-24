@@ -545,14 +545,17 @@ class CategoriaService {
   // Obtener solo categorías principales de tiendas (sin subcategorías)
   static List<Categoria> getMainCategorias() {
     return _categorias
-        .where((categoria) => categoria.parentId.isEmpty)
+        .where(
+          (categoria) =>
+              categoria.parentId == null || categoria.parentId!.isEmpty,
+        )
         .toList();
   }
 
   // Obtener solo categorías principales de productos (sin subcategorías)
   static List<Categoria> getMainProductoCategorias() {
     return _categoriasProductos
-        .where((categoria) => categoria.parentId.isEmpty)
+        .where((categoria) => categoria.parentId!.isEmpty)
         .toList();
   }
 }

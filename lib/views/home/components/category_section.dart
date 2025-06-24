@@ -108,25 +108,31 @@ class _CategorySectionState extends State<CategorySection> {
                               decoration: BoxDecoration(
                                 color: Color(
                                   int.parse(
-                                    categoria.color.replaceFirst('#', '0xFF'),
+                                    categoria.color!.replaceFirst('#', '0xFF'),
                                   ),
                                 ).withOpacity(0.1),
                                 borderRadius: BorderRadius.circular(16),
                                 border: Border.all(
                                   color: Color(
                                     int.parse(
-                                      categoria.color.replaceFirst('#', '0xFF'),
+                                      categoria.color!.replaceFirst(
+                                        '#',
+                                        '0xFF',
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
                               child: Center(
                                 child: Icon(
-                                  _getIconData(categoria.icon),
+                                  _getIconData(categoria.icon!),
                                   size: 24,
                                   color: Color(
                                     int.parse(
-                                      categoria.color.replaceFirst('#', '0xFF'),
+                                      categoria.color!.replaceFirst(
+                                        '#',
+                                        '0xFF',
+                                      ),
                                     ),
                                   ),
                                 ),

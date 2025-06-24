@@ -26,11 +26,13 @@ class SupabaseCategoriaService {
       final response = await _supabase
           .from(_tableName)
           .select('*')
-          .filter('parent_category_id', 'is', null)
+          .isFilter('parent_category_id', null)
           .order('name');
 
       final List<dynamic> data = response as List<dynamic>;
-      return data.map((json) => _fromSupabaseJson(json)).toList();
+      final categorias = data.map((json) => _fromSupabaseJson(json)).toList();
+
+      return categorias;
     } catch (e) {
       throw Exception('Error al obtener categorías principales: $e');
     }

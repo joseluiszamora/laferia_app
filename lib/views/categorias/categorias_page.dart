@@ -110,7 +110,7 @@ class CategoriaCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(25),
                       ),
                       child: Icon(
-                        _getIconData(categoria.icon),
+                        _getIconData(categoria.icon!),
                         color: theme.primaryColor,
                         size: 28,
                       ),
@@ -129,7 +129,7 @@ class CategoriaCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            categoria.description,
+                            categoria.description!,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: Colors.grey.shade600,
                             ),
