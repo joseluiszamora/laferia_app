@@ -4,6 +4,7 @@ import 'package:line_icons/line_icons.dart';
 import 'package:laferia/core/blocs/categorias/categorias_bloc.dart';
 import 'package:laferia/core/blocs/categorias/categorias_event.dart';
 import 'package:laferia/core/blocs/categorias/categorias_state.dart';
+import 'package:laferia/core/models/categoria.dart';
 
 class CategoriaFormDialog extends StatefulWidget {
   final String? categoriaId; // Para editar
@@ -659,28 +660,43 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
     return BlocBuilder<CategoriasBloc, CategoriasState>(
       builder: (context, state) {
         if (state is CategoriasLoaded) {
-          final categoriasPrincipales =
+          // Obtener todas las categorías excepto la que se está editando (para evitar ciclos)
+          final categoriasDisponibles =
               state.categorias
-                  .where((cat) => cat.parentId == null || cat.parentId!.isEmpty)
+                  .where(
+                    (cat) => isEditing ? cat.id != widget.categoriaId : true,
+                  )
                   .toList();
+
+          // Ordenar las categorías jerárquicamente para mejor visualización
+          final categoriasOrdenadas = _ordenarCategoriesJerarquicamente(
+            categoriasDisponibles,
+          );
 
           return DropdownButtonFormField<String>(
             value: _selectedParentId,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
               prefixIcon: Icon(Icons.folder),
+              labelText: 'Categoría Padre',
             ),
-            isExpanded: true, // Esto ayuda a manejar el overflow
+            isExpanded: true,
             items: [
               const DropdownMenuItem(
                 value: null,
                 child: Text('Categoría Principal'),
               ),
-              ...categoriasPrincipales.map((categoria) {
+              ...categoriasOrdenadas.map((categoria) {
+                final nivel = _calcularNivelCategoria(
+                  categoria.id,
+                  categoriasDisponibles,
+                );
+                final indent = '  ' * nivel; // Indentación visual
+
                 return DropdownMenuItem(
                   value: categoria.id,
                   child: Text(
-                    categoria.name,
+                    '$indent${categoria.name}',
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
                   ),
@@ -893,6 +909,73 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
         ],
       ),
     );
+  }
+
+  // Función para calcular el nivel jerárquico de una categoría por su ID
+  int _calcularNivelCategoria(String categoriaId, List<Categoria> categorias) {
+    final categoria = categorias.firstWhere(
+      (cat) => cat.id == categoriaId,
+      orElse: () => const Categoria(id: '', name: '', slug: ''),
+    );
+
+    if (categoria.id.isEmpty ||
+        categoria.parentId == null ||
+        categoria.parentId!.isEmpty) {
+      return 0; // Categoría principal
+    }
+
+    int nivel = 1;
+    String? currentParentId = categoria.parentId;
+
+    while (currentParentId != null && currentParentId.isNotEmpty) {
+      final parent = categorias.firstWhere(
+        (cat) => cat.id == currentParentId,
+        orElse: () => const Categoria(id: '', name: '', slug: ''),
+      );
+
+      if (parent.id.isEmpty) break;
+
+      currentParentId = parent.parentId;
+      if (currentParentId != null && currentParentId.isNotEmpty) {
+        nivel++;
+      }
+    }
+
+    return nivel;
+  }
+
+  // Función para ordenar categorías jerárquicamente
+  List<Categoria> _ordenarCategoriesJerarquicamente(
+    List<Categoria> categorias,
+  ) {
+    final Map<String?, List<Categoria>> categoriasMap = {};
+
+    // Agrupar categorías por parentId
+    for (final categoria in categorias) {
+      final parentId =
+          categoria.parentId?.isEmpty == true ? null : categoria.parentId;
+      categoriasMap[parentId] ??= [];
+      categoriasMap[parentId]!.add(categoria);
+    }
+
+    List<Categoria> resultado = [];
+
+    // Función recursiva para agregar categorías en orden jerárquico
+    void agregarCategoriasRecursivamente(String? parentId, int nivel) {
+      final categoriasDelNivel = categoriasMap[parentId] ?? [];
+      categoriasDelNivel.sort((a, b) => a.name.compareTo(b.name));
+
+      for (final categoria in categoriasDelNivel) {
+        resultado.add(categoria);
+        // Recursivamente agregar subcategorías
+        agregarCategoriasRecursivamente(categoria.id, nivel + 1);
+      }
+    }
+
+    // Comenzar con categorías principales (parentId = null)
+    agregarCategoriasRecursivamente(null, 0);
+
+    return resultado;
   }
 
   void _submitForm() {

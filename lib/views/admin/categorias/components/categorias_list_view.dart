@@ -55,19 +55,18 @@ class _CategoriaCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isSubcategoria =
-        categoria.parentId != null && categoria.parentId!.isNotEmpty;
+    final nivel = _calcularNivelJerarquia(context);
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(
+        bottom: 12,
+        left: (nivel * 16.0), // Indentación según el nivel
+      ),
       elevation: 2,
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isSubcategoria ? Colors.orange[200]! : Colors.blue[200]!,
-            width: 1,
-          ),
+          border: Border.all(color: _getColorPorNivel(nivel), width: 1),
         ),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -101,11 +100,17 @@ class _CategoriaCard extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            if (isSubcategoria) ...[
-                              Icon(
-                                Icons.subdirectory_arrow_right,
-                                size: 16,
-                                color: Colors.orange[600],
+                            if (nivel > 0) ...[
+                              ...List.generate(
+                                nivel,
+                                (index) => Padding(
+                                  padding: const EdgeInsets.only(right: 2),
+                                  child: Icon(
+                                    Icons.subdirectory_arrow_right,
+                                    size: 14,
+                                    color: _getColorPorNivel(nivel),
+                                  ),
+                                ),
                               ),
                               const SizedBox(width: 4),
                             ],
@@ -173,17 +178,16 @@ class _CategoriaCard extends StatelessWidget {
                               ],
                             ),
                           ),
-                          if (!isSubcategoria)
-                            const PopupMenuItem(
-                              value: 'subcategory',
-                              child: Row(
-                                children: [
-                                  Icon(Icons.add, size: 20),
-                                  SizedBox(width: 8),
-                                  Text('Agregar subcategoría'),
-                                ],
-                              ),
+                          const PopupMenuItem(
+                            value: 'subcategory',
+                            child: Row(
+                              children: [
+                                Icon(Icons.add, size: 20),
+                                SizedBox(width: 8),
+                                Text('Agregar subcategoría'),
+                              ],
                             ),
+                          ),
                           const PopupMenuItem(
                             value: 'delete',
                             child: Row(
@@ -207,8 +211,8 @@ class _CategoriaCard extends StatelessWidget {
               Row(
                 children: [
                   _buildInfoChip(
-                    isSubcategoria ? 'Subcategoría' : 'Categoría Principal',
-                    isSubcategoria ? Colors.orange : Colors.blue,
+                    _getLabelNivel(nivel),
+                    _getColorPorNivel(nivel),
                   ),
                   const SizedBox(width: 8),
                   _buildInfoChip('Activa', Colors.green),
@@ -361,5 +365,68 @@ class _CategoriaCard extends StatelessWidget {
             ],
           ),
     );
+  }
+
+  // Función para calcular el nivel jerárquico de la categoría
+  int _calcularNivelJerarquia(BuildContext context) {
+    if (categoria.parentId == null || categoria.parentId!.isEmpty) {
+      return 0; // Categoría principal
+    }
+
+    final state = context.read<CategoriasBloc>().state;
+    if (state is CategoriasLoaded) {
+      int nivel = 1;
+      String? currentParentId = categoria.parentId;
+
+      while (currentParentId != null && currentParentId.isNotEmpty) {
+        final parent = state.categorias.firstWhere(
+          (cat) => cat.id == currentParentId,
+          orElse: () => const Categoria(id: '', name: '', slug: ''),
+        );
+
+        if (parent.id.isEmpty) break;
+
+        currentParentId = parent.parentId;
+        if (currentParentId != null && currentParentId.isNotEmpty) {
+          nivel++;
+        }
+      }
+
+      return nivel;
+    }
+
+    return 1; // Por defecto subcategoría de primer nivel
+  }
+
+  // Función para obtener el color según el nivel jerárquico
+  Color _getColorPorNivel(int nivel) {
+    switch (nivel) {
+      case 0:
+        return Colors.blue[200]!; // Categorías principales
+      case 1:
+        return Colors.orange[200]!; // Subcategorías de primer nivel
+      case 2:
+        return Colors.green[200]!; // Subcategorías de segundo nivel
+      case 3:
+        return Colors.purple[200]!; // Subcategorías de tercer nivel
+      default:
+        return Colors.grey[200]!; // Niveles superiores
+    }
+  }
+
+  // Función para obtener el label del nivel jerárquico
+  String _getLabelNivel(int nivel) {
+    switch (nivel) {
+      case 0:
+        return 'Categoría Principal';
+      case 1:
+        return 'Subcategoría';
+      case 2:
+        return 'Sub-subcategoría';
+      case 3:
+        return 'Nivel 4';
+      default:
+        return 'Nivel ${nivel + 1}';
+    }
   }
 }
