@@ -317,7 +317,7 @@ class CategoriaCard extends StatelessWidget {
       String? currentParentId = categoria.parentId;
 
       while (currentParentId != null && currentParentId.isNotEmpty) {
-        final parent = state.categorias.firstWhere(
+        final parent = state.todasLasCategorias.firstWhere(
           (cat) => cat.id == currentParentId,
           orElse: () => const Categoria(id: '', name: '', slug: ''),
         );

@@ -53,7 +53,8 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
   void _loadCategoriaData() {
     final state = context.read<CategoriasBloc>().state;
     if (state is CategoriasLoaded) {
-      final categoria = state.categorias.firstWhere(
+      // Buscar en todasLasCategorias para evitar problemas con filtros
+      final categoria = state.todasLasCategorias.firstWhere(
         (cat) => cat.id == widget.categoriaId,
       );
 
@@ -62,7 +63,9 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
       _descriptionController.text = categoria.description ?? '';
       _selectedIcon = categoria.icon ?? 'category';
       _selectedColor = categoria.color ?? '#2196F3';
-      _selectedParentId = categoria.parentId;
+      // Manejar parentId correctamente: si es vacío o null, asignar null
+      _selectedParentId =
+          (categoria.parentId?.isEmpty ?? true) ? null : categoria.parentId;
     }
   }
 
@@ -289,18 +292,61 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
     return BlocBuilder<CategoriasBloc, CategoriasState>(
       builder: (context, state) {
         if (state is CategoriasLoaded) {
-          // Obtener todas las categorías excepto la que se está editando (para evitar ciclos)
-          final categoriasDisponibles =
-              state.categorias
-                  .where(
-                    (cat) => isEditing ? cat.id != widget.categoriaId : true,
-                  )
-                  .toList();
+          // Obtener todas las categorías disponibles como padre
+          List<Categoria> categoriasDisponibles;
+
+          if (isEditing) {
+            // Al editar, excluir la categoría actual y todos sus descendientes para evitar ciclos
+            final descendientes = _obtenerDescendientes(
+              widget.categoriaId!,
+              state.todasLasCategorias,
+            );
+            categoriasDisponibles =
+                state.todasLasCategorias
+                    .where(
+                      (cat) =>
+                          cat.id != widget.categoriaId &&
+                          !descendientes.contains(cat.id),
+                    )
+                    .toList();
+          } else {
+            // Al crear nueva categoría, todas están disponibles
+            categoriasDisponibles = List.from(state.todasLasCategorias);
+          }
 
           // Ordenar las categorías jerárquicamente para mejor visualización
           final categoriasOrdenadas = _ordenarCategoriesJerarquicamente(
             categoriasDisponibles,
           );
+
+          // Validar que el parentId seleccionado existe en las categorías disponibles
+          final parentIdValido =
+              _selectedParentId == null ||
+              categoriasDisponibles.any((cat) => cat.id == _selectedParentId);
+
+          // Si el parentId no es válido, resetear a null
+          if (!parentIdValido) {
+            _selectedParentId = null;
+          }
+
+          // Debug: verificar qué categorías están disponibles
+          print('=== DEBUG CATEGORIAS DISPONIBLES ===');
+          print('Total categorías: ${state.todasLasCategorias.length}');
+          print('Categorías disponibles: ${categoriasDisponibles.length}');
+          print('Categoría editándose: ${widget.categoriaId}');
+          if (isEditing) {
+            final descendientes = _obtenerDescendientes(
+              widget.categoriaId!,
+              state.todasLasCategorias,
+            );
+            print(
+              'Descendientes excluidos: ${descendientes.length} -> $descendientes',
+            );
+          }
+          print(
+            'Principales disponibles: ${categoriasDisponibles.where((cat) => cat.parentId == null || cat.parentId!.isEmpty).length}',
+          );
+          print('=====================================');
 
           return DropdownButtonFormField<String>(
             value: _selectedParentId,
@@ -605,6 +651,29 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
     agregarCategoriasRecursivamente(null, 0);
 
     return resultado;
+  }
+
+  // Función para obtener todos los descendientes (subcategorías) de una categoría
+  Set<String> _obtenerDescendientes(
+    String categoriaId,
+    List<Categoria> todasLasCategorias,
+  ) {
+    final Set<String> descendientes = {};
+
+    // Función recursiva para encontrar todos los descendientes
+    void buscarDescendientes(String parentId) {
+      final hijos =
+          todasLasCategorias.where((cat) => cat.parentId == parentId).toList();
+
+      for (final hijo in hijos) {
+        descendientes.add(hijo.id);
+        // Recursivamente buscar los descendientes de este hijo
+        buscarDescendientes(hijo.id);
+      }
+    }
+
+    buscarDescendientes(categoriaId);
+    return descendientes;
   }
 
   void _submitForm() {
