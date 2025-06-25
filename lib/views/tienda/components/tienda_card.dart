@@ -56,13 +56,7 @@ class TiendaCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        Text(
-                          tienda.rubroPrincipal,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: Colors.grey.shade600,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
+
                         // Container(
                         //   padding: const EdgeInsets.symmetric(
                         //     horizontal: 8,

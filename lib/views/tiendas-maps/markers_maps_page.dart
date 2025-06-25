@@ -70,8 +70,8 @@ class _MarkersMapsPageState extends State<MarkersMapsPage>
             width: 60,
             height: 60,
             child: TiendaMarker(
-              icon: tienda.iconoPorRubro,
-              color: tienda.colorPorRubro,
+              icon: Icons.abc,
+              color: Colors.red,
               label: tienda.nombre,
               onTap: () => _showMarkerInfo(tienda),
             ),
@@ -87,7 +87,7 @@ class _MarkersMapsPageState extends State<MarkersMapsPage>
           (context) => TiendaInfo(
             title: tienda.nombre,
             description: tienda.horarioAtencion,
-            color: tienda.colorPorRubro,
+            color: Colors.blue,
           ),
     );
   }

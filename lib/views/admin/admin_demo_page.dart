@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:laferia/views/admin/admin_categorias_pages.dart';
 import 'package:laferia/views/admin_components/admin_card.dart';
+import 'tiendas/tiendas.dart';
 
 class AdminDemoPage extends StatelessWidget {
   const AdminDemoPage({super.key});
@@ -51,15 +52,17 @@ class AdminDemoPage extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // Card para Tiendas (placeholder)
+            // Card para Tiendas
             AdminCard(
               title: 'Gestión de Tiendas',
               description: 'Administrar tiendas registradas',
               icon: Icons.store,
               color: Colors.orange,
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Módulo en desarrollo')),
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const AdminTiendasPage(),
+                  ),
                 );
               },
             ),

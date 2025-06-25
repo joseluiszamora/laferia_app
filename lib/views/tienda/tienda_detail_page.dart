@@ -103,13 +103,7 @@ class _TiendaHeader extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      Text(
-                        tienda.rubroPrincipal,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          color: theme.primaryColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+
                       if (tienda.calificacion != null) ...[
                         const SizedBox(height: 8),
                         Row(
