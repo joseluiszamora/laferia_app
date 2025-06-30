@@ -100,4 +100,110 @@ class Producto extends Equatable {
 
   /// Obtiene el número total de imágenes
   int get cantidadImagenes => imagenesUrl.length;
+
+  /// Factory constructor para crear un Producto desde JSON (Supabase)
+  factory Producto.fromJson(Map<String, dynamic> json) {
+    return Producto(
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      slug: json['slug'] ?? '',
+      description: json['description'] ?? '',
+      price: (json['price'] ?? 0.0).toDouble(),
+      discountedPrice: json['discounted_price']?.toDouble(),
+      acceptOffers: json['accept_offers'] ?? false,
+      categoriaId: json['categoria_id'] ?? '',
+      marcaId: json['marca_id'] ?? '',
+      status: json['status'] ?? 'borrador',
+      isAvailable: json['is_available'] ?? true,
+      isFavorite: json['is_favorite'] ?? false,
+      atributos:
+          json['atributos'] != null
+              ? (json['atributos'] as List)
+                  .map((attr) => ProductoAtributos.fromJson(attr))
+                  .toList()
+              : [],
+      imagenesUrl:
+          json['medias'] != null
+              ? (json['medias'] as List)
+                  .map((media) => ProductoMedias.fromJson(media))
+                  .toList()
+              : [],
+      logoUrl: json['logo_url'],
+      createdAt:
+          json['created_at'] != null
+              ? DateTime.parse(json['created_at'])
+              : DateTime.now(),
+      updatedAt:
+          json['updated_at'] != null
+              ? DateTime.parse(json['updated_at'])
+              : null,
+    );
+  }
+
+  /// Convierte el Producto a JSON para Supabase
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'slug': slug,
+      'description': description,
+      'price': price,
+      'discounted_price': discountedPrice,
+      'accept_offers': acceptOffers,
+      'categoria_id': categoriaId,
+      'marca_id': marcaId,
+      'status': status,
+      'is_available': isAvailable,
+      'is_favorite': isFavorite,
+      'logo_url': logoUrl,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String(),
+    };
+  }
+
+  /// Factory constructor para crear una copia del producto con campos modificados
+  Producto copyWith({
+    String? id,
+    String? name,
+    String? slug,
+    String? description,
+    double? price,
+    double? discountedPrice,
+    bool? acceptOffers,
+    String? categoriaId,
+    String? marcaId,
+    String? status,
+    bool? isAvailable,
+    bool? isFavorite,
+    List<ProductoAtributos>? atributos,
+    List<ProductoMedias>? imagenesUrl,
+    String? logoUrl,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return Producto(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      slug: slug ?? this.slug,
+      description: description ?? this.description,
+      price: price ?? this.price,
+      discountedPrice: discountedPrice ?? this.discountedPrice,
+      acceptOffers: acceptOffers ?? this.acceptOffers,
+      categoriaId: categoriaId ?? this.categoriaId,
+      marcaId: marcaId ?? this.marcaId,
+      status: status ?? this.status,
+      isAvailable: isAvailable ?? this.isAvailable,
+      isFavorite: isFavorite ?? this.isFavorite,
+      atributos: atributos ?? this.atributos,
+      imagenesUrl: imagenesUrl ?? this.imagenesUrl,
+      logoUrl: logoUrl ?? this.logoUrl,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return 'Producto{id: $id, name: $name, slug: $slug, price: $price, discountedPrice: $discountedPrice, status: $status, categoriaId: $categoriaId, marcaId: $marcaId}';
+  }
 }
