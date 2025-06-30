@@ -52,28 +52,6 @@ class _ProductoServiceExampleState extends State<ProductoServiceExample> {
     }
   }
 
-  /// Ejemplo 2: Buscar productos por categoría
-  Future<void> _buscarPorCategoria(String categoriaId) async {
-    setState(() => _isLoading = true);
-
-    try {
-      final productos = await SupabaseProductoService.buscarPorCategoria(
-        categoriaId,
-        limit: 10,
-      );
-
-      setState(() {
-        _productos = productos;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _error = e.toString();
-        _isLoading = false;
-      });
-    }
-  }
-
   /// Ejemplo 3: Buscar productos con filtros
   Future<void> _buscarConFiltros(String busqueda) async {
     setState(() => _isLoading = true);
@@ -130,43 +108,71 @@ class _ProductoServiceExampleState extends State<ProductoServiceExample> {
         name: 'Producto de Ejemplo',
         slug: 'producto-ejemplo-${DateTime.now().millisecondsSinceEpoch}',
         description: 'Este es un producto de ejemplo creado desde la app',
+        shortDescription: 'Ejemplo de producto moderno',
+        sku: 'EJEMPLO-001',
+        barcode: '1234567890123',
         price: 99.99,
         discountedPrice: 79.99,
+        costPrice: 50.00,
         acceptOffers: true,
+        stock: 100,
+        lowStockAlert: 10,
+        weight: 1.5,
+        dimensions: {'width': 20.0, 'height': 15.0, 'depth': 10.0},
         categoriaId: 'categoria-ejemplo', // Debe existir en la base de datos
         marcaId: 'marca-ejemplo', // Debe existir en la base de datos
-        status: 'borrador',
+        tiendaId: 'tienda-ejemplo',
+        status: ProductStatus.borrador,
         isAvailable: true,
-        isFavorite: false,
+        isFeatured: false,
+        metaTitle: 'Producto de Ejemplo - La Feria',
+        metaDescription: 'Descripción SEO del producto de ejemplo',
+        tags: ['ejemplo', 'test', 'demo'],
+        viewCount: 0,
+        saleCount: 0,
         atributos: [
           ProductoAtributos(
             id: 'attr-1-${DateTime.now().millisecondsSinceEpoch}',
             productoId: DateTime.now().millisecondsSinceEpoch.toString(),
             nombre: 'Color',
             valor: 'Azul',
+            tipo: 'color',
+            unidad: null,
+            orden: 1,
+            isVisible: true,
+            createdAt: DateTime.now(),
           ),
           ProductoAtributos(
             id: 'attr-2-${DateTime.now().millisecondsSinceEpoch}',
             productoId: DateTime.now().millisecondsSinceEpoch.toString(),
             nombre: 'Tamaño',
             valor: 'Mediano',
+            tipo: 'size',
+            unidad: 'cm',
+            orden: 2,
+            isVisible: true,
+            createdAt: DateTime.now(),
           ),
         ],
-        imagenesUrl: [
+        medias: [
           ProductoMedias(
             id: 'media-1-${DateTime.now().millisecondsSinceEpoch}',
             productoId: DateTime.now().millisecondsSinceEpoch.toString(),
-            type: 'image',
+            type: MediaType.image,
             url: 'https://via.placeholder.com/400x400?text=Producto+Ejemplo',
-            esPrincipal: true,
-            estaActivo: true,
+            thumbnailUrl: 'https://via.placeholder.com/200x200?text=Thumb',
+            width: 400,
+            height: 400,
+            fileSize: 50000,
             orden: 1,
+            isMain: true,
+            isActive: true,
             descripcion: 'Imagen principal del producto',
-            altTexto: 'Producto de ejemplo',
-            fechaCreacion: DateTime.now(),
+            altText: 'Producto de ejemplo',
+            metadata: {'source': 'ejemplo'},
+            createdAt: DateTime.now(),
           ),
         ],
-        logoUrl: null,
         createdAt: DateTime.now(),
       );
 
@@ -371,7 +377,7 @@ class ProductoCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    '\$${producto.priceEfectivo.toStringAsFixed(2)}',
+                    '\$${producto.precioEfectivo.toStringAsFixed(2)}',
                     style: const TextStyle(
                       color: Colors.green,
                       fontWeight: FontWeight.bold,
@@ -418,7 +424,7 @@ class ProductoCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                producto.status.toUpperCase(),
+                producto.status.value.toUpperCase(),
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 10,
@@ -435,16 +441,16 @@ class ProductoCard extends StatelessWidget {
     );
   }
 
-  Color _getStatusColor(String status) {
+  Color _getStatusColor(ProductStatus status) {
     switch (status) {
-      case 'publicado':
+      case ProductStatus.publicado:
         return Colors.green;
-      case 'borrador':
+      case ProductStatus.borrador:
         return Colors.orange;
-      case 'archivado':
+      case ProductStatus.archivado:
         return Colors.grey;
-      default:
-        return Colors.blue;
+      case ProductStatus.agotado:
+        return Colors.red;
     }
   }
 }
@@ -560,7 +566,7 @@ class ProductoDetailDialog extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            '\$${producto.priceEfectivo.toStringAsFixed(2)}',
+                            '\$${producto.precioEfectivo.toStringAsFixed(2)}',
                             style: const TextStyle(
                               color: Colors.green,
                               fontWeight: FontWeight.bold,
@@ -619,7 +625,7 @@ class ProductoDetailDialog extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    _buildInfoRow('Estado', producto.status),
+                    _buildInfoRow('Estado', producto.status.value),
                     _buildInfoRow(
                       'Disponible',
                       producto.isAvailable ? 'Sí' : 'No',

@@ -101,7 +101,7 @@ class ProductoCard extends StatelessWidget {
                         ),
 
                       // Badge de favorito
-                      if (producto.isFavorite)
+                      if (producto.isFeatured)
                         Positioned(
                           top: 8,
                           right: 8,
@@ -324,7 +324,7 @@ class ProductoCard extends StatelessWidget {
           Row(
             children: [
               Text(
-                'Bs. ${producto.priceEfectivo.toStringAsFixed(0)}',
+                'Bs. ${producto.precioEfectivo.toStringAsFixed(0)}',
                 style: theme.textTheme.titleSmall?.copyWith(
                   color: Colors.red.shade600,
                   fontWeight: FontWeight.bold,

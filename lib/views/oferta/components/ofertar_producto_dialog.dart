@@ -34,7 +34,7 @@ class _OfertarProductoDialogState extends State<OfertarProductoDialog> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final precioMaximo = widget.producto.priceEfectivo;
+    final precioMaximo = widget.producto.precioEfectivo;
 
     return AlertDialog(
       title: const Text('Hacer una oferta'),
@@ -81,7 +81,7 @@ class _OfertarProductoDialogState extends State<OfertarProductoDialog> {
                                 ),
                       ),
                       // Badge de favorito
-                      if (widget.producto.isFavorite)
+                      if (widget.producto.isFeatured)
                         Positioned(
                           top: 2,
                           right: 2,
@@ -140,7 +140,7 @@ class _OfertarProductoDialogState extends State<OfertarProductoDialog> {
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            if (widget.producto.isFavorite) ...[
+                            if (widget.producto.isFeatured) ...[
                               Icon(
                                 Icons.favorite,
                                 size: 12,

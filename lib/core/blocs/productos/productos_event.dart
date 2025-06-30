@@ -55,3 +55,14 @@ class LoadProductosByRubro extends ProductosEvent {
   @override
   List<Object> get props => [rubroId];
 }
+
+/// Evento para cargar productos en oferta
+class LoadProductosEnOferta extends ProductosEvent {
+  final int? limit;
+  final int? offset;
+
+  const LoadProductosEnOferta({this.limit, this.offset});
+
+  @override
+  List<Object> get props => [limit ?? 0, offset ?? 0];
+}

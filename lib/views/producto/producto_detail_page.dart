@@ -62,10 +62,10 @@ class _ProductImageSection extends StatelessWidget {
           // Imágenes del producto
           producto.tieneImagenes
               ? PageView.builder(
-                itemCount: producto.imagenesUrl.length,
+                itemCount: producto.medias.length,
                 itemBuilder: (context, index) {
                   return Image.network(
-                    producto.imagenesUrl[index].url,
+                    producto.medias[index].url,
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return _buildPlaceholderImage();
@@ -130,8 +130,8 @@ class _ProductImageSection extends StatelessWidget {
                   ],
                 ),
                 child: Icon(
-                  producto.isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: producto.isFavorite ? Colors.red : Colors.grey,
+                  producto.isFeatured ? Icons.favorite : Icons.favorite_border,
+                  color: producto.isFeatured ? Colors.red : Colors.grey,
                   size: 24,
                 ),
               ),
@@ -180,7 +180,7 @@ class _ProductImageSection extends StatelessWidget {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          producto.isFavorite
+          producto.isFeatured
               ? '${producto.name} removido de favoritos'
               : '${producto.name} agregado a favoritos',
         ),
@@ -352,11 +352,11 @@ class _ProductInfoSection extends StatelessWidget {
               Expanded(
                 child: _InfoCard(
                   icon:
-                      producto.isFavorite
+                      producto.isFeatured
                           ? Icons.favorite
                           : Icons.favorite_border,
                   title: 'Estado',
-                  content: producto.isFavorite ? 'En favoritos' : 'No favorito',
+                  content: producto.isFeatured ? 'En favoritos' : 'No favorito',
                 ),
               ),
             ],
@@ -416,7 +416,7 @@ class _ProductInfoSection extends StatelessWidget {
             ],
           ),
           Text(
-            'Bs. ${producto.priceEfectivo.toStringAsFixed(0)}',
+            'Bs. ${producto.precioEfectivo.toStringAsFixed(0)}',
             style: theme.textTheme.headlineMedium?.copyWith(
               color: Colors.red.shade600,
               fontWeight: FontWeight.bold,
@@ -602,7 +602,7 @@ class _BottomActionBar extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            'Precio de oferta: Bs. ${producto.priceEfectivo.toStringAsFixed(0)}',
+                            'Precio de oferta: Bs. ${producto.precioEfectivo.toStringAsFixed(0)}',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.red.shade600,

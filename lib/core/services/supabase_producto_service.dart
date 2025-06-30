@@ -19,11 +19,15 @@ class SupabaseProductoService {
     int offset = 0,
     String? categoria,
     String? marca,
-    String? status,
+    String? tienda,
+    ProductStatus? status,
     bool? disponible,
+    bool? destacado,
+    int? stockMinimo,
     double? precioMin,
     double? precioMax,
     String? busqueda,
+    List<String>? tags,
     String ordenarPor = 'created_at',
     bool ascending = false,
   }) async {
@@ -37,11 +41,20 @@ class SupabaseProductoService {
       if (marca != null) {
         query = query.eq('marca_id', marca);
       }
+      if (tienda != null) {
+        query = query.eq('tienda_id', tienda);
+      }
       if (status != null) {
-        query = query.eq('status', status);
+        query = query.eq('status', status.value);
       }
       if (disponible != null) {
         query = query.eq('is_available', disponible);
+      }
+      if (destacado != null) {
+        query = query.eq('is_featured', destacado);
+      }
+      if (stockMinimo != null) {
+        query = query.gte('stock', stockMinimo);
       }
       if (precioMin != null) {
         query = query.gte('price', precioMin);
@@ -154,15 +167,28 @@ class SupabaseProductoService {
         'name': producto.name,
         'slug': producto.slug,
         'description': producto.description,
+        'short_description': producto.shortDescription,
+        'sku': producto.sku,
+        'barcode': producto.barcode,
         'price': producto.price,
         'discounted_price': producto.discountedPrice,
+        'cost_price': producto.costPrice,
         'accept_offers': producto.acceptOffers,
+        'stock': producto.stock,
+        'low_stock_alert': producto.lowStockAlert,
+        'weight': producto.weight,
+        'dimensions': producto.dimensions,
         'categoria_id': producto.categoriaId,
         'marca_id': producto.marcaId,
-        'status': producto.status,
+        'tienda_id': producto.tiendaId,
+        'status': producto.status.value,
         'is_available': producto.isAvailable,
-        'is_favorite': producto.isFavorite,
-        'logo_url': producto.logoUrl,
+        'is_featured': producto.isFeatured,
+        'meta_title': producto.metaTitle,
+        'meta_description': producto.metaDescription,
+        'tags': producto.tags,
+        'view_count': producto.viewCount,
+        'sale_count': producto.saleCount,
       };
 
       await _supabase.from(_tablaProducto).insert(productoData);
@@ -173,8 +199,8 @@ class SupabaseProductoService {
       }
 
       // Crear medias
-      if (producto.imagenesUrl.isNotEmpty) {
-        await _crearMedias(producto.id, producto.imagenesUrl);
+      if (producto.medias.isNotEmpty) {
+        await _crearMedias(producto.id, producto.medias);
       }
 
       return await obtenerProductoPorId(producto.id) ?? producto;
@@ -193,15 +219,28 @@ class SupabaseProductoService {
         'name': producto.name,
         'slug': producto.slug,
         'description': producto.description,
+        'short_description': producto.shortDescription,
+        'sku': producto.sku,
+        'barcode': producto.barcode,
         'price': producto.price,
         'discounted_price': producto.discountedPrice,
+        'cost_price': producto.costPrice,
         'accept_offers': producto.acceptOffers,
+        'stock': producto.stock,
+        'low_stock_alert': producto.lowStockAlert,
+        'weight': producto.weight,
+        'dimensions': producto.dimensions,
         'categoria_id': producto.categoriaId,
         'marca_id': producto.marcaId,
-        'status': producto.status,
+        'tienda_id': producto.tiendaId,
+        'status': producto.status.value,
         'is_available': producto.isAvailable,
-        'is_favorite': producto.isFavorite,
-        'logo_url': producto.logoUrl,
+        'is_featured': producto.isFeatured,
+        'meta_title': producto.metaTitle,
+        'meta_description': producto.metaDescription,
+        'tags': producto.tags,
+        'view_count': producto.viewCount,
+        'sale_count': producto.saleCount,
         'updated_at': DateTime.now().toIso8601String(),
       };
 
@@ -532,17 +571,33 @@ class SupabaseProductoService {
       name: json['name'],
       slug: json['slug'],
       description: json['description'],
+      shortDescription: json['short_description'],
+      sku: json['sku'],
+      barcode: json['barcode'],
       price: (json['price'] ?? 0.0).toDouble(),
       discountedPrice: json['discounted_price']?.toDouble(),
+      costPrice: json['cost_price']?.toDouble(),
       acceptOffers: json['accept_offers'] ?? false,
+      stock: json['stock'] ?? 0,
+      lowStockAlert: json['low_stock_alert'] ?? 5,
+      weight: json['weight']?.toDouble(),
+      dimensions:
+          json['dimensions'] != null
+              ? Map<String, dynamic>.from(json['dimensions'])
+              : null,
       categoriaId: json['categoria_id'],
       marcaId: json['marca_id'],
-      status: json['status'] ?? 'borrador',
+      tiendaId: json['tienda_id'],
+      status: ProductStatus.fromString(json['status'] ?? 'borrador'),
       isAvailable: json['is_available'] ?? true,
-      isFavorite: json['is_favorite'] ?? false,
+      isFeatured: json['is_featured'] ?? false,
+      metaTitle: json['meta_title'],
+      metaDescription: json['meta_description'],
+      tags: json['tags'] != null ? List<String>.from(json['tags']) : [],
+      viewCount: json['view_count'] ?? 0,
+      saleCount: json['sale_count'] ?? 0,
       atributos: _mapearAtributos(json['atributos']),
-      imagenesUrl: _mapearMedias(json['medias']),
-      logoUrl: json['logo_url'],
+      medias: _mapearMedias(json['medias']),
       createdAt: DateTime.parse(json['created_at']),
       updatedAt:
           json['updated_at'] != null

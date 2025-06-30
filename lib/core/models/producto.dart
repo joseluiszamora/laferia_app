@@ -2,26 +2,67 @@ import 'package:equatable/equatable.dart';
 import 'package:laferia/core/models/producto_atributos.dart';
 import 'package:laferia/core/models/producto_medias.dart';
 
+enum ProductStatus {
+  borrador('borrador'),
+  publicado('publicado'),
+  archivado('archivado'),
+  agotado('agotado');
+
+  const ProductStatus(this.value);
+  final String value;
+
+  static ProductStatus fromString(String value) {
+    switch (value.toLowerCase()) {
+      case 'borrador':
+        return ProductStatus.borrador;
+      case 'publicado':
+        return ProductStatus.publicado;
+      case 'archivado':
+        return ProductStatus.archivado;
+      case 'agotado':
+        return ProductStatus.agotado;
+      default:
+        return ProductStatus.borrador;
+    }
+  }
+}
+
 class Producto extends Equatable {
   final String id;
   final String name;
   final String slug;
   final String description;
+  final String? shortDescription;
+  final String? sku;
+  final String? barcode;
 
   final double price;
   final double? discountedPrice;
-  final bool acceptOffers; // acepta ofertas
+  final double? costPrice;
+  final bool acceptOffers;
+
+  final int stock;
+  final int lowStockAlert;
+  final double? weight; // en kg
+  final Map<String, dynamic>? dimensions; // {width, height, depth} en cm
 
   final String categoriaId;
-  final String marcaId;
+  final String? marcaId;
+  final String? tiendaId;
 
-  final String status; // borrador,publicado,archivado
+  final ProductStatus status;
   final bool isAvailable;
-  final bool isFavorite;
+  final bool isFeatured;
+
+  final String? metaTitle;
+  final String? metaDescription;
+  final List<String> tags;
+
+  final int viewCount;
+  final int saleCount;
 
   final List<ProductoAtributos> atributos;
-  final List<ProductoMedias> imagenesUrl;
-  final String? logoUrl;
+  final List<ProductoMedias> medias;
 
   final DateTime createdAt;
   final DateTime? updatedAt;
@@ -37,17 +78,30 @@ class Producto extends Equatable {
     required this.name,
     required this.slug,
     required this.description,
+    this.shortDescription,
+    this.sku,
+    this.barcode,
     required this.price,
     this.discountedPrice,
-    required this.acceptOffers, // acepta ofertas= false,
+    this.costPrice,
+    this.acceptOffers = false,
+    this.stock = 0,
+    this.lowStockAlert = 5,
+    this.weight,
+    this.dimensions,
     required this.categoriaId,
-    required this.marcaId,
-    this.status = 'borrador',
+    this.marcaId,
+    this.tiendaId,
+    this.status = ProductStatus.borrador,
     this.isAvailable = true,
-    this.isFavorite = true,
-    required this.atributos,
-    required this.imagenesUrl,
-    this.logoUrl,
+    this.isFeatured = false,
+    this.metaTitle,
+    this.metaDescription,
+    this.tags = const [],
+    this.viewCount = 0,
+    this.saleCount = 0,
+    this.atributos = const [],
+    this.medias = const [],
     required this.createdAt,
     this.updatedAt,
   });
@@ -58,23 +112,36 @@ class Producto extends Equatable {
     name,
     slug,
     description,
+    shortDescription,
+    sku,
+    barcode,
     price,
     discountedPrice,
-    acceptOffers, // acepta ofertas
+    costPrice,
+    acceptOffers,
+    stock,
+    lowStockAlert,
+    weight,
+    dimensions,
     categoriaId,
     marcaId,
+    tiendaId,
     status,
     isAvailable,
-    isFavorite,
+    isFeatured,
+    metaTitle,
+    metaDescription,
+    tags,
+    viewCount,
+    saleCount,
     atributos,
-    imagenesUrl,
-    logoUrl,
+    medias,
     createdAt,
     updatedAt,
   ];
 
-  /// Obtiene el price efectivo del producto (price de oferta si existe, sino el price normal)
-  double get priceEfectivo => discountedPrice ?? price;
+  /// Obtiene el precio efectivo del producto (precio de oferta si existe, sino el precio normal)
+  double get precioEfectivo => discountedPrice ?? price;
 
   /// Indica si el producto tiene una oferta activa
   bool get tieneOferta => discountedPrice != null && discountedPrice! < price;
@@ -92,14 +159,41 @@ class Producto extends Equatable {
   }
 
   /// Obtiene la primera imagen disponible o null si no hay imágenes
-  ProductoMedias? get imagenPrincipal =>
-      imagenesUrl.isNotEmpty ? imagenesUrl.first : null;
+  ProductoMedias? get imagenPrincipal {
+    final imagenesActivas =
+        medias.where((m) => m.isActive && m.type == MediaType.image).toList();
+    if (imagenesActivas.isEmpty) return null;
+
+    // Buscar imagen principal
+    final principal = imagenesActivas.where((m) => m.isMain).firstOrNull;
+    return principal ?? imagenesActivas.first;
+  }
 
   /// Indica si el producto tiene imágenes
-  bool get tieneImagenes => imagenesUrl.isNotEmpty;
+  bool get tieneImagenes =>
+      medias.where((m) => m.type == MediaType.image && m.isActive).isNotEmpty;
 
-  /// Obtiene el número total de imágenes
-  int get cantidadImagenes => imagenesUrl.length;
+  /// Obtiene el número total de imágenes activas
+  int get cantidadImagenes =>
+      medias.where((m) => m.type == MediaType.image && m.isActive).length;
+
+  /// Indica si el producto está en stock
+  bool get enStock => stock > 0;
+
+  /// Indica si el stock está bajo
+  bool get stockBajo => stock <= lowStockAlert;
+
+  /// Obtiene las dimensiones formateadas
+  String? get dimensionesFormateadas {
+    if (dimensions == null) return null;
+    final w = dimensions!['width'];
+    final h = dimensions!['height'];
+    final d = dimensions!['depth'];
+    if (w != null && h != null && d != null) {
+      return '${w}cm x ${h}cm x ${d}cm';
+    }
+    return null;
+  }
 
   /// Factory constructor para crear un Producto desde JSON (Supabase)
   factory Producto.fromJson(Map<String, dynamic> json) {
@@ -108,27 +202,43 @@ class Producto extends Equatable {
       name: json['name'] ?? '',
       slug: json['slug'] ?? '',
       description: json['description'] ?? '',
+      shortDescription: json['short_description'],
+      sku: json['sku'],
+      barcode: json['barcode'],
       price: (json['price'] ?? 0.0).toDouble(),
       discountedPrice: json['discounted_price']?.toDouble(),
+      costPrice: json['cost_price']?.toDouble(),
       acceptOffers: json['accept_offers'] ?? false,
+      stock: json['stock'] ?? 0,
+      lowStockAlert: json['low_stock_alert'] ?? 5,
+      weight: json['weight']?.toDouble(),
+      dimensions:
+          json['dimensions'] != null
+              ? Map<String, dynamic>.from(json['dimensions'])
+              : null,
       categoriaId: json['categoria_id'] ?? '',
-      marcaId: json['marca_id'] ?? '',
-      status: json['status'] ?? 'borrador',
+      marcaId: json['marca_id'],
+      tiendaId: json['tienda_id'],
+      status: ProductStatus.fromString(json['status'] ?? 'borrador'),
       isAvailable: json['is_available'] ?? true,
-      isFavorite: json['is_favorite'] ?? false,
+      isFeatured: json['is_featured'] ?? false,
+      metaTitle: json['meta_title'],
+      metaDescription: json['meta_description'],
+      tags: json['tags'] != null ? List<String>.from(json['tags']) : [],
+      viewCount: json['view_count'] ?? 0,
+      saleCount: json['sale_count'] ?? 0,
       atributos:
           json['atributos'] != null
               ? (json['atributos'] as List)
                   .map((attr) => ProductoAtributos.fromJson(attr))
                   .toList()
               : [],
-      imagenesUrl:
+      medias:
           json['medias'] != null
               ? (json['medias'] as List)
                   .map((media) => ProductoMedias.fromJson(media))
                   .toList()
               : [],
-      logoUrl: json['logo_url'],
       createdAt:
           json['created_at'] != null
               ? DateTime.parse(json['created_at'])
@@ -147,15 +257,28 @@ class Producto extends Equatable {
       'name': name,
       'slug': slug,
       'description': description,
+      'short_description': shortDescription,
+      'sku': sku,
+      'barcode': barcode,
       'price': price,
       'discounted_price': discountedPrice,
+      'cost_price': costPrice,
       'accept_offers': acceptOffers,
+      'stock': stock,
+      'low_stock_alert': lowStockAlert,
+      'weight': weight,
+      'dimensions': dimensions,
       'categoria_id': categoriaId,
       'marca_id': marcaId,
-      'status': status,
+      'tienda_id': tiendaId,
+      'status': status.value,
       'is_available': isAvailable,
-      'is_favorite': isFavorite,
-      'logo_url': logoUrl,
+      'is_featured': isFeatured,
+      'meta_title': metaTitle,
+      'meta_description': metaDescription,
+      'tags': tags,
+      'view_count': viewCount,
+      'sale_count': saleCount,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
     };
@@ -167,17 +290,30 @@ class Producto extends Equatable {
     String? name,
     String? slug,
     String? description,
+    String? shortDescription,
+    String? sku,
+    String? barcode,
     double? price,
     double? discountedPrice,
+    double? costPrice,
     bool? acceptOffers,
+    int? stock,
+    int? lowStockAlert,
+    double? weight,
+    Map<String, dynamic>? dimensions,
     String? categoriaId,
     String? marcaId,
-    String? status,
+    String? tiendaId,
+    ProductStatus? status,
     bool? isAvailable,
-    bool? isFavorite,
+    bool? isFeatured,
+    String? metaTitle,
+    String? metaDescription,
+    List<String>? tags,
+    int? viewCount,
+    int? saleCount,
     List<ProductoAtributos>? atributos,
-    List<ProductoMedias>? imagenesUrl,
-    String? logoUrl,
+    List<ProductoMedias>? medias,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -186,17 +322,30 @@ class Producto extends Equatable {
       name: name ?? this.name,
       slug: slug ?? this.slug,
       description: description ?? this.description,
+      shortDescription: shortDescription ?? this.shortDescription,
+      sku: sku ?? this.sku,
+      barcode: barcode ?? this.barcode,
       price: price ?? this.price,
       discountedPrice: discountedPrice ?? this.discountedPrice,
+      costPrice: costPrice ?? this.costPrice,
       acceptOffers: acceptOffers ?? this.acceptOffers,
+      stock: stock ?? this.stock,
+      lowStockAlert: lowStockAlert ?? this.lowStockAlert,
+      weight: weight ?? this.weight,
+      dimensions: dimensions ?? this.dimensions,
       categoriaId: categoriaId ?? this.categoriaId,
       marcaId: marcaId ?? this.marcaId,
+      tiendaId: tiendaId ?? this.tiendaId,
       status: status ?? this.status,
       isAvailable: isAvailable ?? this.isAvailable,
-      isFavorite: isFavorite ?? this.isFavorite,
+      isFeatured: isFeatured ?? this.isFeatured,
+      metaTitle: metaTitle ?? this.metaTitle,
+      metaDescription: metaDescription ?? this.metaDescription,
+      tags: tags ?? this.tags,
+      viewCount: viewCount ?? this.viewCount,
+      saleCount: saleCount ?? this.saleCount,
       atributos: atributos ?? this.atributos,
-      imagenesUrl: imagenesUrl ?? this.imagenesUrl,
-      logoUrl: logoUrl ?? this.logoUrl,
+      medias: medias ?? this.medias,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -204,6 +353,6 @@ class Producto extends Equatable {
 
   @override
   String toString() {
-    return 'Producto{id: $id, name: $name, slug: $slug, price: $price, discountedPrice: $discountedPrice, status: $status, categoriaId: $categoriaId, marcaId: $marcaId}';
+    return 'Producto{id: $id, name: $name, slug: $slug, price: $price, discountedPrice: $discountedPrice, status: $status, categoriaId: $categoriaId, marcaId: $marcaId, stock: $stock, isAvailable: $isAvailable, isFeatured: $isFeatured}';
   }
 }

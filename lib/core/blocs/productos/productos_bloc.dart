@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:laferia/core/services/producto_service.dart';
-import '../../models/producto.dart';
+import 'package:laferia/core/services/supabase_producto_service.dart';
 import 'productos_event.dart';
 import 'productos_state.dart';
 
@@ -11,6 +10,7 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
     on<LoadProductosBySubcategoria>(_onLoadProductosBySubcategoria);
     on<LoadProductosByCategoria>(_onLoadProductosByCategoria);
     on<LoadProductosByRubro>(_onLoadProductosByRubro);
+    on<LoadProductosEnOferta>(_onLoadProductosEnOferta);
   }
 
   void _onLoadProductos(
@@ -20,14 +20,8 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
     emit(ProductosLoading());
 
     try {
-      // Simular carga de datos
-      await Future.delayed(const Duration(milliseconds: 300));
-
       // Filtrar productos según los IDs recibidos
-      final productos =
-          ProductoService.obtenerProductos
-              .where((producto) => event.productosIds.contains(producto.id))
-              .toList();
+      final productos = await SupabaseProductoService.obtenerProductos();
 
       emit(ProductosLoaded(productos: productos));
     } catch (e) {
@@ -50,8 +44,6 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
 
     try {
       // Simular carga de datos
-      await Future.delayed(const Duration(milliseconds: 500));
-
       // Filtrar productos por subcategoría
       // final productos =
       //     ProductoService.obtenerProductos
@@ -59,7 +51,7 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
       //           (producto) => producto.subcategoriaId == event.subcategoriaId,
       //         )
       //         .toList();
-      final productos = ProductoService.obtenerProductos.toList();
+      final productos = await SupabaseProductoService.obtenerProductos();
 
       emit(ProductosLoaded(productos: productos));
     } catch (e) {
@@ -78,10 +70,7 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
       await Future.delayed(const Duration(milliseconds: 500));
 
       // Filtrar productos por categoría
-      final productos =
-          ProductoService.obtenerProductos
-              .where((producto) => producto.categoriaId == event.categoriaId)
-              .toList();
+      final productos = await SupabaseProductoService.obtenerProductos();
 
       emit(ProductosLoaded(productos: productos));
     } catch (e) {
@@ -104,11 +93,30 @@ class ProductosBloc extends Bloc<ProductosEvent, ProductosState> {
       //     ProductoService.obtenerProductos
       //         .where((producto) => producto.rubroId == event.rubroId)
       //         .toList();
-      final productos = ProductoService.obtenerProductos.toList();
+      final productos = await SupabaseProductoService.obtenerProductos();
 
       emit(ProductosLoaded(productos: productos));
     } catch (e) {
       emit(ProductosError('Error al cargar productos por rubro: $e'));
+    }
+  }
+
+  void _onLoadProductosEnOferta(
+    LoadProductosEnOferta event,
+    Emitter<ProductosState> emit,
+  ) async {
+    emit(ProductosLoading());
+
+    try {
+      // Cargar productos en oferta usando el servicio
+      final productos = await SupabaseProductoService.obtenerProductosEnOferta(
+        limit: event.limit ?? 20,
+        offset: event.offset ?? 0,
+      );
+
+      emit(ProductosLoaded(productos: productos));
+    } catch (e) {
+      emit(ProductosError('Error al cargar productos en oferta: $e'));
     }
   }
 }
