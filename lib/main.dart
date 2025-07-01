@@ -25,7 +25,6 @@ void main() async {
     anonKey:
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmanh6cWlmZWZzdXJ6b3VueHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5NDA5NTcsImV4cCI6MjA2NDUxNjk1N30.bJgDduYAg7Wb7_EfPtEDc-dCU4oJOPKB6Kr-sZCc54U',
   );
-
   runApp(
     MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => ThemeProvider())],
