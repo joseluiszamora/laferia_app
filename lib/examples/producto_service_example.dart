@@ -102,9 +102,7 @@ class _ProductoServiceExampleState extends State<ProductoServiceExample> {
   Future<void> _crearProductoEjemplo() async {
     try {
       final nuevoProducto = Producto(
-        id:
-            DateTime.now().millisecondsSinceEpoch
-                .toString(), // En producción usar UUID
+        id: 0, // En inserción se genera automáticamente
         name: 'Producto de Ejemplo',
         slug: 'producto-ejemplo-${DateTime.now().millisecondsSinceEpoch}',
         description: 'Este es un producto de ejemplo creado desde la app',
@@ -119,10 +117,10 @@ class _ProductoServiceExampleState extends State<ProductoServiceExample> {
         lowStockAlert: 10,
         weight: 1.5,
         dimensions: {'width': 20.0, 'height': 15.0, 'depth': 10.0},
-        categoriaId: 'categoria-ejemplo', // Debe existir en la base de datos
-        marcaId: 'marca-ejemplo', // Debe existir en la base de datos
-        tiendaId: 'tienda-ejemplo',
-        status: ProductStatus.borrador,
+        categoryId: 1, // Debe existir en la base de datos
+        brandId: 1, // Debe existir en la base de datos
+        storeId: 1,
+        status: ProductStatus.draft,
         isAvailable: true,
         isFeatured: false,
         metaTitle: 'Producto de Ejemplo - La Feria',
@@ -132,42 +130,40 @@ class _ProductoServiceExampleState extends State<ProductoServiceExample> {
         saleCount: 0,
         atributos: [
           ProductoAtributos(
-            id: 'attr-1-${DateTime.now().millisecondsSinceEpoch}',
-            productoId: DateTime.now().millisecondsSinceEpoch.toString(),
-            nombre: 'Color',
-            valor: 'Azul',
-            tipo: 'color',
-            unidad: null,
-            orden: 1,
-            isVisible: true,
+            id: 0, // Se genera automáticamente
+            productId: 0, // Se asigna después de crear el producto
+            name: 'Color',
+            value: 'Azul',
+            type: 'color',
+            unity: null,
+            order: 1,
             createdAt: DateTime.now(),
           ),
           ProductoAtributos(
-            id: 'attr-2-${DateTime.now().millisecondsSinceEpoch}',
-            productoId: DateTime.now().millisecondsSinceEpoch.toString(),
-            nombre: 'Tamaño',
-            valor: 'Mediano',
-            tipo: 'size',
-            unidad: 'cm',
-            orden: 2,
-            isVisible: true,
+            id: 0,
+            productId: 0,
+            name: 'Tamaño',
+            value: 'Mediano',
+            type: 'size',
+            unity: 'cm',
+            order: 2,
             createdAt: DateTime.now(),
           ),
         ],
         medias: [
           ProductoMedias(
-            id: 'media-1-${DateTime.now().millisecondsSinceEpoch}',
-            productoId: DateTime.now().millisecondsSinceEpoch.toString(),
+            id: 0, // Se genera automáticamente
+            productId: 0, // Se asigna después de crear el producto
             type: MediaType.image,
             url: 'https://via.placeholder.com/400x400?text=Producto+Ejemplo',
             thumbnailUrl: 'https://via.placeholder.com/200x200?text=Thumb',
             width: 400,
             height: 400,
             fileSize: 50000,
-            orden: 1,
+            order: 1,
             isMain: true,
             isActive: true,
-            descripcion: 'Imagen principal del producto',
+            description: 'Imagen principal del producto',
             altText: 'Producto de ejemplo',
             metadata: {'source': 'ejemplo'},
             createdAt: DateTime.now(),
@@ -443,13 +439,13 @@ class ProductoCard extends StatelessWidget {
 
   Color _getStatusColor(ProductStatus status) {
     switch (status) {
-      case ProductStatus.publicado:
+      case ProductStatus.published:
         return Colors.green;
-      case ProductStatus.borrador:
+      case ProductStatus.draft:
         return Colors.orange;
-      case ProductStatus.archivado:
+      case ProductStatus.archived:
         return Colors.grey;
-      case ProductStatus.agotado:
+      case ProductStatus.exhausted:
         return Colors.red;
     }
   }
@@ -608,7 +604,7 @@ class ProductoDetailDialog extends StatelessWidget {
                         children:
                             producto.atributos.map((attr) {
                               return Chip(
-                                label: Text('${attr.nombre}: ${attr.valor}'),
+                                label: Text('${attr.name}: ${attr.value}'),
                                 backgroundColor: Colors.blue[50],
                               );
                             }).toList(),

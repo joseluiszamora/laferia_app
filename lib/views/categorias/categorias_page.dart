@@ -131,7 +131,7 @@ class CategoriasPage extends StatelessWidget {
     // Primero obtener todas las categorías principales
     final categoriasPrincipales =
         categorias
-            .where((cat) => cat.parentId == null || cat.parentId!.isEmpty)
+            .where((cat) => cat.parentId == null || cat.parentId! == 0)
             .toList();
 
     // Ordenar alfabéticamente
@@ -158,7 +158,7 @@ class CategoriasPage extends StatelessWidget {
   void _agregarSubcategoriasRecursivamente(
     List<CategoriaItem> resultado,
     List<Categoria> todasLasCategorias,
-    String parentId,
+    int parentId,
     int nivel,
   ) {
     // Encontrar todas las subcategorías directas del padre actual

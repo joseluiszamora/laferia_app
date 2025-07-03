@@ -3,108 +3,179 @@ import 'ubicacion.dart';
 import 'contacto.dart';
 import 'comentario.dart';
 
+enum StoreStatus {
+  active('active'),
+  inactive('inactive'),
+  pending('pending'),
+  suspend('suspend');
+
+  const StoreStatus(this.value);
+  final String value;
+
+  static StoreStatus fromString(String value) {
+    switch (value.toLowerCase()) {
+      case 'active':
+        return StoreStatus.active;
+      case 'inactive':
+        return StoreStatus.inactive;
+      case 'pending':
+        return StoreStatus.pending;
+      case 'suspend':
+        return StoreStatus.suspend;
+      default:
+        return StoreStatus.active;
+    }
+  }
+}
+
 class Tienda extends Equatable {
-  final String id;
-  final String nombre;
-  final String nombrePropietario;
+  final int id;
+  final String name;
+  final String ownerName;
   final Ubicacion ubicacion;
-  final String categoriaId;
+  final int categoryId;
   final List<String> productos;
   final Contacto? contacto;
-  final String? direccion;
-  final List<String> diasAtencion;
-  final String horarioAtencion;
-  final String? horario; // Mantener por compatibilidad
-  final double? calificacion;
+  final String? address;
+  final List<String> schedules;
+  final String operatingHours;
+  final StoreStatus status;
+  final double? averageRating;
+  final int totalComments;
   final List<Comentario> comentarios;
 
   const Tienda({
     required this.id,
-    required this.nombre,
-    required this.nombrePropietario,
+    required this.name,
+    required this.ownerName,
     required this.ubicacion,
-    required this.categoriaId,
+    required this.categoryId,
     this.productos = const [],
     this.contacto,
-    this.direccion,
-    this.diasAtencion = const ['Jueves', 'Domingo'],
-    this.horarioAtencion = '08:00 - 18:00',
-    this.horario,
-    this.calificacion,
+    this.address,
+    this.schedules = const ['Jueves', 'Domingo'],
+    this.operatingHours = '08:00 - 18:00',
+    this.status = StoreStatus.active,
+    this.averageRating,
+    this.totalComments = 0,
     this.comentarios = const [],
   });
 
+  // Getters para compatibilidad con código existente
+  String get tiendaId => id.toString();
+  String get nombre => name;
+  String get nombrePropietario => ownerName;
+  String get categoriaId => categoryId.toString();
+  String? get direccion => address;
+  List<String> get diasAtencion => schedules;
+  String get horarioAtencion => operatingHours;
+  String? get horario => operatingHours; // Compatibilidad
+  double? get calificacion => averageRating;
+
   factory Tienda.fromJson(Map<String, dynamic> json) {
     return Tienda(
-      id: json['id'],
-      nombre: json['nombre'],
-      nombrePropietario: json['nombre_propietario'],
-      ubicacion: Ubicacion.fromJson(json['ubicacion']),
-      categoriaId: json['categoria_id'],
-      productos: List<String>.from(json['productos'] ?? []),
+      id: json['id'] is int ? json['id'] : int.parse(json['id'].toString()),
+      name: json['name'] ?? '',
+      ownerName: json['owner_name'] ?? '',
+      ubicacion: Ubicacion.fromJson(json['ubicacion'] ?? json),
+      categoryId:
+          json['category_id'] is int
+              ? json['category_id']
+              : int.parse(json['category_id'].toString()),
+      productos: List<String>.from(json['products'] ?? json['productos'] ?? []),
       contacto:
-          json['contacto'] != null ? Contacto.fromJson(json['contacto']) : null,
-      direccion: json['direccion'],
-      diasAtencion: List<String>.from(
-        json['dias_atencion'] ?? ['Jueves', 'Domingo'],
+          json['contact'] != null
+              ? Contacto.fromJson(json['contact'])
+              : (json['contacto'] != null
+                  ? Contacto.fromJson(json['contacto'])
+                  : null),
+      address: json['address'] ?? json['direccion'],
+      schedules: List<String>.from(
+        json['schedules'] ?? json['dias_atencion'] ?? ['Jueves', 'Domingo'],
       ),
-      horarioAtencion: json['horario_atencion'] ?? '08:00 - 18:00',
-      horario: json['horario'], // Mantener por compatibilidad
-      calificacion: json['calificacion']?.toDouble(),
-      comentarios:
-          (json['comentarios'] as List<dynamic>?)
-              ?.map((comentario) => Comentario.fromJson(comentario))
-              .toList() ??
-          [],
+      operatingHours:
+          json['operating_hours'] ??
+          json['horario_atencion'] ??
+          '08:00 - 18:00',
+      status: StoreStatus.fromString(json['status'] ?? 'active'),
+      averageRating:
+          (json['average_rating'] ?? json['calificacion_promedio'])?.toDouble(),
+      totalComments: json['total_comments'] ?? json['total_comentarios'] ?? 0,
+      comentarios: [],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'nombre': nombre,
-      'nombre_propietario': nombrePropietario,
+      'name': name,
+      'owner_name': ownerName,
       'ubicacion': ubicacion.toJson(),
-      'categoria_id': categoriaId,
-      'productos': productos,
-      'contacto': contacto?.toJson(),
-      'direccion': direccion,
-      'dias_atencion': diasAtencion,
-      'horario_atencion': horarioAtencion,
-      'horario': horario,
-      'calificacion': calificacion,
-      'comentarios':
-          comentarios.map((comentario) => comentario.toJson()).toList(),
+      'category_id': categoryId,
+      'products': productos,
+      'contact': contacto?.toJson(),
+      'address': address,
+      'schedules': schedules,
+      'operating_hours': operatingHours,
+      'status': status.value,
+      'average_rating': averageRating,
+      'total_comments': totalComments,
     };
   }
 
   @override
   List<Object?> get props => [
     id,
-    nombre,
-    nombrePropietario,
+    name,
+    ownerName,
     ubicacion,
-    categoriaId,
+    categoryId,
     productos,
     contacto,
-    direccion,
-    diasAtencion,
-    horarioAtencion,
-    horario,
-    calificacion,
+    address,
+    schedules,
+    operatingHours,
+    status,
+    averageRating,
+    totalComments,
     comentarios,
   ];
 
-  // Método para calcular la calificación promedio basada en comentarios
-  double get calificacionPromedio {
-    if (comentarios.isEmpty) return 0.0;
-    final suma = comentarios.fold(
-      0.0,
-      (sum, comentario) => sum + comentario.calificacion,
+  Tienda copyWith({
+    int? id,
+    String? name,
+    String? ownerName,
+    Ubicacion? ubicacion,
+    int? categoryId,
+    List<String>? productos,
+    Contacto? contacto,
+    String? address,
+    List<String>? schedules,
+    String? operatingHours,
+    StoreStatus? status,
+    double? averageRating,
+    int? totalComments,
+    List<Comentario>? comentarios,
+  }) {
+    return Tienda(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      ownerName: ownerName ?? this.ownerName,
+      ubicacion: ubicacion ?? this.ubicacion,
+      categoryId: categoryId ?? this.categoryId,
+      productos: productos ?? this.productos,
+      contacto: contacto ?? this.contacto,
+      address: address ?? this.address,
+      schedules: schedules ?? this.schedules,
+      operatingHours: operatingHours ?? this.operatingHours,
+      status: status ?? this.status,
+      averageRating: averageRating ?? this.averageRating,
+      totalComments: totalComments ?? this.totalComments,
+      comentarios: comentarios ?? this.comentarios,
     );
-    return suma / comentarios.length;
   }
 
-  // Método para obtener el total de comentarios
-  int get totalComentarios => comentarios.length;
+  @override
+  String toString() =>
+      'Tienda(id: $id, name: $name, ownerName: $ownerName, categoryId: $categoryId, status: $status)';
 }

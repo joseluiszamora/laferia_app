@@ -31,7 +31,7 @@ class SelectSubcategoria extends CategoriasEvent {
 }
 
 class FilterByCategoria extends CategoriasEvent {
-  final String categoriaId;
+  final int categoriaId;
 
   const FilterByCategoria(this.categoriaId);
 
@@ -41,7 +41,7 @@ class FilterByCategoria extends CategoriasEvent {
 
 // Eventos para administración CRUD
 class CrearCategoria extends CategoriasEvent {
-  final String? parentId;
+  final int? parentId;
   final String name;
   final String slug;
   final String? description;
@@ -72,8 +72,8 @@ class CrearCategoria extends CategoriasEvent {
 }
 
 class ActualizarCategoria extends CategoriasEvent {
-  final String id;
-  final String? parentId;
+  final int id;
+  final int? parentId;
   final String name;
   final String slug;
   final String? description;
@@ -106,7 +106,7 @@ class ActualizarCategoria extends CategoriasEvent {
 }
 
 class EliminarCategoria extends CategoriasEvent {
-  final String id;
+  final int id;
 
   const EliminarCategoria(this.id);
 
@@ -141,7 +141,7 @@ class LimpiarFiltros extends CategoriasEvent {}
 class LimpiarSeleccion extends CategoriasEvent {}
 
 class SeleccionarParaEditar extends CategoriasEvent {
-  final String categoriaId;
+  final int categoriaId;
 
   const SeleccionarParaEditar(this.categoriaId);
 

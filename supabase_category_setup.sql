@@ -85,7 +85,8 @@ INSERT INTO "Category" (name, slug, description, icon, color) VALUES
 -- Oficina y Papelería
 ('Oficina y Papelería', 'oficina-papeleria', 'Artículos de oficina, papelería y equipos', 'briefcase', '#607D8B'),
 -- Otros y Varios
-('Otros y Varios', 'otros-varios', 'Productos diversos que no encajan en otras categorías', 'category', '#9E9E9E')
+('Otros y Varios', 'otros-varios', 'Productos diversos que no encajan en otras categorías', 'category', '#9E9E9E'),
+('Entidades Financieras', 'entidades-financieras', 'Cajeros, agencias de banco, entidades financieras', 'category', '#9E9E9E')
 ON CONFLICT (name) DO NOTHING;
 
 -- Obtener los IDs de las categorías principales para crear subcategorías
@@ -174,13 +175,17 @@ BEGIN
 
     -- COMIDA Y BEBIDAS  
     INSERT INTO "Category" (parent_category_id, name, slug, description, icon, color) VALUES
-    ('432d725a-6923-4f44-aec8-2ae8c4c1cb9e', 'Charquecán', 'charquecan', 'Plato tradicional de charque', 'meat', '#D32F2F'),
-    ('432d725a-6923-4f44-aec8-2ae8c4c1cb9e', 'Churrascos', 'churrascos', 'Carne a la parrilla', 'hamburger', '#8D6E63'),
-    ('432d725a-6923-4f44-aec8-2ae8c4c1cb9e', 'Llauchas', 'llauchas', 'Pan tradicional boliviano', 'bread', '#FFC107'),
-    ('432d725a-6923-4f44-aec8-2ae8c4c1cb9e', 'Api', 'api', 'Bebida tradicional de maíz morado', 'coffee', '#673AB7'),
-    ('432d725a-6923-4f44-aec8-2ae8c4c1cb9e', 'Salchipapas', 'salchipapas', 'Comida rápida popular', 'hamburger', '#FF5722'),
-    ('432d725a-6923-4f44-aec8-2ae8c4c1cb9e', 'Tortas', 'tortas', 'Pasteles y tortas', 'cake', '#E91E63'),
-    ('432d725a-6923-4f44-aec8-2ae8c4c1cb9e', 'Abarrotes', 'abarrotes', 'Productos de despensa', 'grocery', '#4CAF50');
+    ('6', 'Charquekan', 'charquekan', 'Plato tradicional de charque', 'meat', '#FF9800'),
+    ('6', 'Churrascos', 'churrascos', 'Carne a la parrilla', 'hamburger', '#FF9800'),
+    ('6', 'Llauchas', 'llauchas', 'Pan tradicional boliviano', 'bread', '#FF9800'),
+    ('6', 'Api', 'api', 'Bebida tradicional de maíz morado', 'coffee', '#FF9800'),
+    ('6', 'Salchipapas', 'salchipapas', 'Comida rápida popular', 'hamburger', '#FF9800'),
+    ('6', 'Hamburguesas', 'hamburguesas', 'Comida rápida', 'hamburger', '#FF9800'),
+    ('6', 'Tortas', 'tortas', 'Pasteles y tortas', 'cake', '#FF9800'),
+    ('6', 'Jugos y batidos', 'jugos-y-batidos', 'Jugos saludables', 'cake', '#FF9800'),
+    ('6', 'Salteñas', 'saltenas', 'salteñas', 'grocery', '#FF9800'),
+    ('6', 'Chicharron tradicional', 'chicharron-tradicional', 'Plato tradicional chicharron', 'meat', '#FF9800'),
+    ('6', 'Chicharron Cochabambino', 'chicharron-cochabambino', 'Plato tradicional cochabambino', 'meat', '#FF9800');
 
     -- SALUD Y BELLEZA
     INSERT INTO "Category" (parent_category_id, name, slug, description, icon, color) VALUES

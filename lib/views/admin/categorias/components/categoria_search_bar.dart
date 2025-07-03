@@ -18,7 +18,7 @@ class _CategoriaSearchBarState extends State<CategoriaSearchBar> {
   // Estados de filtros
   String _tipoFiltroSeleccionado = 'todas';
   String _estadoFiltroSeleccionado = 'activas';
-  String? _categoriaSeleccionada; // ID de la categoría principal seleccionada
+  int? _categoriaSeleccionada; // ID de la categoría principal seleccionada
 
   @override
   void dispose() {
@@ -221,9 +221,7 @@ class _CategoriaSearchBarState extends State<CategoriaSearchBar> {
 
     // Obtener categorías principales
     final categoriasPrincipales =
-        state.categorias
-            .where((cat) => cat.parentId == null || cat.parentId!.isEmpty)
-            .toList();
+        state.categorias.where((cat) => cat.parentId == null).toList();
 
     if (categoriasPrincipales.isEmpty) {
       return const SizedBox.shrink();
@@ -232,7 +230,7 @@ class _CategoriaSearchBarState extends State<CategoriaSearchBar> {
     return Row(
       children: [
         Expanded(
-          child: DropdownButtonFormField<String>(
+          child: DropdownButtonFormField<int?>(
             value: _categoriaSeleccionada,
             decoration: InputDecoration(
               labelText: 'Filtrar por categoría principal',
@@ -250,12 +248,12 @@ class _CategoriaSearchBarState extends State<CategoriaSearchBar> {
             ),
             isExpanded: true,
             items: [
-              const DropdownMenuItem(
+              const DropdownMenuItem<int?>(
                 value: null,
                 child: Text('Todas las categorías'),
               ),
               ...categoriasPrincipales.map((categoria) {
-                return DropdownMenuItem(
+                return DropdownMenuItem<int?>(
                   value: categoria.id,
                   child: Row(
                     children: [
@@ -527,15 +525,11 @@ class _CategoriaSearchBarState extends State<CategoriaSearchBar> {
   }
 
   // Método para obtener el nombre de una categoría por su ID
-  String _getNombreCategoria(String categoriaId, List<Categoria> categorias) {
+  String _getNombreCategoria(int categoriaId, List<Categoria> categorias) {
     final categoria = categorias.firstWhere(
       (cat) => cat.id == categoriaId,
       orElse:
-          () => const Categoria(
-            id: '',
-            name: 'Categoría no encontrada',
-            slug: '',
-          ),
+          () => Categoria(id: -1, name: 'Categoría no encontrada', slug: ''),
     );
     return categoria.name;
   }

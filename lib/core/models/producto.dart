@@ -3,32 +3,32 @@ import 'package:laferia/core/models/producto_atributos.dart';
 import 'package:laferia/core/models/producto_medias.dart';
 
 enum ProductStatus {
-  borrador('borrador'),
-  publicado('publicado'),
-  archivado('archivado'),
-  agotado('agotado');
+  draft('draft'),
+  published('published'),
+  archived('archived'),
+  exhausted('exhausted');
 
   const ProductStatus(this.value);
   final String value;
 
   static ProductStatus fromString(String value) {
     switch (value.toLowerCase()) {
-      case 'borrador':
-        return ProductStatus.borrador;
-      case 'publicado':
-        return ProductStatus.publicado;
-      case 'archivado':
-        return ProductStatus.archivado;
-      case 'agotado':
-        return ProductStatus.agotado;
+      case 'draft':
+        return ProductStatus.draft;
+      case 'published':
+        return ProductStatus.published;
+      case 'archived':
+        return ProductStatus.archived;
+      case 'exhausted':
+        return ProductStatus.exhausted;
       default:
-        return ProductStatus.borrador;
+        return ProductStatus.draft;
     }
   }
 }
 
 class Producto extends Equatable {
-  final String id;
+  final int id;
   final String name;
   final String slug;
   final String description;
@@ -46,9 +46,9 @@ class Producto extends Equatable {
   final double? weight; // en kg
   final Map<String, dynamic>? dimensions; // {width, height, depth} en cm
 
-  final String categoriaId;
-  final String? marcaId;
-  final String? tiendaId;
+  final int categoryId;
+  final int? brandId;
+  final int? storeId;
 
   final ProductStatus status;
   final bool isAvailable;
@@ -67,12 +67,6 @@ class Producto extends Equatable {
   final DateTime createdAt;
   final DateTime? updatedAt;
 
-  // final List<String> imagenesUrl;
-  // final String categoria;
-  // final String rubroId;
-  // final String subcategoriaId;
-  // final bool esFavorito;
-
   const Producto({
     required this.id,
     required this.name,
@@ -89,10 +83,10 @@ class Producto extends Equatable {
     this.lowStockAlert = 5,
     this.weight,
     this.dimensions,
-    required this.categoriaId,
-    this.marcaId,
-    this.tiendaId,
-    this.status = ProductStatus.borrador,
+    required this.categoryId,
+    this.brandId,
+    this.storeId,
+    this.status = ProductStatus.draft,
     this.isAvailable = true,
     this.isFeatured = false,
     this.metaTitle,
@@ -123,9 +117,9 @@ class Producto extends Equatable {
     lowStockAlert,
     weight,
     dimensions,
-    categoriaId,
-    marcaId,
-    tiendaId,
+    categoryId,
+    brandId,
+    storeId,
     status,
     isAvailable,
     isFeatured,
@@ -198,7 +192,7 @@ class Producto extends Equatable {
   /// Factory constructor para crear un Producto desde JSON (Supabase)
   factory Producto.fromJson(Map<String, dynamic> json) {
     return Producto(
-      id: json['id'] ?? '',
+      id: json['product_id'] ?? json['id'] ?? 0,
       name: json['name'] ?? '',
       slug: json['slug'] ?? '',
       description: json['description'] ?? '',
@@ -216,10 +210,10 @@ class Producto extends Equatable {
           json['dimensions'] != null
               ? Map<String, dynamic>.from(json['dimensions'])
               : null,
-      categoriaId: json['categoria_id'] ?? '',
-      marcaId: json['marca_id'],
-      tiendaId: json['tienda_id'],
-      status: ProductStatus.fromString(json['status'] ?? 'borrador'),
+      categoryId: json['category_id'] ?? 0,
+      brandId: json['brand_id'],
+      storeId: json['store_id'],
+      status: ProductStatus.fromString(json['status'] ?? 'draft'),
       isAvailable: json['is_available'] ?? true,
       isFeatured: json['is_featured'] ?? false,
       metaTitle: json['meta_title'],
@@ -228,8 +222,8 @@ class Producto extends Equatable {
       viewCount: json['view_count'] ?? 0,
       saleCount: json['sale_count'] ?? 0,
       atributos:
-          json['atributos'] != null
-              ? (json['atributos'] as List)
+          json['atributos'] != null || json['attributes'] != null
+              ? (json['atributos'] ?? json['attributes'] as List)
                   .map((attr) => ProductoAtributos.fromJson(attr))
                   .toList()
               : [],
@@ -253,7 +247,7 @@ class Producto extends Equatable {
   /// Convierte el Producto a JSON para Supabase
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      'product_id': id,
       'name': name,
       'slug': slug,
       'description': description,
@@ -268,9 +262,9 @@ class Producto extends Equatable {
       'low_stock_alert': lowStockAlert,
       'weight': weight,
       'dimensions': dimensions,
-      'categoria_id': categoriaId,
-      'marca_id': marcaId,
-      'tienda_id': tiendaId,
+      'category_id': categoryId,
+      'brand_id': brandId,
+      'store_id': storeId,
       'status': status.value,
       'is_available': isAvailable,
       'is_featured': isFeatured,
@@ -286,7 +280,7 @@ class Producto extends Equatable {
 
   /// Factory constructor para crear una copia del producto con campos modificados
   Producto copyWith({
-    String? id,
+    int? id,
     String? name,
     String? slug,
     String? description,
@@ -301,9 +295,9 @@ class Producto extends Equatable {
     int? lowStockAlert,
     double? weight,
     Map<String, dynamic>? dimensions,
-    String? categoriaId,
-    String? marcaId,
-    String? tiendaId,
+    int? categoryId,
+    int? brandId,
+    int? storeId,
     ProductStatus? status,
     bool? isAvailable,
     bool? isFeatured,
@@ -333,9 +327,9 @@ class Producto extends Equatable {
       lowStockAlert: lowStockAlert ?? this.lowStockAlert,
       weight: weight ?? this.weight,
       dimensions: dimensions ?? this.dimensions,
-      categoriaId: categoriaId ?? this.categoriaId,
-      marcaId: marcaId ?? this.marcaId,
-      tiendaId: tiendaId ?? this.tiendaId,
+      categoryId: categoryId ?? this.categoryId,
+      brandId: brandId ?? this.brandId,
+      storeId: storeId ?? this.storeId,
       status: status ?? this.status,
       isAvailable: isAvailable ?? this.isAvailable,
       isFeatured: isFeatured ?? this.isFeatured,
@@ -353,6 +347,6 @@ class Producto extends Equatable {
 
   @override
   String toString() {
-    return 'Producto{id: $id, name: $name, slug: $slug, price: $price, discountedPrice: $discountedPrice, status: $status, categoriaId: $categoriaId, marcaId: $marcaId, stock: $stock, isAvailable: $isAvailable, isFeatured: $isFeatured}';
+    return 'Producto{id: $id, name: $name, slug: $slug, price: $price, discountedPrice: $discountedPrice, status: $status, categoryId: $categoryId, brandId: $brandId, stock: $stock, isAvailable: $isAvailable, isFeatured: $isFeatured}';
   }
 }

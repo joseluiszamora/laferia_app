@@ -18,7 +18,7 @@ class TiendasLoaded extends TiendasState {
   final Tienda? selectedTienda;
   final Tienda? tiendaParaEditar;
   final String? terminoBusqueda;
-  final String? categoriaFiltro;
+  final int? categoriaFiltro;
 
   const TiendasLoaded({
     required this.tiendas,
@@ -35,7 +35,7 @@ class TiendasLoaded extends TiendasState {
     Tienda? selectedTienda,
     Tienda? tiendaParaEditar,
     String? terminoBusqueda,
-    String? categoriaFiltro,
+    int? categoriaFiltro,
     bool clearTiendaParaEditar = false,
     bool clearTerminoBusqueda = false,
     bool clearCategoriaFiltro = false,
@@ -76,10 +76,10 @@ class TiendasLoaded extends TiendasState {
     }
 
     // Aplicar filtro por categoría
-    if (categoriaFiltro != null && categoriaFiltro!.isNotEmpty) {
+    if (categoriaFiltro != null) {
       resultado =
           resultado
-              .where((tienda) => tienda.categoriaId == categoriaFiltro)
+              .where((tienda) => tienda.categoryId == categoriaFiltro)
               .toList();
     }
 
@@ -132,7 +132,7 @@ class TiendaActualizada extends TiendasState {
 class TiendaEliminandose extends TiendasState {}
 
 class TiendaEliminada extends TiendasState {
-  final String tiendaId;
+  final int tiendaId;
 
   const TiendaEliminada(this.tiendaId);
 

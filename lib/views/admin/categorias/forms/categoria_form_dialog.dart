@@ -7,8 +7,8 @@ import 'package:laferia/core/blocs/categorias/categorias_state.dart';
 import 'package:laferia/core/models/categoria.dart';
 
 class CategoriaFormDialog extends StatefulWidget {
-  final String? categoriaId; // Para editar
-  final String? parentCategoriaId; // Para crear subcategoría
+  final int? categoriaId; // Para editar
+  final int? parentCategoriaId; // Para crear subcategoría
 
   const CategoriaFormDialog({
     super.key,
@@ -28,7 +28,7 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
 
   String? _selectedIcon;
   String? _selectedColor;
-  String? _selectedParentId;
+  int? _selectedParentId;
 
   bool get isEditing => widget.categoriaId != null;
   bool get isCreatingSubcategory => widget.parentCategoriaId != null;
@@ -36,36 +36,27 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
   @override
   void initState() {
     super.initState();
-
-    // Inicializar valores por defecto
     _selectedIcon = 'category';
     _selectedColor = '#2196F3';
     _selectedParentId = isCreatingSubcategory ? widget.parentCategoriaId : null;
-
     if (isEditing) {
       _loadCategoriaData();
     }
-
-    // Auto-generar slug cuando cambie el nombre
     _nameController.addListener(_generateSlug);
   }
 
   void _loadCategoriaData() {
     final state = context.read<CategoriasBloc>().state;
     if (state is CategoriasLoaded) {
-      // Buscar en todasLasCategorias para evitar problemas con filtros
       final categoria = state.todasLasCategorias.firstWhere(
         (cat) => cat.id == widget.categoriaId,
       );
-
       _nameController.text = categoria.name;
       _slugController.text = categoria.slug;
       _descriptionController.text = categoria.description ?? '';
       _selectedIcon = categoria.icon ?? 'category';
       _selectedColor = categoria.color ?? '#2196F3';
-      // Manejar parentId correctamente: si es vacío o null, asignar null
-      _selectedParentId =
-          (categoria.parentId?.isEmpty ?? true) ? null : categoria.parentId;
+      _selectedParentId = categoria.parentId;
     }
   }
 
@@ -344,11 +335,11 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
             );
           }
           print(
-            'Principales disponibles: ${categoriasDisponibles.where((cat) => cat.parentId == null || cat.parentId!.isEmpty).length}',
+            'Principales disponibles: ${categoriasDisponibles.where((cat) => cat.parentId == null).length}',
           );
           print('=====================================');
 
-          return DropdownButtonFormField<String>(
+          return DropdownButtonFormField<int>(
             value: _selectedParentId,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
@@ -586,49 +577,49 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
     );
   }
 
-  // Función para calcular el nivel jerárquico de una categoría por su ID
-  int _calcularNivelCategoria(String categoriaId, List<Categoria> categorias) {
-    final categoria = categorias.firstWhere(
+  // Cambia _calcularNivelCategoria y _obtenerDescendientes:
+  int _calcularNivelCategoria(int categoriaId, List<Categoria> categorias) {
+    int nivel = 0;
+    Categoria? categoria = categorias.firstWhere(
       (cat) => cat.id == categoriaId,
-      orElse: () => const Categoria(id: '', name: '', slug: ''),
+      orElse: () => const Categoria(id: 0, name: '', slug: ''),
     );
-
-    if (categoria.id.isEmpty ||
-        categoria.parentId == null ||
-        categoria.parentId!.isEmpty) {
-      return 0; // Categoría principal
-    }
-
-    int nivel = 1;
-    String? currentParentId = categoria.parentId;
-
-    while (currentParentId != null && currentParentId.isNotEmpty) {
-      final parent = categorias.firstWhere(
-        (cat) => cat.id == currentParentId,
-        orElse: () => const Categoria(id: '', name: '', slug: ''),
+    while (categoria != null && categoria.parentId != null) {
+      nivel++;
+      final parentId = categoria.parentId;
+      if (parentId == null) break;
+      categoria = categorias.firstWhere(
+        (cat) => cat.id == parentId,
+        orElse: () => const Categoria(id: 0, name: '', slug: ''),
       );
+      if (categoria.id == 0) break;
+    }
+    return nivel;
+  }
 
-      if (parent.id.isEmpty) break;
-
-      currentParentId = parent.parentId;
-      if (currentParentId != null && currentParentId.isNotEmpty) {
-        nivel++;
+  Set<int> _obtenerDescendientes(int categoriaId, List<Categoria> categorias) {
+    final Set<int> descendientes = {};
+    void buscarDescendientes(int parentId) {
+      final hijos = categorias.where((cat) => cat.parentId == parentId);
+      for (final hijo in hijos) {
+        descendientes.add(hijo.id);
+        buscarDescendientes(hijo.id);
       }
     }
 
-    return nivel;
+    buscarDescendientes(categoriaId);
+    return descendientes;
   }
 
   // Función para ordenar categorías jerárquicamente
   List<Categoria> _ordenarCategoriesJerarquicamente(
     List<Categoria> categorias,
   ) {
-    final Map<String?, List<Categoria>> categoriasMap = {};
+    final Map<int?, List<Categoria>> categoriasMap = {};
 
     // Agrupar categorías por parentId
     for (final categoria in categorias) {
-      final parentId =
-          categoria.parentId?.isEmpty == true ? null : categoria.parentId;
+      final parentId = categoria.parentId == 0 ? null : categoria.parentId;
       categoriasMap[parentId] ??= [];
       categoriasMap[parentId]!.add(categoria);
     }
@@ -636,7 +627,7 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
     List<Categoria> resultado = [];
 
     // Función recursiva para agregar categorías en orden jerárquico
-    void agregarCategoriasRecursivamente(String? parentId, int nivel) {
+    void agregarCategoriasRecursivamente(int? parentId, int nivel) {
       final categoriasDelNivel = categoriasMap[parentId] ?? [];
       categoriasDelNivel.sort((a, b) => a.name.compareTo(b.name));
 
@@ -651,29 +642,6 @@ class _CategoriaFormDialogState extends State<CategoriaFormDialog> {
     agregarCategoriasRecursivamente(null, 0);
 
     return resultado;
-  }
-
-  // Función para obtener todos los descendientes (subcategorías) de una categoría
-  Set<String> _obtenerDescendientes(
-    String categoriaId,
-    List<Categoria> todasLasCategorias,
-  ) {
-    final Set<String> descendientes = {};
-
-    // Función recursiva para encontrar todos los descendientes
-    void buscarDescendientes(String parentId) {
-      final hijos =
-          todasLasCategorias.where((cat) => cat.parentId == parentId).toList();
-
-      for (final hijo in hijos) {
-        descendientes.add(hijo.id);
-        // Recursivamente buscar los descendientes de este hijo
-        buscarDescendientes(hijo.id);
-      }
-    }
-
-    buscarDescendientes(categoriaId);
-    return descendientes;
   }
 
   void _submitForm() {

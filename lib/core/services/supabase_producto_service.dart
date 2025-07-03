@@ -7,9 +7,9 @@ class SupabaseProductoService {
   static final SupabaseClient _supabase = Supabase.instance.client;
 
   // Tablas
-  static const String _tablaProducto = 'Producto';
-  static const String _tablaProductoAtributos = 'ProductoAtributos';
-  static const String _tablaProductoMedias = 'ProductoMedias';
+  static const String _tablaProducto = 'Product';
+  static const String _tablaProductoAtributos = 'ProductAttributes';
+  static const String _tablaProductoMedias = 'ProductMedias';
   static const String _vistaProductoCompleto = 'ProductoCompleto';
   static const String _vistaProductoPublico = 'ProductoPublico';
 
@@ -17,9 +17,9 @@ class SupabaseProductoService {
   static Future<List<Producto>> obtenerProductos({
     int limit = 20,
     int offset = 0,
-    String? categoria,
-    String? marca,
-    String? tienda,
+    int? categoria,
+    int? marca,
+    int? tienda,
     ProductStatus? status,
     bool? disponible,
     bool? destacado,
@@ -36,13 +36,13 @@ class SupabaseProductoService {
 
       // Aplicar filtros
       if (categoria != null) {
-        query = query.eq('categoria_id', categoria);
+        query = query.eq('category_id', categoria);
       }
       if (marca != null) {
-        query = query.eq('marca_id', marca);
+        query = query.eq('brand_id', marca);
       }
       if (tienda != null) {
-        query = query.eq('tienda_id', tienda);
+        query = query.eq('store_id', tienda);
       }
       if (status != null) {
         query = query.eq('status', status.value);
@@ -84,8 +84,8 @@ class SupabaseProductoService {
   static Future<List<Producto>> obtenerProductosPublicos({
     int limit = 20,
     int offset = 0,
-    String? categoria,
-    String? marca,
+    int? categoria,
+    int? marca,
     double? precioMin,
     double? precioMax,
     String? busqueda,
@@ -97,10 +97,10 @@ class SupabaseProductoService {
 
       // Aplicar filtros
       if (categoria != null) {
-        query = query.eq('categoria_id', categoria);
+        query = query.eq('category_id', categoria);
       }
       if (marca != null) {
-        query = query.eq('marca_id', marca);
+        query = query.eq('brand_id', marca);
       }
       if (precioMin != null) {
         query = query.gte('price', precioMin);
@@ -127,13 +127,13 @@ class SupabaseProductoService {
   }
 
   /// Obtiene un producto por ID con todos sus detalles
-  static Future<Producto?> obtenerProductoPorId(String id) async {
+  static Future<Producto?> obtenerProductoPorId(dynamic id) async {
     try {
       final response =
           await _supabase
               .from(_vistaProductoCompleto)
               .select()
-              .eq('id', id)
+              .eq('product_id', id)
               .single();
 
       return _mapearProductoCompleto(response);
@@ -163,7 +163,6 @@ class SupabaseProductoService {
     try {
       // Crear el producto principal
       final productoData = {
-        'id': producto.id,
         'name': producto.name,
         'slug': producto.slug,
         'description': producto.description,
@@ -178,9 +177,9 @@ class SupabaseProductoService {
         'low_stock_alert': producto.lowStockAlert,
         'weight': producto.weight,
         'dimensions': producto.dimensions,
-        'categoria_id': producto.categoriaId,
-        'marca_id': producto.marcaId,
-        'tienda_id': producto.tiendaId,
+        'category_id': producto.categoryId,
+        'brand_id': producto.brandId,
+        'store_id': producto.storeId,
         'status': producto.status.value,
         'is_available': producto.isAvailable,
         'is_featured': producto.isFeatured,
@@ -191,29 +190,33 @@ class SupabaseProductoService {
         'sale_count': producto.saleCount,
       };
 
-      await _supabase.from(_tablaProducto).insert(productoData);
+      final response =
+          await _supabase
+              .from(_tablaProducto)
+              .insert(productoData)
+              .select()
+              .single();
+
+      final newProductId = response['id'] as int;
 
       // Crear atributos
       if (producto.atributos.isNotEmpty) {
-        await _crearAtributos(producto.id, producto.atributos);
+        await _crearAtributos(newProductId, producto.atributos);
       }
 
       // Crear medias
       if (producto.medias.isNotEmpty) {
-        await _crearMedias(producto.id, producto.medias);
+        await _crearMedias(newProductId, producto.medias);
       }
 
-      return await obtenerProductoPorId(producto.id) ?? producto;
+      return await obtenerProductoPorId(newProductId) ?? producto;
     } catch (e) {
       throw Exception('Error al crear producto: $e');
     }
   }
 
   /// Actualiza un producto existente
-  static Future<Producto> actualizarProducto(
-    String id,
-    Producto producto,
-  ) async {
+  static Future<Producto> actualizarProducto(int id, Producto producto) async {
     try {
       final productoData = {
         'name': producto.name,
@@ -230,9 +233,9 @@ class SupabaseProductoService {
         'low_stock_alert': producto.lowStockAlert,
         'weight': producto.weight,
         'dimensions': producto.dimensions,
-        'categoria_id': producto.categoriaId,
-        'marca_id': producto.marcaId,
-        'tienda_id': producto.tiendaId,
+        'category_id': producto.categoryId,
+        'brand_id': producto.brandId,
+        'store_id': producto.storeId,
         'status': producto.status.value,
         'is_available': producto.isAvailable,
         'is_featured': producto.isFeatured,
@@ -253,7 +256,7 @@ class SupabaseProductoService {
   }
 
   /// Elimina un producto y todos sus datos relacionados
-  static Future<void> eliminarProducto(String id) async {
+  static Future<void> eliminarProducto(int id) async {
     try {
       await _supabase.from(_tablaProducto).delete().eq('id', id);
     } catch (e) {
@@ -262,10 +265,7 @@ class SupabaseProductoService {
   }
 
   /// Cambia el estado de un producto
-  static Future<void> cambiarEstadoProducto(
-    String id,
-    String nuevoEstado,
-  ) async {
+  static Future<void> cambiarEstadoProducto(int id, String nuevoEstado) async {
     try {
       await _supabase
           .from(_tablaProducto)
@@ -280,7 +280,7 @@ class SupabaseProductoService {
   }
 
   /// Alterna la disponibilidad de un producto
-  static Future<void> alternarDisponibilidad(String id) async {
+  static Future<void> alternarDisponibilidad(int id) async {
     try {
       final producto =
           await _supabase
@@ -344,10 +344,12 @@ class SupabaseProductoService {
   ) async {
     try {
       final data = {
-        'id': atributo.id,
-        'producto_id': atributo.productoId,
-        'nombre': atributo.nombre,
-        'valor': atributo.valor,
+        'product_id': atributo.productId,
+        'name': atributo.name,
+        'value': atributo.value,
+        'type': atributo.type,
+        'unity': atributo.unity,
+        'order': atributo.order,
       };
 
       final response =
@@ -365,11 +367,17 @@ class SupabaseProductoService {
 
   /// Actualiza un atributo existente
   static Future<ProductoAtributos> actualizarAtributo(
-    String id,
+    int id,
     ProductoAtributos atributo,
   ) async {
     try {
-      final data = {'nombre': atributo.nombre, 'valor': atributo.valor};
+      final data = {
+        'name': atributo.name,
+        'value': atributo.value,
+        'type': atributo.type,
+        'unity': atributo.unity,
+        'order': atributo.order,
+      };
 
       final response =
           await _supabase
@@ -386,7 +394,7 @@ class SupabaseProductoService {
   }
 
   /// Elimina un atributo
-  static Future<void> eliminarAtributo(String id) async {
+  static Future<void> eliminarAtributo(int id) async {
     try {
       await _supabase.from(_tablaProductoAtributos).delete().eq('id', id);
     } catch (e) {
@@ -398,14 +406,14 @@ class SupabaseProductoService {
 
   /// Obtiene todas las medias de un producto
   static Future<List<ProductoMedias>> obtenerMediasProducto(
-    String productoId,
+    int productoId,
   ) async {
     try {
       final response = await _supabase
           .from(_tablaProductoMedias)
           .select()
-          .eq('producto_id', productoId)
-          .order('orden', ascending: true);
+          .eq('product_id', productoId)
+          .order('order', ascending: true);
 
       final List<dynamic> data = response as List<dynamic>;
       return data.map((json) => ProductoMedias.fromJson(json)).toList();
@@ -432,7 +440,7 @@ class SupabaseProductoService {
 
   /// Actualiza una media existente
   static Future<ProductoMedias> actualizarMedia(
-    String id,
+    int id,
     ProductoMedias media,
   ) async {
     try {
@@ -454,7 +462,7 @@ class SupabaseProductoService {
   }
 
   /// Elimina una media
-  static Future<void> eliminarMedia(String id) async {
+  static Future<void> eliminarMedia(int id) async {
     try {
       await _supabase.from(_tablaProductoMedias).delete().eq('id', id);
     } catch (e) {
@@ -464,15 +472,15 @@ class SupabaseProductoService {
 
   /// Establece una imagen como principal
   static Future<void> establecerImagenPrincipal(
-    String productoId,
-    String mediaId,
+    int productoId,
+    int mediaId,
   ) async {
     try {
       // Primero quitar el estado principal de todas las imágenes del producto
       await _supabase
           .from(_tablaProductoMedias)
           .update({'is_main': false})
-          .eq('producto_id', productoId);
+          .eq('product_id', productoId);
 
       // Luego establecer la nueva imagen principal
       await _supabase
@@ -488,7 +496,7 @@ class SupabaseProductoService {
 
   /// Busca productos por categoría
   static Future<List<Producto>> buscarPorCategoria(
-    String categoriaId, {
+    int categoriaId, {
     int limit = 20,
     int offset = 0,
   }) async {
@@ -501,7 +509,7 @@ class SupabaseProductoService {
 
   /// Busca productos por marca
   static Future<List<Producto>> buscarPorMarca(
-    String marcaId, {
+    int marcaId, {
     int limit = 20,
     int offset = 0,
   }) async {
@@ -567,7 +575,7 @@ class SupabaseProductoService {
   /// Mapea los datos de la vista completa a un objeto Producto
   static Producto _mapearProductoCompleto(Map<String, dynamic> json) {
     return Producto(
-      id: json['id'],
+      id: json['id'] is int ? json['id'] : int.parse(json['id'].toString()),
       name: json['name'],
       slug: json['slug'],
       description: json['description'],
@@ -585,10 +593,23 @@ class SupabaseProductoService {
           json['dimensions'] != null
               ? Map<String, dynamic>.from(json['dimensions'])
               : null,
-      categoriaId: json['categoria_id'],
-      marcaId: json['marca_id'],
-      tiendaId: json['tienda_id'],
-      status: ProductStatus.fromString(json['status'] ?? 'borrador'),
+      categoryId:
+          json['category_id'] is int
+              ? json['category_id']
+              : int.parse(json['category_id'].toString()),
+      brandId:
+          json['brand_id'] != null
+              ? (json['brand_id'] is int
+                  ? json['brand_id']
+                  : int.parse(json['brand_id'].toString()))
+              : null,
+      storeId:
+          json['store_id'] != null
+              ? (json['store_id'] is int
+                  ? json['store_id']
+                  : int.parse(json['store_id'].toString()))
+              : null,
+      status: ProductStatus.fromString(json['status'] ?? 'draft'),
       isAvailable: json['is_available'] ?? true,
       isFeatured: json['is_featured'] ?? false,
       metaTitle: json['meta_title'],
@@ -628,17 +649,19 @@ class SupabaseProductoService {
 
   /// Crea los atributos de un producto
   static Future<void> _crearAtributos(
-    String productoId,
+    int productoId,
     List<ProductoAtributos> atributos,
   ) async {
     final atributosData =
         atributos
             .map(
               (attr) => {
-                'id': attr.id,
-                'producto_id': productoId,
-                'nombre': attr.nombre,
-                'valor': attr.valor,
+                'product_id': productoId,
+                'name': attr.name,
+                'value': attr.value,
+                'type': attr.type,
+                'unity': attr.unity,
+                'order': attr.order,
               },
             )
             .toList();
@@ -648,12 +671,12 @@ class SupabaseProductoService {
 
   /// Crea las medias de un producto
   static Future<void> _crearMedias(
-    String productoId,
+    int productoId,
     List<ProductoMedias> medias,
   ) async {
     final mediasData =
         medias
-            .map((media) => {...media.toJson(), 'producto_id': productoId})
+            .map((media) => {...media.toJson(), 'product_id': productoId})
             .toList();
 
     await _supabase.from(_tablaProductoMedias).insert(mediasData);

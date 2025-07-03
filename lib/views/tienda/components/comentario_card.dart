@@ -67,12 +67,19 @@ class ComentarioCard extends StatelessWidget {
                           _buildEstrellas(comentario.calificacion),
                           const SizedBox(width: 8),
                           Text(
-                            comentario.tiempoTranscurrido,
+                            'Hace x minutos',
                             style: TextStyle(
                               color: Colors.grey.shade600,
                               fontSize: 12,
                             ),
                           ),
+                          // Text(
+                          //   comentario.tiempoTranscurrido,
+                          //   style: TextStyle(
+                          //     color: Colors.grey.shade600,
+                          //     fontSize: 12,
+                          //   ),
+                          // ),
                         ],
                       ),
                     ],

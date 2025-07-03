@@ -1,85 +1,86 @@
 import 'package:equatable/equatable.dart';
 
 class Comentario extends Equatable {
-  final String id;
-  final String tiendaId;
-  final String nombreUsuario;
+  final int id;
+  final int storeId;
+  final String userName;
   final String? avatarUrl;
-  final String comentario;
-  final double calificacion;
-  final DateTime fechaCreacion;
-  final bool verificado;
-  final List<String> imagenes;
+  final String comment;
+  final double rating;
+  final DateTime createdAt;
+  final bool isVerified;
+  final List<String> images;
 
   const Comentario({
     required this.id,
-    required this.tiendaId,
-    required this.nombreUsuario,
+    required this.storeId,
+    required this.userName,
     this.avatarUrl,
-    required this.comentario,
-    required this.calificacion,
-    required this.fechaCreacion,
-    this.verificado = false,
-    this.imagenes = const [],
+    required this.comment,
+    required this.rating,
+    required this.createdAt,
+    this.isVerified = false,
+    this.images = const [],
   });
+
+  // Getters para compatibilidad con código existente
+  String get comentarioId => id.toString();
+  String get tiendaId => storeId.toString();
+  String get nombreUsuario => userName;
+  String get comentario => comment;
+  double get calificacion => rating;
+  DateTime get fechaCreacion => createdAt;
+  bool get verificado => isVerified;
+  List<String> get imagenes => images;
 
   factory Comentario.fromJson(Map<String, dynamic> json) {
     return Comentario(
-      id: json['id'],
-      tiendaId: json['tienda_id'],
-      nombreUsuario: json['nombre_usuario'],
+      id: json['id'] is int ? json['id'] : int.parse(json['id'].toString()),
+      storeId:
+          json['store_id'] is int
+              ? json['store_id']
+              : int.parse(json['store_id'].toString()),
+      userName: json['user_name'] ?? '',
       avatarUrl: json['avatar_url'],
-      comentario: json['comentario'],
-      calificacion: json['calificacion']?.toDouble() ?? 0.0,
-      fechaCreacion: DateTime.parse(json['fecha_creacion']),
-      verificado: json['verificado'] ?? false,
-      imagenes: List<String>.from(json['imagenes'] ?? []),
+      comment: json['comment'] ?? '',
+      rating: (json['rating'] ?? 0.0).toDouble(),
+      createdAt:
+          json['created_at'] != null
+              ? DateTime.parse(json['created_at'])
+              : DateTime.now(),
+      isVerified: json['is_verified'] ?? false,
+      images: List<String>.from(json['images'] ?? []),
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'tienda_id': tiendaId,
-      'nombre_usuario': nombreUsuario,
+      'store_id': storeId,
+      'user_name': userName,
       'avatar_url': avatarUrl,
-      'comentario': comentario,
-      'calificacion': calificacion,
-      'fecha_creacion': fechaCreacion.toIso8601String(),
-      'verificado': verificado,
-      'imagenes': imagenes,
+      'comment': comment,
+      'rating': rating,
+      'created_at': createdAt.toIso8601String(),
+      'is_verified': isVerified,
+      'images': images,
     };
-  }
-
-  // Método para obtener el tiempo transcurrido de forma legible
-  String get tiempoTranscurrido {
-    final now = DateTime.now();
-    final difference = now.difference(fechaCreacion);
-
-    if (difference.inDays > 30) {
-      final months = (difference.inDays / 30).floor();
-      return 'hace ${months} ${months == 1 ? 'mes' : 'meses'}';
-    } else if (difference.inDays > 0) {
-      return 'hace ${difference.inDays} ${difference.inDays == 1 ? 'día' : 'días'}';
-    } else if (difference.inHours > 0) {
-      return 'hace ${difference.inHours} ${difference.inHours == 1 ? 'hora' : 'horas'}';
-    } else if (difference.inMinutes > 0) {
-      return 'hace ${difference.inMinutes} ${difference.inMinutes == 1 ? 'minuto' : 'minutos'}';
-    } else {
-      return 'hace un momento';
-    }
   }
 
   @override
   List<Object?> get props => [
     id,
-    tiendaId,
-    nombreUsuario,
+    storeId,
+    userName,
     avatarUrl,
-    comentario,
-    calificacion,
-    fechaCreacion,
-    verificado,
-    imagenes,
+    comment,
+    rating,
+    createdAt,
+    isVerified,
+    images,
   ];
+
+  @override
+  String toString() =>
+      'Comentario(id: $id, storeId: $storeId, userName: $userName, comment: $comment, rating: $rating, createdAt: $createdAt, isVerified: $isVerified)';
 }

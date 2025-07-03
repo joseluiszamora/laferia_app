@@ -21,7 +21,7 @@ class CategoriasLoaded extends CategoriasState {
   final String? terminoBusqueda;
   final String? tipoFiltro; // 'todas', 'principales', 'subcategorias'
   final String? estadoFiltro; // 'activas', 'inactivas', 'todas'
-  final String?
+  final int?
   categoriaPrincipalFiltro; // ID de categoría principal para filtrar subcategorías
 
   const CategoriasLoaded({
@@ -45,7 +45,7 @@ class CategoriasLoaded extends CategoriasState {
     String? terminoBusqueda,
     String? tipoFiltro,
     String? estadoFiltro,
-    String? categoriaPrincipalFiltro,
+    int? categoriaPrincipalFiltro,
     bool clearCategoriaParaEditar = false,
     bool clearTerminoBusqueda = false,
     bool clearCategoriaPrincipalFiltro = false,
@@ -78,15 +78,9 @@ class CategoriasLoaded extends CategoriasState {
 
     // Aplicar filtro de tipo
     if (tipoFiltro == 'principales') {
-      resultado =
-          resultado
-              .where((cat) => cat.parentId == null || cat.parentId!.isEmpty)
-              .toList();
+      resultado = resultado.where((cat) => cat.parentId == null).toList();
     } else if (tipoFiltro == 'subcategorias') {
-      resultado =
-          resultado
-              .where((cat) => cat.parentId != null && cat.parentId!.isNotEmpty)
-              .toList();
+      resultado = resultado.where((cat) => cat.parentId != null).toList();
     }
 
     // Aplicar filtro de estado (por ahora todas las categorías están activas)
@@ -100,8 +94,7 @@ class CategoriasLoaded extends CategoriasState {
     // Para 'activas' (default), mantener todas ya que todas están activas
 
     // Aplicar filtro por categoría principal (mostrar solo sus subcategorías)
-    if (categoriaPrincipalFiltro != null &&
-        categoriaPrincipalFiltro!.isNotEmpty) {
+    if (categoriaPrincipalFiltro != null) {
       resultado =
           resultado.where((cat) {
             // Mostrar la categoría principal seleccionada
@@ -134,10 +127,10 @@ class CategoriasLoaded extends CategoriasState {
   // Método auxiliar para verificar si una categoría pertenece a una categoría principal
   bool _perteneceACategoriaPrincipal(
     Categoria categoria,
-    String categoriaPrincipalId,
+    int categoriaPrincipalId,
     List<Categoria> todasLasCategorias,
   ) {
-    if (categoria.parentId == null || categoria.parentId!.isEmpty) {
+    if (categoria.parentId == null) {
       return false; // Es una categoría principal, no una subcategoría
     }
 
@@ -147,18 +140,18 @@ class CategoriasLoaded extends CategoriasState {
     }
 
     // Verificar si es hija indirecta (nieta, bisnieta, etc.)
-    String? currentParentId = categoria.parentId;
-    while (currentParentId != null && currentParentId.isNotEmpty) {
+    int? currentParentId = categoria.parentId;
+    while (currentParentId != null) {
       if (currentParentId == categoriaPrincipalId) {
         return true;
       }
 
       final parent = todasLasCategorias.firstWhere(
         (cat) => cat.id == currentParentId,
-        orElse: () => const Categoria(id: '', name: '', slug: ''),
+        orElse: () => const Categoria(id: 0, name: '', slug: ''),
       );
 
-      if (parent.id.isEmpty) break;
+      if (parent.id == 0) break;
       currentParentId = parent.parentId;
     }
 
@@ -214,7 +207,7 @@ class CategoriaActualizada extends CategoriasState {
 class CategoriaEliminandose extends CategoriasState {}
 
 class CategoriaEliminada extends CategoriasState {
-  final String categoriaId;
+  final int categoriaId;
 
   const CategoriaEliminada(this.categoriaId);
 

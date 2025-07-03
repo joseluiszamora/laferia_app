@@ -11,7 +11,7 @@ import '../../../../core/services/categoria_service.dart';
 import '../components/location_picker_map.dart';
 
 class TiendaFormDialog extends StatefulWidget {
-  final String? tiendaId; // Para editar
+  final int? tiendaId; // Para editar
 
   const TiendaFormDialog({super.key, this.tiendaId});
 
@@ -27,7 +27,7 @@ class _TiendaFormDialogState extends State<TiendaFormDialog> {
   final _telefonoController = TextEditingController();
   final _horarioController = TextEditingController();
 
-  String? _selectedCategoriaId;
+  int? _selectedCategoriaId;
   Ubicacion _ubicacion = Ubicacion(
     lat: -16.5000,
     lng: -68.1193,
@@ -80,7 +80,7 @@ class _TiendaFormDialogState extends State<TiendaFormDialog> {
         _direccionController.text = tienda.direccion ?? '';
         _telefonoController.text = tienda.contacto?.telefono ?? '';
         _horarioController.text = tienda.horarioAtencion;
-        _selectedCategoriaId = tienda.categoriaId;
+        _selectedCategoriaId = tienda.categoryId;
         _ubicacion = tienda.ubicacion;
         _diasSeleccionados = List.from(tienda.diasAtencion);
       }
@@ -329,7 +329,7 @@ class _TiendaFormDialogState extends State<TiendaFormDialog> {
         if (state is CategoriasLoaded) {
           final categorias = state.todasLasCategorias;
 
-          return DropdownButtonFormField<String>(
+          return DropdownButtonFormField<int?>(
             value: _selectedCategoriaId,
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
@@ -338,12 +338,12 @@ class _TiendaFormDialogState extends State<TiendaFormDialog> {
             ),
             isExpanded: true,
             items: [
-              const DropdownMenuItem(
+              const DropdownMenuItem<int?>(
                 value: null,
                 child: Text('Selecciona una categoría'),
               ),
               ...categorias.map((categoria) {
-                return DropdownMenuItem(
+                return DropdownMenuItem<int?>(
                   value: categoria.id,
                   child: Row(
                     children: [
@@ -465,28 +465,28 @@ class _TiendaFormDialogState extends State<TiendaFormDialog> {
       context.read<TiendasBloc>().add(
         ActualizarTienda(
           id: widget.tiendaId!,
-          nombre: nombre,
-          nombrePropietario: nombrePropietario,
+          name: nombre,
+          ownerName: nombrePropietario,
           ubicacion: _ubicacion,
-          categoriaId: _selectedCategoriaId!,
+          categoryId: _selectedCategoriaId!,
           contacto: contacto,
-          direccion: direccion.isNotEmpty ? direccion : null,
-          diasAtencion: _diasSeleccionados,
-          horarioAtencion: horario,
+          address: direccion.isNotEmpty ? direccion : null,
+          schedules: _diasSeleccionados,
+          operatingHours: horario,
         ),
       );
     } else {
       // Crear nueva tienda
       context.read<TiendasBloc>().add(
         CrearTienda(
-          nombre: nombre,
-          nombrePropietario: nombrePropietario,
+          name: nombre,
+          ownerName: nombrePropietario,
           ubicacion: _ubicacion,
-          categoriaId: _selectedCategoriaId!,
+          categoryId: _selectedCategoriaId!,
           contacto: contacto,
-          direccion: direccion.isNotEmpty ? direccion : null,
-          diasAtencion: _diasSeleccionados,
-          horarioAtencion: horario,
+          address: direccion.isNotEmpty ? direccion : null,
+          schedules: _diasSeleccionados,
+          operatingHours: horario,
         ),
       );
     }

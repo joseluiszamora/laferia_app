@@ -166,7 +166,7 @@ class _OfertarProductoDialogState extends State<OfertarProductoDialog> {
                             ],
                             Expanded(
                               child: Text(
-                                widget.producto.categoriaId,
+                                widget.producto.categoryId.toString(),
                                 style: TextStyle(
                                   fontSize: 10,
                                   color: Colors.grey.shade600,

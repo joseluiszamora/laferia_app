@@ -41,18 +41,19 @@ class TiendasBloc extends Bloc<TiendasEvent, TiendasState> {
 
     try {
       final nuevaTienda = Tienda(
-        id: '', // Se genera automáticamente en Supabase
-        nombre: event.nombre,
-        nombrePropietario: event.nombrePropietario,
+        id: 0, // Se genera automáticamente en Supabase
+        name: event.name,
+        ownerName: event.ownerName,
         ubicacion: event.ubicacion,
-        categoriaId: event.categoriaId,
+        categoryId: event.categoryId,
         productos: event.productos ?? [],
         contacto: event.contacto,
-        direccion: event.direccion,
-        diasAtencion: event.diasAtencion ?? ['Jueves', 'Domingo'],
-        horarioAtencion: event.horarioAtencion ?? '08:00 - 18:00',
-        calificacion: 0.0,
-        comentarios: [],
+        address: event.address,
+        schedules: event.schedules ?? ['Jueves', 'Domingo'],
+        operatingHours: event.operatingHours ?? '08:00 - 18:00',
+        status: StoreStatus.active,
+        averageRating: 0.0,
+        totalComments: 0,
       );
 
       final tiendaCreada = await SupabaseTiendaService.crearTienda(nuevaTienda);
@@ -74,16 +75,18 @@ class TiendasBloc extends Bloc<TiendasEvent, TiendasState> {
     try {
       final tiendaActualizada = Tienda(
         id: event.id,
-        nombre: event.nombre,
-        nombrePropietario: event.nombrePropietario,
+        name: event.name,
+        ownerName: event.ownerName,
         ubicacion: event.ubicacion,
-        categoriaId: event.categoriaId,
+        categoryId: event.categoryId,
         productos: event.productos ?? [],
         contacto: event.contacto,
-        direccion: event.direccion,
-        diasAtencion: event.diasAtencion ?? ['Jueves', 'Domingo'],
-        horarioAtencion: event.horarioAtencion ?? '08:00 - 18:00',
-        calificacion: event.calificacion ?? 0.0,
+        address: event.address,
+        schedules: event.schedules ?? ['Jueves', 'Domingo'],
+        operatingHours: event.operatingHours ?? '08:00 - 18:00',
+        status: StoreStatus.active,
+        averageRating: event.averageRating ?? 0.0,
+        totalComments: 0,
         comentarios: event.comentarios ?? [],
       );
 

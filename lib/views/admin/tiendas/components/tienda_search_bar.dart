@@ -16,7 +16,7 @@ class TiendaSearchBar extends StatefulWidget {
 
 class _TiendaSearchBarState extends State<TiendaSearchBar> {
   final TextEditingController _searchController = TextEditingController();
-  String? _categoriaSeleccionada;
+  int? _categoriaSeleccionada;
 
   @override
   void dispose() {
@@ -93,11 +93,7 @@ class _TiendaSearchBarState extends State<TiendaSearchBar> {
                         // Solo categorías principales
                         final categoriasDisponibles =
                             categoriaState.todasLasCategorias
-                                .where(
-                                  (cat) =>
-                                      cat.parentId == null ||
-                                      cat.parentId!.isEmpty,
-                                )
+                                .where((cat) => cat.parentId == null)
                                 .toList();
 
                         return Container(
@@ -108,17 +104,17 @@ class _TiendaSearchBarState extends State<TiendaSearchBar> {
                             border: Border.all(color: Colors.grey[300]!),
                           ),
                           child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
+                            child: DropdownButton<int?>(
                               value: _categoriaSeleccionada,
                               hint: const Text('Categoría'),
                               icon: const Icon(Icons.filter_list),
                               items: [
-                                const DropdownMenuItem(
+                                const DropdownMenuItem<int?>(
                                   value: null,
                                   child: Text('Todas las categorías'),
                                 ),
                                 ...categoriasDisponibles.map((categoria) {
-                                  return DropdownMenuItem(
+                                  return DropdownMenuItem<int?>(
                                     value: categoria.id,
                                     child: Row(
                                       mainAxisSize: MainAxisSize.min,

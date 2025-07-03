@@ -5,7 +5,7 @@ import '../../../core/models/comentario.dart';
 import 'comentario_card.dart';
 
 class ComentariosSection extends StatefulWidget {
-  final String tiendaId;
+  final int tiendaId;
 
   const ComentariosSection({super.key, required this.tiendaId});
 
@@ -297,13 +297,13 @@ class _ComentariosSectionState extends State<ComentariosSection> {
     }
 
     final comentario = Comentario(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      tiendaId: widget.tiendaId,
-      nombreUsuario:
+      id: DateTime.now().millisecondsSinceEpoch,
+      storeId: widget.tiendaId,
+      userName:
           'Usuario Anónimo', // En una app real vendría del usuario logueado
-      comentario: _comentarioController.text.trim(),
-      calificacion: _calificacionSeleccionada,
-      fechaCreacion: DateTime.now(),
+      comment: _comentarioController.text.trim(),
+      rating: _calificacionSeleccionada,
+      createdAt: DateTime.now(),
     );
 
     context.read<ComentariosBloc>().add(AgregarComentario(comentario));
@@ -319,7 +319,7 @@ class _ComentariosSectionState extends State<ComentariosSection> {
     );
   }
 
-  void _eliminarComentario(String comentarioId) {
+  void _eliminarComentario(int comentarioId) {
     showDialog(
       context: context,
       builder:

@@ -61,7 +61,7 @@ class SupabaseCategoriaService {
           await _supabase
               .from(_tableName)
               .update(_toSupabaseJsonForUpdate(categoria))
-              .eq('category_id', categoria.id)
+              .eq('id', categoria.id)
               .select('*')
               .single();
 
@@ -72,12 +72,12 @@ class SupabaseCategoriaService {
   }
 
   /// Eliminar una categoría
-  static Future<void> eliminarCategoria(String id) async {
+  static Future<void> eliminarCategoria(int id) async {
     try {
       // Verificar si tiene subcategorías
       final subcategorias = await _supabase
           .from(_tableName)
-          .select('category_id')
+          .select('id')
           .eq('parent_category_id', id);
 
       if (subcategorias.isNotEmpty) {
@@ -86,7 +86,7 @@ class SupabaseCategoriaService {
         );
       }
 
-      await _supabase.from(_tableName).delete().eq('category_id', id);
+      await _supabase.from(_tableName).delete().eq('id', id);
     } catch (e) {
       throw Exception('Error al eliminar categoría: $e');
     }
@@ -109,7 +109,7 @@ class SupabaseCategoriaService {
   }
 
   /// Obtener subcategorías de una categoría
-  static Future<List<Categoria>> getSubcategorias(String parentId) async {
+  static Future<List<Categoria>> getSubcategorias(int parentId) async {
     try {
       final response = await _supabase
           .from(_tableName)
@@ -127,8 +127,16 @@ class SupabaseCategoriaService {
   /// Convertir de JSON de Supabase a modelo Categoria
   static Categoria _fromSupabaseJson(Map<String, dynamic> json) {
     return Categoria(
-      id: json['category_id'] as String,
-      parentId: json['parent_category_id'] as String?,
+      id:
+          json['category_id'] is int
+              ? json['category_id']
+              : int.parse(json['category_id'].toString()),
+      parentId:
+          json['parent_category_id'] != null
+              ? (json['parent_category_id'] is int
+                  ? json['parent_category_id']
+                  : int.parse(json['parent_category_id'].toString()))
+              : null,
       name: json['name'] as String,
       slug: json['slug'] as String,
       description: json['description'] as String?,
@@ -154,8 +162,7 @@ class SupabaseCategoriaService {
       'icon': categoria.icon?.isNotEmpty == true ? categoria.icon : null,
       'color': categoria.color?.isNotEmpty == true ? categoria.color : null,
       'image_url': categoria.imageUrl,
-      'parent_category_id':
-          categoria.parentId?.isNotEmpty == true ? categoria.parentId : null,
+      'parent_category_id': categoria.parentId,
     };
   }
 
@@ -171,8 +178,7 @@ class SupabaseCategoriaService {
       'icon': categoria.icon?.isNotEmpty == true ? categoria.icon : null,
       'color': categoria.color?.isNotEmpty == true ? categoria.color : null,
       'image_url': categoria.imageUrl,
-      'parent_category_id':
-          categoria.parentId?.isNotEmpty == true ? categoria.parentId : null,
+      'parent_category_id': categoria.parentId,
     };
   }
 }

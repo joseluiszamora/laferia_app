@@ -82,13 +82,15 @@ class TiendaCard extends StatelessWidget {
                     Icon(Icons.star, color: Colors.amber, size: 20),
                     const SizedBox(width: 4),
                     Text(
-                      tienda.calificacionPromedio.toStringAsFixed(1),
+                      tienda.calificacion != null
+                          ? tienda.calificacion!.toStringAsFixed(1)
+                          : 'N/A',
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     Text(
-                      ' (${tienda.totalComentarios})',
+                      ' (${tienda.totalComments})',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: Colors.grey.shade600,
                       ),

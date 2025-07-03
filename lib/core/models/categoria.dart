@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 
 class Categoria extends Equatable {
-  final String id;
-  final String? parentId;
+  final int id;
+  final int? parentId;
   final String name;
   final String slug;
   final String? description;
@@ -41,6 +41,10 @@ class Categoria extends Equatable {
   /// Lista de subcategorías de esta categoría
   final List<Categoria> subcategorias;
 
+  // Getters para compatibilidad con código existente
+  String get categoriaId => id.toString();
+  String? get parentCategoryId => parentId?.toString();
+
   /// Factory constructor para crear una categoría con sus subcategorías
   factory Categoria.withSubcategorias({
     required Categoria categoria,
@@ -69,8 +73,8 @@ class Categoria extends Equatable {
 
   /// Copia la categoría con nuevos valores
   Categoria copyWith({
-    String? id,
-    String? parentId,
+    int? id,
+    int? parentId,
     String? name,
     String? slug,
     String? description,

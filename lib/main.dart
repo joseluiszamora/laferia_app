@@ -21,9 +21,9 @@ void main() async {
   serviceLocatorInit();
 
   await Supabase.initialize(
-    url: 'https://afjxzqifefsurzounxxq.supabase.co',
+    url: 'https://sfporjwgzplyckosbdqx.supabase.co',
     anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFmanh6cWlmZWZzdXJ6b3VueHhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5NDA5NTcsImV4cCI6MjA2NDUxNjk1N30.bJgDduYAg7Wb7_EfPtEDc-dCU4oJOPKB6Kr-sZCc54U',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNmcG9yandnenBseWNrb3NiZHF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEzOTYyODQsImV4cCI6MjA2Njk3MjI4NH0.eqPIh0WgI4Tqqu_auoZ8rwkFTk7EiOTM042hxEjxe2Q',
   );
   runApp(
     MultiProvider(

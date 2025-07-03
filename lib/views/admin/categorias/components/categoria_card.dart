@@ -174,12 +174,12 @@ class CategoriaCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 8),
                   _buildInfoChip('Activa', Colors.green),
-                  const SizedBox(width: 8),
-                  if (categoria.createdAt != null)
-                    _buildInfoChip(
-                      'Creada: ${_formatDate(categoria.createdAt!)}',
-                      Colors.grey,
-                    ),
+                  // const SizedBox(width: 8),
+                  // if (categoria.createdAt != null)
+                  //   _buildInfoChip(
+                  //     'Creada: ${_formatDate(categoria.createdAt!)}',
+                  //     Colors.grey,
+                  //   ),
                 ],
               ),
             ],
@@ -242,7 +242,9 @@ class CategoriaCard extends StatelessWidget {
       builder:
           (dialogContext) => BlocProvider.value(
             value: context.read<CategoriasBloc>(),
-            child: CategoriaFormDialog(categoriaId: categoria.id),
+            child: CategoriaFormDialog(
+              categoriaId: categoria.id,
+            ), // int? ahora permitido
           ),
     );
   }
@@ -254,7 +256,9 @@ class CategoriaCard extends StatelessWidget {
       builder:
           (dialogContext) => BlocProvider.value(
             value: context.read<CategoriasBloc>(),
-            child: CategoriaFormDialog(parentCategoriaId: categoria.id),
+            child: CategoriaFormDialog(
+              parentCategoriaId: categoria.id,
+            ), // int? ahora permitido
           ),
     );
   }
@@ -307,25 +311,25 @@ class CategoriaCard extends StatelessWidget {
 
   // Función para calcular el nivel jerárquico de la categoría
   int _calcularNivelJerarquia(BuildContext context) {
-    if (categoria.parentId == null || categoria.parentId!.isEmpty) {
+    if (categoria.parentId == null) {
       return 0; // Categoría principal
     }
 
     final state = context.read<CategoriasBloc>().state;
     if (state is CategoriasLoaded) {
       int nivel = 1;
-      String? currentParentId = categoria.parentId;
+      int? currentParentId = categoria.parentId;
 
-      while (currentParentId != null && currentParentId.isNotEmpty) {
+      while (currentParentId != null) {
         final parent = state.todasLasCategorias.firstWhere(
           (cat) => cat.id == currentParentId,
-          orElse: () => const Categoria(id: '', name: '', slug: ''),
+          orElse: () => const Categoria(id: 0, name: '', slug: ''),
         );
 
-        if (parent.id.isEmpty) break;
+        if (parent.id == 0) break;
 
         currentParentId = parent.parentId;
-        if (currentParentId != null && currentParentId.isNotEmpty) {
+        if (currentParentId != null) {
           nivel++;
         }
       }

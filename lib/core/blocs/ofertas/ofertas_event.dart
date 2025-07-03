@@ -8,7 +8,7 @@ abstract class OfertasEvent extends Equatable {
 }
 
 class LoadOfertas extends OfertasEvent {
-  final String? productoId;
+  final int? productoId;
   final String? usuarioId;
 
   const LoadOfertas({this.productoId, this.usuarioId});
@@ -21,7 +21,7 @@ class LoadOfertas extends OfertasEvent {
 }
 
 class CreateOferta extends OfertasEvent {
-  final String productoId;
+  final int productoId;
   final double montoOferta;
   final String mensaje;
   final String nombreUsuario;

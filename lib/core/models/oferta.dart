@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 
 class Oferta extends Equatable {
   final String id;
-  final String productoId;
+  final int productoId;
   final String nombreUsuario;
   final String? avatarUsuario;
   final double montoOferta;
@@ -64,7 +64,7 @@ class Oferta extends Equatable {
   /// Crea una copia de la oferta con algunos campos modificados
   Oferta copyWith({
     String? id,
-    String? productoId,
+    int? productoId,
     String? nombreUsuario,
     String? avatarUsuario,
     double? montoOferta,

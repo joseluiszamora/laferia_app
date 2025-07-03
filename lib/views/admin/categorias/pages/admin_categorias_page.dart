@@ -148,7 +148,7 @@ class _AdminCategoriasPageState extends State<AdminCategoriasPage> {
     );
   }
 
-  void _showCategoriaFormDialog(BuildContext context, {String? categoriaId}) {
+  void _showCategoriaFormDialog(BuildContext context, {int? categoriaId}) {
     showDialog(
       context: context,
       barrierDismissible: false,

@@ -7,8 +7,8 @@ import '../models/comentario.dart';
 
 class SupabaseTiendaService {
   static final SupabaseClient _supabase = Supabase.instance.client;
-  static const String _tiendaTableName = 'Tienda';
-  static const String _comentarioTableName = 'Comentario';
+  static const String _tiendaTableName = 'Store';
+  static const String _comentarioTableName = 'Comment';
 
   /// Obtener todas las tiendas
   static Future<List<Tienda>> getAllTiendas() async {
@@ -16,7 +16,7 @@ class SupabaseTiendaService {
       final response = await _supabase
           .from(_tiendaTableName)
           .select('*')
-          .order('nombre');
+          .order('name');
 
       final List<dynamic> data = response as List<dynamic>;
 
@@ -34,13 +34,13 @@ class SupabaseTiendaService {
   }
 
   /// Obtener tienda por ID
-  static Future<Tienda?> getTiendaById(String id) async {
+  static Future<Tienda?> getTiendaById(int id) async {
     try {
       final response =
           await _supabase
               .from(_tiendaTableName)
               .select('*')
-              .eq('tienda_id', id)
+              .eq('id', id)
               .single();
 
       return await _fromSupabaseJsonWithComentarios(response);
@@ -53,13 +53,13 @@ class SupabaseTiendaService {
   }
 
   /// Obtener tiendas por categoría
-  static Future<List<Tienda>> getTiendasByCategoria(String categoriaId) async {
+  static Future<List<Tienda>> getTiendasByCategoria(int categoriaId) async {
     try {
       final response = await _supabase
           .from(_tiendaTableName)
           .select('*')
-          .eq('categoria_id', categoriaId)
-          .order('nombre');
+          .eq('category_id', categoriaId)
+          .order('name');
 
       final List<dynamic> data = response as List<dynamic>;
 
@@ -82,9 +82,9 @@ class SupabaseTiendaService {
           .from(_tiendaTableName)
           .select('*')
           .or(
-            'nombre.ilike.%$termino%,nombre_propietario.ilike.%$termino%,direccion.ilike.%$termino%',
+            'name.ilike.%$termino%,owner_name.ilike.%$termino%,address.ilike.%$termino%',
           )
-          .order('nombre');
+          .order('name');
 
       final List<dynamic> data = response as List<dynamic>;
 
@@ -134,7 +134,7 @@ class SupabaseTiendaService {
   }
 
   /// Eliminar una tienda
-  static Future<void> eliminarTienda(String id) async {
+  static Future<void> eliminarTienda(int id) async {
     try {
       // Primero eliminar todos los comentarios asociados
       await _supabase.from(_comentarioTableName).delete().eq('tienda_id', id);
@@ -186,15 +186,13 @@ class SupabaseTiendaService {
   /// GESTIÓN DE COMENTARIOS ///
 
   /// Obtener comentarios de una tienda
-  static Future<List<Comentario>> getComentariosByTienda(
-    String tiendaId,
-  ) async {
+  static Future<List<Comentario>> getComentariosByTienda(int tiendaId) async {
     try {
       final response = await _supabase
           .from(_comentarioTableName)
           .select('*')
-          .eq('tienda_id', tiendaId)
-          .order('fecha_creacion', ascending: false);
+          .eq('store_id', tiendaId)
+          .order('created_at', ascending: false);
 
       final List<dynamic> data = response as List<dynamic>;
       return data.map((json) => _comentarioFromSupabaseJson(json)).toList();
@@ -238,29 +236,33 @@ class SupabaseTiendaService {
     Map<String, dynamic> json,
   ) async {
     // Obtener comentarios de la tienda
-    final comentarios = await getComentariosByTienda(json['tienda_id']);
+    final tiendaId =
+        json['id'] is int ? json['id'] : int.parse(json['id'].toString());
+    final comentarios = await getComentariosByTienda(tiendaId);
 
     return Tienda(
-      id: json['tienda_id'] as String,
-      nombre: json['nombre'] as String,
-      nombrePropietario: json['nombre_propietario'] as String,
+      id: tiendaId,
+      name: json['name'] as String,
+      ownerName: json['owner_name'] as String,
       ubicacion: Ubicacion(
-        lat: (json['latitud'] as num).toDouble(),
-        lng: (json['longitud'] as num).toDouble(),
+        lat: (json['latitude'] as num).toDouble(),
+        lng: (json['longitude'] as num).toDouble(),
       ),
-      categoriaId: json['categoria_id'] as String,
-      productos: List<String>.from(json['productos'] ?? []),
+      categoryId:
+          json['category_id'] is int
+              ? json['category_id']
+              : int.parse(json['category_id'].toString()),
+      productos: List<String>.from(json['products'] ?? []),
       contacto:
-          json['contacto'] != null
-              ? _contactoFromJson(json['contacto'] as Map<String, dynamic>)
+          json['contact'] != null
+              ? _contactoFromJson(json['contact'] as Map<String, dynamic>)
               : null,
-      direccion: json['direccion'] as String?,
-      diasAtencion: List<String>.from(
-        json['dias_atencion'] ?? ['Jueves', 'Domingo'],
-      ),
-      horarioAtencion: json['horario_atencion'] as String? ?? '08:00 - 18:00',
-      horario: json['horario'] as String?, // Mantener por compatibilidad
-      calificacion: json['calificacion_promedio']?.toDouble(),
+      address: json['address'] as String?,
+      schedules: List<String>.from(json['schedules'] ?? ['Jueves', 'Domingo']),
+      operatingHours: json['operating_hours'] as String? ?? '08:00 - 18:00',
+      status: StoreStatus.fromString(json['status'] ?? 'active'),
+      averageRating: json['average_rating']?.toDouble(),
+      totalComments: json['total_comments'] ?? 0,
       comentarios: comentarios,
     );
   }
@@ -268,18 +270,19 @@ class SupabaseTiendaService {
   /// Convertir de modelo Tienda a JSON para Supabase (inserción)
   static Map<String, dynamic> _toSupabaseJson(Tienda tienda) {
     return {
-      'nombre': tienda.nombre,
-      'nombre_propietario': tienda.nombrePropietario,
-      'latitud': tienda.ubicacion.lat,
-      'longitud': tienda.ubicacion.lng,
-      'categoria_id': tienda.categoriaId,
-      'productos': tienda.productos,
-      'contacto': tienda.contacto?.toJson(),
-      'direccion': tienda.direccion,
-      'dias_atencion': tienda.diasAtencion,
-      'horario_atencion': tienda.horarioAtencion,
-      'horario': tienda.horario,
-      'calificacion_promedio': tienda.calificacion,
+      'name': tienda.name,
+      'owner_name': tienda.ownerName,
+      'latitude': tienda.ubicacion.lat,
+      'longitude': tienda.ubicacion.lng,
+      'category_id': tienda.categoryId,
+      'products': tienda.productos,
+      'contact': tienda.contacto?.toJson(),
+      'address': tienda.address,
+      'schedules': tienda.schedules,
+      'operating_hours': tienda.operatingHours,
+      'status': tienda.status.value,
+      'average_rating': tienda.averageRating,
+      'total_comments': tienda.totalComments,
     };
   }
 
@@ -319,29 +322,32 @@ class SupabaseTiendaService {
   /// Convertir de JSON de Supabase a modelo Comentario
   static Comentario _comentarioFromSupabaseJson(Map<String, dynamic> json) {
     return Comentario(
-      id: json['comentario_id'] as String,
-      tiendaId: json['tienda_id'] as String,
-      nombreUsuario: json['nombre_usuario'] as String,
+      id: json['id'] is int ? json['id'] : int.parse(json['id'].toString()),
+      storeId:
+          json['store_id'] is int
+              ? json['store_id']
+              : int.parse(json['store_id'].toString()),
+      userName: json['user_name'] as String,
       avatarUrl: json['avatar_url'] as String?,
-      comentario: json['comentario'] as String,
-      calificacion: (json['calificacion'] as num).toDouble(),
-      fechaCreacion: DateTime.parse(json['fecha_creacion'] as String),
-      verificado: json['verificado'] as bool? ?? false,
-      imagenes: List<String>.from(json['imagenes'] ?? []),
+      comment: json['comment'] as String,
+      rating: (json['rating'] as num).toDouble(),
+      createdAt: DateTime.parse(json['created_at'] as String),
+      isVerified: json['is_verified'] as bool? ?? false,
+      images: List<String>.from(json['images'] ?? []),
     );
   }
 
   /// Convertir de modelo Comentario a JSON para Supabase
   static Map<String, dynamic> _comentarioToSupabaseJson(Comentario comentario) {
     return {
-      'tienda_id': comentario.tiendaId,
-      'nombre_usuario': comentario.nombreUsuario,
+      'store_id': comentario.storeId,
+      'user_name': comentario.userName,
       'avatar_url': comentario.avatarUrl,
-      'comentario': comentario.comentario,
-      'calificacion': comentario.calificacion,
-      'fecha_creacion': comentario.fechaCreacion.toIso8601String(),
-      'verificado': comentario.verificado,
-      'imagenes': comentario.imagenes,
+      'comment': comentario.comment,
+      'rating': comentario.rating,
+      'created_at': comentario.createdAt.toIso8601String(),
+      'is_verified': comentario.isVerified,
+      'images': comentario.images,
     };
   }
 

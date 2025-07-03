@@ -9,7 +9,7 @@ abstract class ComentariosEvent extends Equatable {
 }
 
 class CargarComentarios extends ComentariosEvent {
-  final String tiendaId;
+  final int tiendaId;
 
   const CargarComentarios(this.tiendaId);
 
@@ -27,8 +27,8 @@ class AgregarComentario extends ComentariosEvent {
 }
 
 class EliminarComentario extends ComentariosEvent {
-  final String comentarioId;
-  final String tiendaId;
+  final int comentarioId;
+  final int tiendaId;
 
   const EliminarComentario({
     required this.comentarioId,

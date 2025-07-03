@@ -23,8 +23,8 @@ enum MediaType {
 }
 
 class ProductoMedias extends Equatable {
-  final String id;
-  final String productoId;
+  final int id;
+  final int productId;
   final MediaType type;
   final String url;
   final String? thumbnailUrl;
@@ -32,10 +32,10 @@ class ProductoMedias extends Equatable {
   final int? height;
   final int? fileSize; // en bytes
   final int? duration; // para videos, en segundos
-  final int orden;
+  final int order;
   final bool isMain;
   final bool isActive;
-  final String? descripcion;
+  final String? description;
   final String? altText;
   final Map<String, dynamic>? metadata;
   final DateTime createdAt;
@@ -43,7 +43,7 @@ class ProductoMedias extends Equatable {
 
   const ProductoMedias({
     required this.id,
-    required this.productoId,
+    required this.productId,
     required this.type,
     required this.url,
     this.thumbnailUrl,
@@ -51,30 +51,31 @@ class ProductoMedias extends Equatable {
     this.height,
     this.fileSize,
     this.duration,
-    this.orden = 0,
+    this.order = 0,
     this.isMain = false,
     this.isActive = true,
-    this.descripcion,
+    this.description,
     this.altText,
     this.metadata,
     required this.createdAt,
     this.updatedAt,
   });
+
   factory ProductoMedias.fromJson(Map<String, dynamic> json) {
     return ProductoMedias(
-      id: json['id'],
-      productoId: json['producto_id'],
+      id: json['product_medias_id'] ?? json['id'] ?? 0,
+      productId: json['product_id'] ?? 0,
       type: MediaType.fromString(json['type'] ?? 'image'),
-      url: json['url'],
+      url: json['url'] ?? '',
       thumbnailUrl: json['thumbnail_url'],
       width: json['width'],
       height: json['height'],
-      fileSize: json['file_size'],
+      fileSize: json['file_size']?.toInt(),
       duration: json['duration'],
-      orden: json['orden'] ?? 0,
+      order: json['order'] ?? json['orden'] ?? 0,
       isMain: json['is_main'] ?? false,
       isActive: json['is_active'] ?? true,
-      descripcion: json['descripcion'],
+      description: json['description'] ?? json['descripcion'],
       altText: json['alt_text'],
       metadata:
           json['metadata'] != null
@@ -90,10 +91,11 @@ class ProductoMedias extends Equatable {
               : null,
     );
   }
+
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'producto_id': productoId,
+      'product_medias_id': id,
+      'product_id': productId,
       'type': type.value,
       'url': url,
       'thumbnail_url': thumbnailUrl,
@@ -101,10 +103,10 @@ class ProductoMedias extends Equatable {
       'height': height,
       'file_size': fileSize,
       'duration': duration,
-      'orden': orden,
+      'order': order,
       'is_main': isMain,
       'is_active': isActive,
-      'descripcion': descripcion,
+      'description': description,
       'alt_text': altText,
       'metadata': metadata,
       'created_at': createdAt.toIso8601String(),
@@ -114,14 +116,14 @@ class ProductoMedias extends Equatable {
 
   @override
   String toString() {
-    return 'ProductoMedias{id: $id, productoId: $productoId, type: $type, url: $url, thumbnailUrl: $thumbnailUrl, width: $width, height: $height, fileSize: $fileSize, duration: $duration, orden: $orden, isMain: $isMain, isActive: $isActive, descripcion: $descripcion, altText: $altText, metadata: $metadata, createdAt: $createdAt, updatedAt: $updatedAt}';
+    return 'ProductoMedias{id: $id, productId: $productId, type: $type, url: $url, thumbnailUrl: $thumbnailUrl, width: $width, height: $height, fileSize: $fileSize, duration: $duration, order: $order, isMain: $isMain, isActive: $isActive, description: $description, altText: $altText, metadata: $metadata, createdAt: $createdAt, updatedAt: $updatedAt}';
   }
 
   @override
   List<Object?> get props {
     return [
       id,
-      productoId,
+      productId,
       type,
       url,
       thumbnailUrl,
@@ -129,10 +131,10 @@ class ProductoMedias extends Equatable {
       height,
       fileSize,
       duration,
-      orden,
+      order,
       isMain,
       isActive,
-      descripcion,
+      description,
       altText,
       metadata,
       createdAt,
@@ -141,8 +143,8 @@ class ProductoMedias extends Equatable {
   }
 
   ProductoMedias copyWith({
-    String? id,
-    String? productoId,
+    int? id,
+    int? productId,
     MediaType? type,
     String? url,
     String? thumbnailUrl,
@@ -150,10 +152,10 @@ class ProductoMedias extends Equatable {
     int? height,
     int? fileSize,
     int? duration,
-    int? orden,
+    int? order,
     bool? isMain,
     bool? isActive,
-    String? descripcion,
+    String? description,
     String? altText,
     Map<String, dynamic>? metadata,
     DateTime? createdAt,
@@ -161,7 +163,7 @@ class ProductoMedias extends Equatable {
   }) {
     return ProductoMedias(
       id: id ?? this.id,
-      productoId: productoId ?? this.productoId,
+      productId: productId ?? this.productId,
       type: type ?? this.type,
       url: url ?? this.url,
       thumbnailUrl: thumbnailUrl ?? this.thumbnailUrl,
@@ -169,10 +171,10 @@ class ProductoMedias extends Equatable {
       height: height ?? this.height,
       fileSize: fileSize ?? this.fileSize,
       duration: duration ?? this.duration,
-      orden: orden ?? this.orden,
+      order: order ?? this.order,
       isMain: isMain ?? this.isMain,
       isActive: isActive ?? this.isActive,
-      descripcion: descripcion ?? this.descripcion,
+      description: description ?? this.description,
       altText: altText ?? this.altText,
       metadata: metadata ?? this.metadata,
       createdAt: createdAt ?? this.createdAt,

@@ -292,7 +292,7 @@ class _ProductInfoSection extends StatelessWidget {
               border: Border.all(color: theme.primaryColor.withOpacity(0.3)),
             ),
             child: Text(
-              producto.categoriaId,
+              producto.categoryId.toString(),
               style: TextStyle(
                 color: theme.primaryColor,
                 fontWeight: FontWeight.w600,
@@ -333,7 +333,7 @@ class _ProductInfoSection extends StatelessWidget {
           _InfoCard(
             icon: Icons.info_outline,
             title: 'ID del Producto',
-            content: producto.id,
+            content: producto.id.toString(),
           ),
 
           const SizedBox(height: 12),

@@ -1,36 +1,37 @@
 import 'package:equatable/equatable.dart';
 
 class ProductoAtributos extends Equatable {
-  final String id;
-  final String productoId;
-  final String nombre;
-  final String valor;
-  final String tipo; // text, number, boolean, color, size, etc.
-  final String? unidad; // kg, cm, litros, etc.
-  final int orden;
+  final int id;
+  final int productId;
+  final String name;
+  final String value;
+  final String type; // text, number, boolean, color, size, etc.
+  final String? unity; // kg, cm, litros, etc.
+  final int order;
   final bool isVisible;
   final DateTime createdAt;
 
   const ProductoAtributos({
     required this.id,
-    required this.productoId,
-    required this.nombre,
-    required this.valor,
-    this.tipo = 'text',
-    this.unidad,
-    this.orden = 0,
+    required this.productId,
+    required this.name,
+    required this.value,
+    this.type = 'text',
+    this.unity,
+    this.order = 0,
     this.isVisible = true,
     required this.createdAt,
   });
+
   factory ProductoAtributos.fromJson(Map<String, dynamic> json) {
     return ProductoAtributos(
-      id: json['id'],
-      productoId: json['producto_id'] ?? json['productoId'],
-      nombre: json['nombre'],
-      valor: json['valor'],
-      tipo: json['tipo'] ?? 'text',
-      unidad: json['unidad'],
-      orden: json['orden'] ?? 0,
+      id: json['product_attributes_id'] ?? json['id'] ?? 0,
+      productId: json['product_id'] ?? 0,
+      name: json['name'] ?? json['nombre'] ?? '',
+      value: json['value'] ?? json['valor'] ?? '',
+      type: json['type'] ?? json['tipo'] ?? 'text',
+      unity: json['unity'] ?? json['unidad'],
+      order: json['order'] ?? json['orden'] ?? 0,
       isVisible: json['is_visible'] ?? json['isVisible'] ?? true,
       createdAt:
           json['created_at'] != null
@@ -38,39 +39,40 @@ class ProductoAtributos extends Equatable {
               : DateTime.now(),
     );
   }
+
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'producto_id': productoId,
-      'nombre': nombre,
-      'valor': valor,
-      'tipo': tipo,
-      'unidad': unidad,
-      'orden': orden,
+      'product_attributes_id': id,
+      'product_id': productId,
+      'name': name,
+      'value': value,
+      'type': type,
+      'unity': unity,
+      'order': order,
       'is_visible': isVisible,
       'created_at': createdAt.toIso8601String(),
     };
   }
 
   ProductoAtributos copyWith({
-    String? id,
-    String? productoId,
-    String? nombre,
-    String? valor,
-    String? tipo,
-    String? unidad,
-    int? orden,
+    int? id,
+    int? productId,
+    String? name,
+    String? value,
+    String? type,
+    String? unity,
+    int? order,
     bool? isVisible,
     DateTime? createdAt,
   }) {
     return ProductoAtributos(
       id: id ?? this.id,
-      productoId: productoId ?? this.productoId,
-      nombre: nombre ?? this.nombre,
-      valor: valor ?? this.valor,
-      tipo: tipo ?? this.tipo,
-      unidad: unidad ?? this.unidad,
-      orden: orden ?? this.orden,
+      productId: productId ?? this.productId,
+      name: name ?? this.name,
+      value: value ?? this.value,
+      type: type ?? this.type,
+      unity: unity ?? this.unity,
+      order: order ?? this.order,
       isVisible: isVisible ?? this.isVisible,
       createdAt: createdAt ?? this.createdAt,
     );
@@ -78,18 +80,18 @@ class ProductoAtributos extends Equatable {
 
   @override
   String toString() {
-    return 'ProductoAtributos{id: $id, productoId: $productoId, nombre: $nombre, valor: $valor, tipo: $tipo, unidad: $unidad, orden: $orden, isVisible: $isVisible, createdAt: $createdAt}';
+    return 'ProductoAtributos{id: $id, productId: $productId, name: $name, value: $value, type: $type, unity: $unity, order: $order, isVisible: $isVisible, createdAt: $createdAt}';
   }
 
   @override
   List<Object?> get props => [
     id,
-    productoId,
-    nombre,
-    valor,
-    tipo,
-    unidad,
-    orden,
+    productId,
+    name,
+    value,
+    type,
+    unity,
+    order,
     isVisible,
     createdAt,
   ];

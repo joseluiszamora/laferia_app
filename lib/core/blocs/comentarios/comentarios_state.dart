@@ -50,7 +50,7 @@ class ComentarioAgregado extends ComentariosState {
 }
 
 class ComentarioEliminado extends ComentariosState {
-  final String comentarioId;
+  final int comentarioId;
 
   const ComentarioEliminado(this.comentarioId);
 

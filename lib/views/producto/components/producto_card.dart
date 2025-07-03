@@ -266,7 +266,7 @@ class ProductoCard extends StatelessWidget {
                         ), // Reducido de 8 a 6
                       ),
                       child: Text(
-                        producto.categoriaId,
+                        '${producto.categoryId}',
                         style: TextStyle(
                           fontSize: 8, // Reducido de 10 a 8
                           color: theme.primaryColor,

@@ -114,14 +114,15 @@ class CategoriasBloc extends Bloc<CategoriasEvent, CategoriasState> {
 
     try {
       final nuevaCategoria = Categoria(
-        id: '', // Se generará automáticamente en Supabase
-        parentId: event.parentId,
+        id: 0, // Se generará automáticamente en Supabase
         name: event.name,
         slug: event.slug,
         description: event.description,
         icon: event.icon,
         color: event.color,
         imageUrl: event.imageUrl,
+        parentId: event.parentId,
+        createdAt: DateTime.now(),
       );
 
       final categoriaCreada = await SupabaseCategoriaService.crearCategoria(
@@ -145,13 +146,14 @@ class CategoriasBloc extends Bloc<CategoriasEvent, CategoriasState> {
     try {
       final categoriaActualizada = Categoria(
         id: event.id,
-        parentId: event.parentId,
         name: event.name,
         slug: event.slug,
         description: event.description,
         icon: event.icon,
         color: event.color,
         imageUrl: event.imageUrl,
+        parentId: event.parentId,
+        createdAt: DateTime.now(),
       );
 
       final categoriaGuardada =

@@ -233,7 +233,7 @@ class RecommendedSection extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    producto.categoriaId,
+                                    '${producto.categoryId}',
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: theme.textTheme.bodySmall?.color,

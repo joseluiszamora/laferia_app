@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 class Marca extends Equatable {
-  final String marcaId;
+  final int id;
   final String name;
   final String slug;
   final String? description;
@@ -12,7 +12,7 @@ class Marca extends Equatable {
   final DateTime updatedAt;
 
   const Marca({
-    required this.marcaId,
+    required this.id,
     required this.name,
     required this.slug,
     this.description,
@@ -23,13 +23,16 @@ class Marca extends Equatable {
     required this.updatedAt,
   });
 
+  // Getters para compatibilidad con código existente
+  String get marcaId => id.toString();
+
   factory Marca.fromJson(Map<String, dynamic> json) {
     return Marca(
-      marcaId: json['marca_id'] ?? json['id'],
-      name: json['name'],
-      slug: json['slug'],
+      id: json['brand_id'] ?? json['id'] ?? 0,
+      name: json['name'] ?? '',
+      slug: json['slug'] ?? '',
       description: json['description'],
-      logoUrl: json['logo_url'] ?? json['logoUrl'],
+      logoUrl: json['logo_url'],
       websiteUrl: json['website_url'],
       isActive: json['is_active'] ?? true,
       createdAt:
@@ -45,11 +48,11 @@ class Marca extends Equatable {
 
   @override
   String toString() =>
-      'Marca(marcaId: $marcaId, name: $name, slug: $slug, description: $description, logoUrl: $logoUrl, websiteUrl: $websiteUrl, isActive: $isActive, createdAt: $createdAt, updatedAt: $updatedAt)';
+      'Marca(id: $id, name: $name, slug: $slug, description: $description, logoUrl: $logoUrl, websiteUrl: $websiteUrl, isActive: $isActive, createdAt: $createdAt, updatedAt: $updatedAt)';
 
   Map<String, dynamic> toJson() {
     return {
-      'marca_id': marcaId,
+      'brand_id': id,
       'name': name,
       'slug': slug,
       'description': description,
@@ -62,7 +65,7 @@ class Marca extends Equatable {
   }
 
   Marca copyWith({
-    String? marcaId,
+    int? id,
     String? name,
     String? slug,
     String? description,
@@ -73,7 +76,7 @@ class Marca extends Equatable {
     DateTime? updatedAt,
   }) {
     return Marca(
-      marcaId: marcaId ?? this.marcaId,
+      id: id ?? this.id,
       name: name ?? this.name,
       slug: slug ?? this.slug,
       description: description ?? this.description,
@@ -87,7 +90,7 @@ class Marca extends Equatable {
 
   @override
   List<Object?> get props => [
-    marcaId,
+    id,
     name,
     slug,
     description,

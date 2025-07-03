@@ -24,90 +24,90 @@ class SelectTienda extends TiendasEvent {
 
 // Eventos para administración CRUD
 class CrearTienda extends TiendasEvent {
-  final String nombre;
-  final String nombrePropietario;
+  final String name;
+  final String ownerName;
   final Ubicacion ubicacion;
-  final String categoriaId;
+  final int categoryId;
   final List<String>? productos;
   final Contacto? contacto;
-  final String? direccion;
-  final List<String>? diasAtencion;
-  final String? horarioAtencion;
+  final String? address;
+  final List<String>? schedules;
+  final String? operatingHours;
 
   const CrearTienda({
-    required this.nombre,
-    required this.nombrePropietario,
+    required this.name,
+    required this.ownerName,
     required this.ubicacion,
-    required this.categoriaId,
+    required this.categoryId,
     this.productos,
     this.contacto,
-    this.direccion,
-    this.diasAtencion,
-    this.horarioAtencion,
+    this.address,
+    this.schedules,
+    this.operatingHours,
   });
 
   @override
   List<Object?> get props => [
-    nombre,
-    nombrePropietario,
+    name,
+    ownerName,
     ubicacion,
-    categoriaId,
+    categoryId,
     productos,
     contacto,
-    direccion,
-    diasAtencion,
-    horarioAtencion,
+    address,
+    schedules,
+    operatingHours,
   ];
 }
 
 class ActualizarTienda extends TiendasEvent {
-  final String id;
-  final String nombre;
-  final String nombrePropietario;
+  final int id;
+  final String name;
+  final String ownerName;
   final Ubicacion ubicacion;
-  final String categoriaId;
+  final int categoryId;
   final List<String>? productos;
   final Contacto? contacto;
-  final String? direccion;
-  final List<String>? diasAtencion;
-  final String? horarioAtencion;
-  final double? calificacion;
+  final String? address;
+  final List<String>? schedules;
+  final String? operatingHours;
+  final double? averageRating;
   final List<Comentario>? comentarios;
 
   const ActualizarTienda({
     required this.id,
-    required this.nombre,
-    required this.nombrePropietario,
+    required this.name,
+    required this.ownerName,
     required this.ubicacion,
-    required this.categoriaId,
+    required this.categoryId,
     this.productos,
     this.contacto,
-    this.direccion,
-    this.diasAtencion,
-    this.horarioAtencion,
-    this.calificacion,
+    this.address,
+    this.schedules,
+    this.operatingHours,
+    this.averageRating,
     this.comentarios,
   });
 
   @override
   List<Object?> get props => [
     id,
-    nombre,
-    nombrePropietario,
+    name,
+    ownerName,
     ubicacion,
-    categoriaId,
+    categoryId,
     productos,
     contacto,
-    direccion,
-    diasAtencion,
-    horarioAtencion,
-    calificacion,
+    address,
+    schedules,
+    operatingHours,
+    averageRating,
     comentarios,
   ];
 }
 
 class EliminarTienda extends TiendasEvent {
-  final String id;
+  final int id;
 
   const EliminarTienda(this.id);
 
@@ -125,7 +125,7 @@ class BuscarTiendas extends TiendasEvent {
 }
 
 class FiltrarTiendasPorCategoria extends TiendasEvent {
-  final String categoriaId;
+  final int categoriaId;
 
   const FiltrarTiendasPorCategoria(this.categoriaId);
 
@@ -136,7 +136,7 @@ class FiltrarTiendasPorCategoria extends TiendasEvent {
 class LimpiarFiltros extends TiendasEvent {}
 
 class SeleccionarParaEditar extends TiendasEvent {
-  final String tiendaId;
+  final int tiendaId;
 
   const SeleccionarParaEditar(this.tiendaId);
 
