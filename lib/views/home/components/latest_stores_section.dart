@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:laferia/views/tienda/tienda_detail_page.dart';
 import '../../../core/services/supabase_tienda_service.dart';
 import '../../../core/models/tienda.dart';
 
@@ -175,9 +176,8 @@ class LatestStoresSection extends StatelessWidget {
   }
 
   void _navigateToStoreDetail(BuildContext context, Tienda tienda) {
-    // Aquí puedes navegar a la página de detalle de tienda si existe
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Detalle de tienda: ${tienda.name}')),
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => TiendaDetailPage(tienda: tienda)),
     );
   }
 

@@ -20,7 +20,6 @@ class _ComentariosSectionState extends State<ComentariosSection> {
   @override
   void initState() {
     super.initState();
-    // Cargar comentarios al inicializar
     context.read<ComentariosBloc>().add(CargarComentarios(widget.tiendaId));
   }
 

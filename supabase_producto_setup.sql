@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS "ProductoAtributos" (
 -- =====================================
 
 -- Tabla para gestionar imágenes y videos de productos
-CREATE TABLE IF NOT EXISTS "ProductoMedias" (
+CREATE TABLE IF NOT EXISTS "ProductMedias" (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     product_id UUID NOT NULL REFERENCES "Producto"(id) ON DELETE CASCADE,
     type VARCHAR(20) NOT NULL DEFAULT 'image' CHECK (type IN ('image', 'video')),
@@ -102,12 +102,12 @@ CREATE INDEX IF NOT EXISTS idx_producto_atributos_valor ON "ProductoAtributos"(v
 CREATE INDEX IF NOT EXISTS idx_producto_atributos_nombre_valor 
     ON "ProductoAtributos"(nombre, valor);
 
--- Índices para tabla ProductoMedias
-CREATE INDEX IF NOT EXISTS idx_producto_medias_product_id ON "ProductoMedias"(product_id);
-CREATE INDEX IF NOT EXISTS idx_producto_medias_type ON "ProductoMedias"(type);
-CREATE INDEX IF NOT EXISTS idx_producto_medias_main ON "ProductoMedias"(is_main);
-CREATE INDEX IF NOT EXISTS idx_producto_medias_active ON "ProductoMedias"(is_active);
-CREATE INDEX IF NOT EXISTS idx_producto_medias_orden ON "ProductoMedias"(orden);
+-- Índices para tabla ProductMedias
+CREATE INDEX IF NOT EXISTS idx_producto_medias_product_id ON "ProductMedias"(product_id);
+CREATE INDEX IF NOT EXISTS idx_producto_medias_type ON "ProductMedias"(type);
+CREATE INDEX IF NOT EXISTS idx_producto_medias_main ON "ProductMedias"(is_main);
+CREATE INDEX IF NOT EXISTS idx_producto_medias_active ON "ProductMedias"(is_active);
+CREATE INDEX IF NOT EXISTS idx_producto_medias_orden ON "ProductMedias"(orden);
 
 -- =====================================
 -- CONFIGURAR ROW LEVEL SECURITY (RLS)
@@ -116,7 +116,7 @@ CREATE INDEX IF NOT EXISTS idx_producto_medias_orden ON "ProductoMedias"(orden);
 -- Habilitar RLS en todas las tablas
 ALTER TABLE "Producto" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "ProductoAtributos" ENABLE ROW LEVEL SECURITY;
-ALTER TABLE "ProductoMedias" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "ProductMedias" ENABLE ROW LEVEL SECURITY;
 
 -- Políticas para tabla Producto
 -- Permitir lectura de productos publicados y disponibles a todos los usuarios autenticados
@@ -168,8 +168,8 @@ CREATE POLICY "Allow delete producto atributos" ON "ProductoAtributos"
     FOR DELETE TO authenticated
     USING (true);
 
--- Políticas para tabla ProductoMedias
-CREATE POLICY "Allow read producto medias" ON "ProductoMedias"
+-- Políticas para tabla ProductMedias
+CREATE POLICY "Allow read producto medias" ON "ProductMedias"
     FOR SELECT TO authenticated
     USING (
         is_active = true AND EXISTS (
@@ -180,16 +180,16 @@ CREATE POLICY "Allow read producto medias" ON "ProductoMedias"
         )
     );
 
-CREATE POLICY "Allow insert producto medias" ON "ProductoMedias"
+CREATE POLICY "Allow insert producto medias" ON "ProductMedias"
     FOR INSERT TO authenticated
     WITH CHECK (true);
 
-CREATE POLICY "Allow update producto medias" ON "ProductoMedias"
+CREATE POLICY "Allow update producto medias" ON "ProductMedias"
     FOR UPDATE TO authenticated
     USING (true)
     WITH CHECK (true);
 
-CREATE POLICY "Allow delete producto medias" ON "ProductoMedias"
+CREATE POLICY "Allow delete producto medias" ON "ProductMedias"
     FOR DELETE TO authenticated
     USING (true);
 
@@ -212,7 +212,7 @@ CREATE TRIGGER update_producto_updated_at
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_producto_medias_updated_at 
-    BEFORE UPDATE ON "ProductoMedias" 
+    BEFORE UPDATE ON "ProductMedias" 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
 -- Función para validar que solo una imagen sea principal por producto
@@ -222,7 +222,7 @@ BEGIN
     -- Si se está marcando como imagen principal
     IF NEW.is_main = true THEN
         -- Desmarcar todas las otras imágenes del mismo producto como no principales
-        UPDATE "ProductoMedias" 
+        UPDATE "ProductMedias" 
         SET is_main = false 
         WHERE product_id = NEW.product_id 
         AND id != NEW.id 
@@ -235,7 +235,7 @@ $$ language 'plpgsql';
 
 -- Trigger para validar imagen principal única
 CREATE TRIGGER validate_single_main_image_trigger
-    BEFORE INSERT OR UPDATE ON "ProductoMedias"
+    BEFORE INSERT OR UPDATE ON "ProductMedias"
     FOR EACH ROW EXECUTE FUNCTION validate_single_main_image();
 
 -- =====================================
@@ -253,24 +253,24 @@ SELECT
     -- Información de categoría
     c.name as categoria_name,
     c.slug as categoria_slug
-FROM "Producto" p
-LEFT JOIN "Category" c ON p.categoria_id = c.category_id
+FROM "Product" p
+LEFT JOIN "Category" c ON p.category_id = c.category_id
 LEFT JOIN (
     SELECT 
         product_id, 
         COUNT(*) as total_images 
-    FROM "ProductoMedias" 
+    FROM "ProductMedias" 
     WHERE is_active = true 
     GROUP BY product_id
-) media_count ON p.id = media_count.product_id
+) media_count ON p.product_id = media_count.product_id
 LEFT JOIN (
     SELECT 
         product_id, 
         url 
-    FROM "ProductoMedias" 
+    FROM "ProductMedias" 
     WHERE is_main = true 
     AND is_active = true
-) main_image ON p.id = main_image.product_id;
+) main_image ON p.product_id = main_image.product_id;
 
 -- Vista para productos publicados y disponibles (para frontend público)
 CREATE OR REPLACE VIEW "ProductoPublico" AS
@@ -323,7 +323,7 @@ BEGIN
         (producto1_id, 'Cuidado', 'Lavado a máquina');
         
         -- Agregar imágenes al producto 1
-        INSERT INTO "ProductoMedias" (product_id, type, url, is_main, orden, alt_text) VALUES
+        INSERT INTO "ProductMedias" (product_id, type, url, is_main, orden, alt_text) VALUES
         (producto1_id, 'image', 'https://example.com/camiseta-azul-frente.jpg', true, 1, 'Camiseta azul vista frontal'),
         (producto1_id, 'image', 'https://example.com/camiseta-azul-espalda.jpg', false, 2, 'Camiseta azul vista posterior');
     END IF;
@@ -353,7 +353,7 @@ BEGIN
         (producto2_id, 'Color', 'Negro Espacial');
         
         -- Agregar imágenes al producto 2
-        INSERT INTO "ProductoMedias" (product_id, type, url, is_main, orden, alt_text) VALUES
+        INSERT INTO "ProductMedias" (product_id, type, url, is_main, orden, alt_text) VALUES
         (producto2_id, 'image', 'https://example.com/smartphone-frontal.jpg', true, 1, 'Smartphone vista frontal'),
         (producto2_id, 'image', 'https://example.com/smartphone-posterior.jpg', false, 2, 'Smartphone vista posterior'),
         (producto2_id, 'image', 'https://example.com/smartphone-lateral.jpg', false, 3, 'Smartphone vista lateral');
@@ -382,7 +382,7 @@ BEGIN
         (producto3_id, 'Peso', '45kg');
         
         -- Agregar imágenes al producto 3
-        INSERT INTO "ProductoMedias" (product_id, type, url, is_main, orden, alt_text) VALUES
+        INSERT INTO "ProductMedias" (product_id, type, url, is_main, orden, alt_text) VALUES
         (producto3_id, 'image', 'https://example.com/mesa-comedor-principal.jpg', true, 1, 'Mesa de comedor roble'),
         (producto3_id, 'image', 'https://example.com/mesa-comedor-detalle.jpg', false, 2, 'Detalle de la madera'),
         (producto3_id, 'image', 'https://example.com/mesa-comedor-ambiente.jpg', false, 3, 'Mesa en ambiente');
@@ -396,19 +396,19 @@ END $$;
 
 COMMENT ON TABLE "Producto" IS 'Tabla principal de productos del marketplace';
 COMMENT ON TABLE "ProductoAtributos" IS 'Atributos personalizados de productos (talla, color, material, etc.)';
-COMMENT ON TABLE "ProductoMedias" IS 'Imágenes y videos asociados a productos';
+COMMENT ON TABLE "ProductMedias" IS 'Imágenes y videos asociados a productos';
 
 COMMENT ON COLUMN "Producto".status IS 'Estado del producto: borrador, publicado, archivado';
 COMMENT ON COLUMN "Producto".accept_offers IS 'Indica si el producto acepta ofertas de los compradores';
-COMMENT ON COLUMN "ProductoMedias".is_main IS 'Indica si es la imagen principal del producto (solo una por producto)';
-COMMENT ON COLUMN "ProductoMedias".metadata IS 'Información adicional en formato JSON (EXIF, etc.)';
+COMMENT ON COLUMN "ProductMedias".is_main IS 'Indica si es la imagen principal del producto (solo una por producto)';
+COMMENT ON COLUMN "ProductMedias".metadata IS 'Información adicional en formato JSON (EXIF, etc.)';
 
 -- =====================================
 -- SCRIPT COMPLETADO
 -- =====================================
 
 -- Este script configura:
--- ✅ Tablas principales (Producto, ProductoAtributos, ProductoMedias)
+-- ✅ Tablas principales (Producto, ProductoAtributos, ProductMedias)
 -- ✅ Índices optimizados para consultas frecuentes
 -- ✅ Políticas RLS para seguridad
 -- ✅ Triggers automáticos (updated_at, imagen principal única)
