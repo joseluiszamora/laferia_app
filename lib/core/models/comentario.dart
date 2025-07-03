@@ -35,7 +35,10 @@ class Comentario extends Equatable {
 
   factory Comentario.fromJson(Map<String, dynamic> json) {
     return Comentario(
-      id: json['id'] is int ? json['id'] : int.parse(json['id'].toString()),
+      id:
+          json['comment_id'] is int
+              ? json['comment_id']
+              : int.parse(json['comment_id'].toString()),
       storeId:
           json['store_id'] is int
               ? json['store_id']

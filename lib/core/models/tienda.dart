@@ -43,6 +43,8 @@ class Tienda extends Equatable {
   final double? averageRating;
   final int totalComments;
   final List<Comentario> comentarios;
+  final String? logoUrl;
+  final String? bannerUrl;
 
   const Tienda({
     required this.id,
@@ -59,6 +61,8 @@ class Tienda extends Equatable {
     this.averageRating,
     this.totalComments = 0,
     this.comentarios = const [],
+    this.logoUrl,
+    this.bannerUrl,
   });
 
   // Getters para compatibilidad con código existente
@@ -105,6 +109,8 @@ class Tienda extends Equatable {
           (json['average_rating'] ?? json['calificacion_promedio'])?.toDouble(),
       totalComments: json['total_comments'] ?? json['total_comentarios'] ?? 0,
       comentarios: [],
+      logoUrl: json['logo_url'] ?? json['logo'],
+      bannerUrl: json['banner_url'] ?? json['banner'],
     );
   }
 
@@ -123,6 +129,8 @@ class Tienda extends Equatable {
       'status': status.value,
       'average_rating': averageRating,
       'total_comments': totalComments,
+      'logo_url': logoUrl,
+      'banner_url': bannerUrl,
     };
   }
 
@@ -142,6 +150,8 @@ class Tienda extends Equatable {
     averageRating,
     totalComments,
     comentarios,
+    logoUrl,
+    bannerUrl,
   ];
 
   Tienda copyWith({
@@ -159,6 +169,8 @@ class Tienda extends Equatable {
     double? averageRating,
     int? totalComments,
     List<Comentario>? comentarios,
+    String? logoUrl,
+    String? bannerUrl,
   }) {
     return Tienda(
       id: id ?? this.id,
@@ -175,6 +187,8 @@ class Tienda extends Equatable {
       averageRating: averageRating ?? this.averageRating,
       totalComments: totalComments ?? this.totalComments,
       comentarios: comentarios ?? this.comentarios,
+      logoUrl: logoUrl ?? this.logoUrl,
+      bannerUrl: bannerUrl ?? this.bannerUrl,
     );
   }
 
