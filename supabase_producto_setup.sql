@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS "Producto" (
 -- Tabla para atributos personalizados de productos (talla, color, material, etc.)
 CREATE TABLE IF NOT EXISTS "ProductoAtributos" (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    producto_id UUID NOT NULL REFERENCES "Producto"(id) ON DELETE CASCADE,
+    product_id UUID NOT NULL REFERENCES "Producto"(id) ON DELETE CASCADE,
     nombre VARCHAR(100) NOT NULL, -- Ej: "Talla", "Color", "Material"
     valor VARCHAR(255) NOT NULL,  -- Ej: "L", "Rojo", "Algodón"
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS "ProductoAtributos" (
 -- Tabla para gestionar imágenes y videos de productos
 CREATE TABLE IF NOT EXISTS "ProductoMedias" (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    producto_id UUID NOT NULL REFERENCES "Producto"(id) ON DELETE CASCADE,
+    product_id UUID NOT NULL REFERENCES "Producto"(id) ON DELETE CASCADE,
     type VARCHAR(20) NOT NULL DEFAULT 'image' CHECK (type IN ('image', 'video')),
     url TEXT NOT NULL,
     thumbnail_url TEXT,
@@ -94,7 +94,7 @@ CREATE INDEX IF NOT EXISTS idx_producto_categoria_status_available
     ON "Producto"(categoria_id, status, is_available);
 
 -- Índices para tabla ProductoAtributos
-CREATE INDEX IF NOT EXISTS idx_producto_atributos_producto_id ON "ProductoAtributos"(producto_id);
+CREATE INDEX IF NOT EXISTS idx_producto_atributos_product_id ON "ProductoAtributos"(product_id);
 CREATE INDEX IF NOT EXISTS idx_producto_atributos_nombre ON "ProductoAtributos"(nombre);
 CREATE INDEX IF NOT EXISTS idx_producto_atributos_valor ON "ProductoAtributos"(valor);
 
@@ -103,7 +103,7 @@ CREATE INDEX IF NOT EXISTS idx_producto_atributos_nombre_valor
     ON "ProductoAtributos"(nombre, valor);
 
 -- Índices para tabla ProductoMedias
-CREATE INDEX IF NOT EXISTS idx_producto_medias_producto_id ON "ProductoMedias"(producto_id);
+CREATE INDEX IF NOT EXISTS idx_producto_medias_product_id ON "ProductoMedias"(product_id);
 CREATE INDEX IF NOT EXISTS idx_producto_medias_type ON "ProductoMedias"(type);
 CREATE INDEX IF NOT EXISTS idx_producto_medias_main ON "ProductoMedias"(is_main);
 CREATE INDEX IF NOT EXISTS idx_producto_medias_active ON "ProductoMedias"(is_active);
@@ -149,7 +149,7 @@ CREATE POLICY "Allow read producto atributos" ON "ProductoAtributos"
     USING (
         EXISTS (
             SELECT 1 FROM "Producto" p 
-            WHERE p.id = producto_id 
+            WHERE p.id = product_id 
             AND p.status = 'publicado' 
             AND p.is_available = true
         )
@@ -174,7 +174,7 @@ CREATE POLICY "Allow read producto medias" ON "ProductoMedias"
     USING (
         is_active = true AND EXISTS (
             SELECT 1 FROM "Producto" p 
-            WHERE p.id = producto_id 
+            WHERE p.id = product_id 
             AND p.status = 'publicado' 
             AND p.is_available = true
         )
@@ -224,7 +224,7 @@ BEGIN
         -- Desmarcar todas las otras imágenes del mismo producto como no principales
         UPDATE "ProductoMedias" 
         SET is_main = false 
-        WHERE producto_id = NEW.producto_id 
+        WHERE product_id = NEW.product_id 
         AND id != NEW.id 
         AND is_main = true;
     END IF;
@@ -257,20 +257,20 @@ FROM "Producto" p
 LEFT JOIN "Category" c ON p.categoria_id = c.category_id
 LEFT JOIN (
     SELECT 
-        producto_id, 
+        product_id, 
         COUNT(*) as total_images 
     FROM "ProductoMedias" 
     WHERE is_active = true 
-    GROUP BY producto_id
-) media_count ON p.id = media_count.producto_id
+    GROUP BY product_id
+) media_count ON p.id = media_count.product_id
 LEFT JOIN (
     SELECT 
-        producto_id, 
+        product_id, 
         url 
     FROM "ProductoMedias" 
     WHERE is_main = true 
     AND is_active = true
-) main_image ON p.id = main_image.producto_id;
+) main_image ON p.id = main_image.product_id;
 
 -- Vista para productos publicados y disponibles (para frontend público)
 CREATE OR REPLACE VIEW "ProductoPublico" AS
@@ -316,14 +316,14 @@ BEGIN
         ) RETURNING id INTO producto1_id;
         
         -- Agregar atributos al producto 1
-        INSERT INTO "ProductoAtributos" (producto_id, nombre, valor) VALUES
+        INSERT INTO "ProductoAtributos" (product_id, nombre, valor) VALUES
         (producto1_id, 'Talla', 'M'),
         (producto1_id, 'Color', 'Azul'),
         (producto1_id, 'Material', 'Algodón 100%'),
         (producto1_id, 'Cuidado', 'Lavado a máquina');
         
         -- Agregar imágenes al producto 1
-        INSERT INTO "ProductoMedias" (producto_id, type, url, is_main, orden, alt_text) VALUES
+        INSERT INTO "ProductoMedias" (product_id, type, url, is_main, orden, alt_text) VALUES
         (producto1_id, 'image', 'https://example.com/camiseta-azul-frente.jpg', true, 1, 'Camiseta azul vista frontal'),
         (producto1_id, 'image', 'https://example.com/camiseta-azul-espalda.jpg', false, 2, 'Camiseta azul vista posterior');
     END IF;
@@ -345,7 +345,7 @@ BEGIN
         ) RETURNING id INTO producto2_id;
         
         -- Agregar atributos al producto 2
-        INSERT INTO "ProductoAtributos" (producto_id, nombre, valor) VALUES
+        INSERT INTO "ProductoAtributos" (product_id, nombre, valor) VALUES
         (producto2_id, 'Pantalla', '6.7" AMOLED'),
         (producto2_id, 'Cámara', '108MP'),
         (producto2_id, 'Almacenamiento', '256GB'),
@@ -353,7 +353,7 @@ BEGIN
         (producto2_id, 'Color', 'Negro Espacial');
         
         -- Agregar imágenes al producto 2
-        INSERT INTO "ProductoMedias" (producto_id, type, url, is_main, orden, alt_text) VALUES
+        INSERT INTO "ProductoMedias" (product_id, type, url, is_main, orden, alt_text) VALUES
         (producto2_id, 'image', 'https://example.com/smartphone-frontal.jpg', true, 1, 'Smartphone vista frontal'),
         (producto2_id, 'image', 'https://example.com/smartphone-posterior.jpg', false, 2, 'Smartphone vista posterior'),
         (producto2_id, 'image', 'https://example.com/smartphone-lateral.jpg', false, 3, 'Smartphone vista lateral');
@@ -374,7 +374,7 @@ BEGIN
         ) RETURNING id INTO producto3_id;
         
         -- Agregar atributos al producto 3
-        INSERT INTO "ProductoAtributos" (producto_id, nombre, valor) VALUES
+        INSERT INTO "ProductoAtributos" (product_id, nombre, valor) VALUES
         (producto3_id, 'Material', 'Roble macizo'),
         (producto3_id, 'Dimensiones', '180cm x 90cm x 75cm'),
         (producto3_id, 'Capacidad', '6 personas'),
@@ -382,7 +382,7 @@ BEGIN
         (producto3_id, 'Peso', '45kg');
         
         -- Agregar imágenes al producto 3
-        INSERT INTO "ProductoMedias" (producto_id, type, url, is_main, orden, alt_text) VALUES
+        INSERT INTO "ProductoMedias" (product_id, type, url, is_main, orden, alt_text) VALUES
         (producto3_id, 'image', 'https://example.com/mesa-comedor-principal.jpg', true, 1, 'Mesa de comedor roble'),
         (producto3_id, 'image', 'https://example.com/mesa-comedor-detalle.jpg', false, 2, 'Detalle de la madera'),
         (producto3_id, 'image', 'https://example.com/mesa-comedor-ambiente.jpg', false, 3, 'Mesa en ambiente');

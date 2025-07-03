@@ -74,7 +74,10 @@ class Tienda extends Equatable {
 
   factory Tienda.fromJson(Map<String, dynamic> json) {
     return Tienda(
-      id: json['id'] is int ? json['id'] : int.parse(json['id'].toString()),
+      id:
+          json['store_id'] is int
+              ? json['store_id']
+              : int.parse(json['store_id'].toString()),
       name: json['name'] ?? '',
       ownerName: json['owner_name'] ?? '',
       ubicacion: Ubicacion.fromJson(json['ubicacion'] ?? json),

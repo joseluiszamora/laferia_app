@@ -100,6 +100,26 @@ class SupabaseTiendaService {
     }
   }
 
+  /// Busca las ultimas tiendas
+  static Future<List<Tienda>> obtenerUltimasTiendas({
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    try {
+      final response = await _supabase
+          .from(_tiendaTableName)
+          .select()
+          .eq('status', 'active')
+          .order('created_at', ascending: false)
+          .range(offset, offset + limit - 1);
+
+      final List<dynamic> data = response as List<dynamic>;
+      return data.map((json) => Tienda.fromJson(json)).toList();
+    } catch (e) {
+      throw Exception('Error al obtener productos en oferta: $e');
+    }
+  }
+
   /// Crear una nueva tienda
   static Future<Tienda> crearTienda(Tienda tienda) async {
     try {
@@ -237,7 +257,9 @@ class SupabaseTiendaService {
   ) async {
     // Obtener comentarios de la tienda
     final tiendaId =
-        json['id'] is int ? json['id'] : int.parse(json['id'].toString());
+        json['store_id'] is int
+            ? json['store_id']
+            : int.parse(json['store_id'].toString());
     final comentarios = await getComentariosByTienda(tiendaId);
 
     return Tienda(

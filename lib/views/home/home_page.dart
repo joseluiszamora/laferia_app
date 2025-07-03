@@ -5,6 +5,8 @@ import 'package:laferia/core/blocs/categorias/categorias_event.dart';
 
 import 'package:laferia/views/home/components/banner_section.dart';
 import 'package:laferia/views/home/components/category_section.dart';
+import 'package:laferia/views/home/components/latest_products_section.dart';
+import 'package:laferia/views/home/components/latest_stores_section.dart';
 import 'package:laferia/views/home/components/quick_actions_section.dart';
 import 'package:laferia/views/home/components/recommended_section.dart';
 import 'package:laferia/views/home/components/search_section.dart';
@@ -51,6 +53,14 @@ class _HomePageContent extends StatelessWidget {
 
               // Categories section
               CategorySection(),
+              const SizedBox(height: 32),
+
+              // latest stores section
+              LatestStoresSection(),
+              const SizedBox(height: 32),
+
+              // latest products section
+              LatestProductsSection(),
               const SizedBox(height: 32),
 
               // Recommended section

@@ -527,9 +527,30 @@ class SupabaseProductoService {
   }) async {
     try {
       final response = await _supabase
-          .from(_vistaProductoPublico)
+          .from(_tablaProducto)
           .select()
           .not('discounted_price', 'is', null)
+          .order('created_at', ascending: false)
+          .range(offset, offset + limit - 1);
+
+      final List<dynamic> data = response as List<dynamic>;
+      return data.map((json) => _mapearProductoCompleto(json)).toList();
+    } catch (e) {
+      throw Exception('Error al obtener productos en oferta: $e');
+    }
+  }
+
+  /// Busca los ultimos productos
+  static Future<List<Producto>> obtenerUltimosProductos({
+    int limit = 20,
+    int offset = 0,
+  }) async {
+    try {
+      final response = await _supabase
+          .from(_tablaProducto)
+          .select()
+          .eq('status', 'published')
+          .eq('is_available', true)
           .order('created_at', ascending: false)
           .range(offset, offset + limit - 1);
 
@@ -575,7 +596,10 @@ class SupabaseProductoService {
   /// Mapea los datos de la vista completa a un objeto Producto
   static Producto _mapearProductoCompleto(Map<String, dynamic> json) {
     return Producto(
-      id: json['id'] is int ? json['id'] : int.parse(json['id'].toString()),
+      id:
+          json['product_id'] is int
+              ? json['product_id']
+              : int.parse(json['product_id'].toString()),
       name: json['name'],
       slug: json['slug'],
       description: json['description'],
