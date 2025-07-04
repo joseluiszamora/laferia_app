@@ -50,33 +50,89 @@ class ProductoCardMini extends StatelessWidget {
                     topRight: Radius.circular(16),
                   ),
                 ),
-                child: Center(
-                  child:
-                      producto.tieneImagenes
-                          ? ClipRRect(
-                            borderRadius: const BorderRadius.only(
-                              topLeft: Radius.circular(16),
-                              topRight: Radius.circular(16),
-                            ),
-                            child: Image.network(
-                              producto.imagenPrincipal?.url ?? '',
-                              width: double.infinity,
-                              height: 100,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Icon(
-                                  Icons.image_not_supported,
-                                  size: 40,
-                                  color: theme.colorScheme.primary,
-                                );
-                              },
-                            ),
-                          )
-                          : Icon(
-                            Icons.shopping_bag,
-                            size: 40,
-                            color: theme.colorScheme.primary,
+                child: Stack(
+                  children: [
+                    Center(
+                      child:
+                          producto.tieneImagenes
+                              ? ClipRRect(
+                                borderRadius: const BorderRadius.only(
+                                  topLeft: Radius.circular(16),
+                                  topRight: Radius.circular(16),
+                                ),
+                                child: Image.network(
+                                  producto.imagenPrincipal?.url ?? '',
+                                  width: double.infinity,
+                                  height: 100,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Icon(
+                                      Icons.image_not_supported,
+                                      size: 40,
+                                      color: theme.colorScheme.primary,
+                                    );
+                                  },
+                                ),
+                              )
+                              : Icon(
+                                Icons.shopping_bag,
+                                size: 40,
+                                color: theme.colorScheme.primary,
+                              ),
+                    ),
+                    // Badge de oferta
+                    if (producto.tieneOferta)
+                      Positioned(
+                        top: 8,
+                        left: 8,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
                           ),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Text(
+                            '-${producto.porcentajeDescuento.round()}%',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    // Botón de favorito
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: GestureDetector(
+                        onTap: () {
+                          _toggleFavorite(context, producto);
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.1),
+                                blurRadius: 4,
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            Icons.favorite_border,
+                            color: Colors.red,
+                            size: 16,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               // Content section
@@ -98,7 +154,7 @@ class ProductoCardMini extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${producto.categoryId}',
+                      producto.categoryName ?? 'Sin categoría',
                       style: TextStyle(
                         fontSize: 12,
                         color: theme.textTheme.bodySmall?.color,
@@ -111,14 +167,39 @@ class ProductoCardMini extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          "\$${producto.price.toStringAsFixed(0)}",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.primary,
-                            fontFamily: 'Kodchasan',
-                          ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (producto.tieneOferta) ...[
+                              Text(
+                                "\$${producto.price.toStringAsFixed(0)}",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey,
+                                  decoration: TextDecoration.lineThrough,
+                                  fontFamily: 'Kodchasan',
+                                ),
+                              ),
+                              Text(
+                                "\$${producto.precioEfectivo.toStringAsFixed(0)}",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.primary,
+                                  fontFamily: 'Kodchasan',
+                                ),
+                              ),
+                            ] else
+                              Text(
+                                "\$${producto.price.toStringAsFixed(0)}",
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.primary,
+                                  fontFamily: 'Kodchasan',
+                                ),
+                              ),
+                          ],
                         ),
                         if (producto.acceptOffers)
                           Container(
@@ -149,6 +230,22 @@ class ProductoCardMini extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  void _toggleFavorite(BuildContext context, Producto producto) {
+    // Aquí podrías implementar la lógica para cambiar el estado de favorito
+    // Por ahora solo mostramos un mensaje
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        // content: Text(
+        //   producto.esFavorito
+        //       ? '${producto.nombre} removido de favoritos'
+        //       : '${producto.nombre} agregado a favoritos',
+        // ),
+        content: Text('${producto.name} agregado a favoritos'),
+        duration: const Duration(seconds: 2),
       ),
     );
   }

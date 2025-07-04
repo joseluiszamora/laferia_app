@@ -553,7 +553,7 @@ class SupabaseProductoService {
     try {
       final response = await _supabase
           .from(_tablaProducto)
-          .select('*, ProductMedias(*)')
+          .select('*, Category(name), ProductMedias(*)')
           .eq('status', 'published')
           .eq('is_available', true)
           .order('created_at', ascending: false)
@@ -631,6 +631,7 @@ class SupabaseProductoService {
           json['category_id'] is int
               ? json['category_id']
               : int.parse(json['category_id'].toString()),
+      categoryName: json['Category']?['name'],
       brandId:
           json['brand_id'] != null
               ? (json['brand_id'] is int

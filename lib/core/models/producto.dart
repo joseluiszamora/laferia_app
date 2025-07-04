@@ -47,6 +47,7 @@ class Producto extends Equatable {
   final Map<String, dynamic>? dimensions; // {width, height, depth} en cm
 
   final int categoryId;
+  final String? categoryName;
   final int? brandId;
   final int? storeId;
 
@@ -84,6 +85,7 @@ class Producto extends Equatable {
     this.weight,
     this.dimensions,
     required this.categoryId,
+    this.categoryName,
     this.brandId,
     this.storeId,
     this.status = ProductStatus.draft,
@@ -118,6 +120,7 @@ class Producto extends Equatable {
     weight,
     dimensions,
     categoryId,
+    categoryName,
     brandId,
     storeId,
     status,
@@ -211,6 +214,7 @@ class Producto extends Equatable {
               ? Map<String, dynamic>.from(json['dimensions'])
               : null,
       categoryId: json['category_id'] ?? 0,
+      categoryName: json['Category']?['name'],
       brandId: json['brand_id'],
       storeId: json['store_id'],
       status: ProductStatus.fromString(json['status'] ?? 'draft'),
@@ -263,6 +267,7 @@ class Producto extends Equatable {
       'weight': weight,
       'dimensions': dimensions,
       'category_id': categoryId,
+      'category_name': categoryName,
       'brand_id': brandId,
       'store_id': storeId,
       'status': status.value,
@@ -296,6 +301,7 @@ class Producto extends Equatable {
     double? weight,
     Map<String, dynamic>? dimensions,
     int? categoryId,
+    String? categoryName,
     int? brandId,
     int? storeId,
     ProductStatus? status,
@@ -328,6 +334,7 @@ class Producto extends Equatable {
       weight: weight ?? this.weight,
       dimensions: dimensions ?? this.dimensions,
       categoryId: categoryId ?? this.categoryId,
+      categoryName: categoryName ?? this.categoryName,
       brandId: brandId ?? this.brandId,
       storeId: storeId ?? this.storeId,
       status: status ?? this.status,
