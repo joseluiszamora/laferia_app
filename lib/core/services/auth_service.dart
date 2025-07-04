@@ -1,9 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-// import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
   final SupabaseClient _supabase = Supabase.instance.client;
-  // final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   // Obtener usuario actual
   User? get currentUser => _supabase.auth.currentUser;
@@ -47,49 +45,95 @@ class AuthService {
     }
   }
 
-  // Login con Google - Temporalmente deshabilitado hasta resolver compatibilidad
-  Future<AuthResponse> signInWithGoogle() async {
-    throw Exception(
-      'Google Sign In temporalmente deshabilitado - requiere configuración adicional',
-    );
-
-    /* 
-    // TODO: Implementar cuando se resuelva compatibilidad con google_sign_in
+  // Login con Google - Método mejorado para manejo de OAuth
+  Future<bool> signInWithGoogle() async {
     try {
-      // Generar nonce para seguridad
-      final rawNonce = _generateNonce();
-      
-      // Iniciar Google Sign In
-      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
-
-      if (googleUser == null) {
-        throw Exception('Login con Google cancelado');
-      }
-
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-
-      final accessToken = googleAuth.accessToken;
-      final idToken = googleAuth.idToken;
-
-      if (accessToken == null || idToken == null) {
-        throw Exception('Error obteniendo tokens de Google');
-      }
-
-      // Autenticar con Supabase usando OAuth
-      final response = await _supabase.auth.signInWithIdToken(
-        provider: OAuthProvider.google,
-        idToken: idToken,
-        accessToken: accessToken,
-        nonce: rawNonce,
+      // Método 1: Intentar sin redirectTo personalizado (usar el por defecto de Supabase)
+      final result = await _supabase.auth.signInWithOAuth(
+        OAuthProvider.google,
+        authScreenLaunchMode: LaunchMode.externalApplication,
       );
 
-      return response;
+      return result;
+    } on AuthException catch (e) {
+      if (e.message.contains('validation_failed') ||
+          e.message.contains('missing OAuth secret')) {
+        throw Exception(
+          'Error de configuración: Google OAuth no está configurado correctamente en Supabase.\n\n'
+          'Para solucionar este problema:\n'
+          '1. Ve a tu Dashboard de Supabase\n'
+          '2. Navega a Authentication > Providers\n'
+          '3. Configura Google OAuth con tu Client ID y Client Secret\n'
+          '4. Asegúrate de que la URL de callback esté configurada correctamente',
+        );
+      }
+      throw Exception('Error en autenticación con Google: ${e.message}');
     } catch (e) {
       throw Exception('Error en Google Sign In: ${e.toString()}');
     }
-    */
   }
+
+  // Método alternativo para Google Sign In con redirectTo personalizado
+  Future<bool> signInWithGoogleCustomRedirect() async {
+    try {
+      // Usar deep link personalizado
+      final result = await _supabase.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: 'com.example.laferia://oauth/callback',
+        authScreenLaunchMode: LaunchMode.externalApplication,
+      );
+
+      return result;
+    } on AuthException catch (e) {
+      if (e.message.contains('validation_failed') ||
+          e.message.contains('missing OAuth secret')) {
+        throw Exception(
+          'Error de configuración: Google OAuth no está configurado correctamente en Supabase.',
+        );
+      }
+      throw Exception('Error en autenticación con Google: ${e.message}');
+    } catch (e) {
+      throw Exception(
+        'Error en Google Sign In con redirect personalizado: ${e.toString()}',
+      );
+    }
+  }
+
+  // Método para manejar deep links OAuth de retorno
+  Future<void> handleOAuthCallback(String url) async {
+    try {
+      // Extraer los parámetros de la URL de callback
+      final uri = Uri.parse(url);
+      final fragments = uri.fragment.split('&');
+
+      final Map<String, String> params = {};
+      for (String fragment in fragments) {
+        final parts = fragment.split('=');
+        if (parts.length == 2) {
+          params[parts[0]] = Uri.decodeComponent(parts[1]);
+        }
+      }
+
+      // Si hay un access_token, el usuario se ha autenticado correctamente
+      if (params.containsKey('access_token')) {
+        await _supabase.auth.setSession(params['access_token']!);
+      }
+    } catch (e) {
+      throw Exception('Error procesando callback OAuth: ${e.toString()}');
+    }
+  }
+
+  // Verificar si el usuario está autenticado con Google
+  bool get isGoogleUser {
+    final provider = currentUser?.appMetadata['provider'];
+    return provider == 'google';
+  }
+
+  // Obtener la URL del avatar del usuario (especialmente útil para usuarios de Google)
+  String? get userAvatarUrl => currentUser?.userMetadata?['avatar_url'];
+
+  // Obtener el nombre completo del usuario
+  String? get userFullName => currentUser?.userMetadata?['full_name'];
 
   // Recuperar contraseña
   Future<void> resetPassword(String email) async {
@@ -116,14 +160,6 @@ class AuthService {
   // Cerrar sesión
   Future<void> signOut() async {
     try {
-      // TODO: Cerrar sesión en Google cuando esté implementado
-      /*
-      final isSignedIn = await _googleSignIn.isSignedIn();
-      if (isSignedIn) {
-        await _googleSignIn.signOut();
-      }
-      */
-
       // Cerrar sesión en Supabase
       await _supabase.auth.signOut();
     } catch (e) {
@@ -182,5 +218,86 @@ class AuthService {
     } catch (e) {
       throw Exception('Error reenviando confirmación: ${e.toString()}');
     }
+  }
+
+  // Método para diagnosticar problemas de OAuth
+  Future<Map<String, dynamic>> diagnoseOAuthIssues() async {
+    final Map<String, dynamic> diagnosis = {
+      'supabse_configured': false,
+      'user_session': null,
+      'auth_state': 'unknown',
+      'recommendations': <String>[],
+    };
+
+    try {
+      // Verificar estado de autenticación
+      final user = _supabase.auth.currentUser;
+      diagnosis['user_session'] = user?.toJson();
+      diagnosis['auth_state'] =
+          user != null ? 'authenticated' : 'not_authenticated';
+
+      // Verificar configuración de Supabase
+      final session = _supabase.auth.currentSession;
+      diagnosis['supabase_configured'] = session != null || user != null;
+
+      // Añadir recomendaciones basadas en el estado
+      if (user == null) {
+        diagnosis['recommendations'].add('Usuario no autenticado');
+        diagnosis['recommendations'].add(
+          'Verificar configuración OAuth en Supabase Dashboard',
+        );
+      }
+
+      if (!diagnosis['supabase_configured']) {
+        diagnosis['recommendations'].add(
+          'Configurar Google OAuth Provider en Supabase',
+        );
+        diagnosis['recommendations'].add(
+          'Añadir Client ID y Client Secret de Google Cloud Console',
+        );
+        diagnosis['recommendations'].add('Verificar URLs de redirección');
+      }
+    } catch (e) {
+      diagnosis['error'] = e.toString();
+      diagnosis['recommendations'].add(
+        'Error en configuración de Supabase: ${e.toString()}',
+      );
+    }
+
+    return diagnosis;
+  }
+
+  // Método para verificar si OAuth está configurado correctamente
+  Future<bool> isOAuthConfigured() async {
+    try {
+      // Intentar una verificación simple de la configuración
+      await _supabase.auth.signInWithOAuth(
+        OAuthProvider.google,
+        authScreenLaunchMode: LaunchMode.externalApplication,
+        // Dry run - no abrirá el navegador en realidad
+      );
+      return true;
+    } on AuthException catch (e) {
+      // Si el error es de configuración, OAuth no está configurado
+      return !e.message.contains('validation_failed') &&
+          !e.message.contains('missing OAuth secret');
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Método para obtener información de debug
+  Map<String, dynamic> getDebugInfo() {
+    return {
+      'is_authenticated': isAuthenticated,
+      'user_id': userId,
+      'user_email': userEmail,
+      'user_metadata': userMetadata,
+      'is_google_user': isGoogleUser,
+      'avatar_url': userAvatarUrl,
+      'full_name': userFullName,
+      'email_confirmed': isEmailConfirmed,
+      'auth_client_configured': _supabase.auth.currentSession != null,
+    };
   }
 }

@@ -29,6 +29,10 @@ void main() async {
     authOptions: const FlutterAuthClientOptions(
       authFlowType: AuthFlowType.pkce,
     ),
+    // Configurar para detectar deep links de OAuth
+    realtimeClientOptions: const RealtimeClientOptions(
+      logLevel: RealtimeLogLevel.info,
+    ),
   );
   runApp(
     MultiProvider(
