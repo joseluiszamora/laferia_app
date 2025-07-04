@@ -37,33 +37,6 @@ class ProductoCard extends StatelessWidget {
                   ),
                   child: Stack(
                     children: [
-                      // Imagen principal del producto
-                      producto.tieneImagenes
-                          ? Image.network(
-                            producto.imagenPrincipal!.url,
-                            width: double.infinity,
-                            height: double.infinity,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return _buildPlaceholderImage();
-                            },
-                            loadingBuilder: (context, child, loadingProgress) {
-                              if (loadingProgress == null) return child;
-                              return Center(
-                                child: CircularProgressIndicator(
-                                  value:
-                                      loadingProgress.expectedTotalBytes != null
-                                          ? loadingProgress
-                                                  .cumulativeBytesLoaded /
-                                              loadingProgress
-                                                  .expectedTotalBytes!
-                                          : null,
-                                ),
-                              );
-                            },
-                          )
-                          : _buildPlaceholderImage(),
-
                       // Badge de múltiples imágenes
                       if (producto.cantidadImagenes > 1)
                         Positioned(
@@ -166,16 +139,15 @@ class ProductoCard extends StatelessWidget {
                       MainAxisSize.min, // Agregado para evitar overflow
                   children: [
                     // Nombre del producto
-                    Text(
-                      producto.name,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12, // Reducido el tamaño de fuente
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-
+                    // Text(
+                    //   producto.name,
+                    //   style: theme.textTheme.titleSmall?.copyWith(
+                    //     fontWeight: FontWeight.bold,
+                    //     fontSize: 12, // Reducido el tamaño de fuente
+                    //   ),
+                    //   maxLines: 2,
+                    //   overflow: TextOverflow.ellipsis,
+                    // ),
                     const SizedBox(height: 2), // Reducido de 4 a 2
                     // Precio y disponibilidad
                     Column(
@@ -251,56 +223,12 @@ class ProductoCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-
-                    const SizedBox(height: 2), // Reducido de 4 a 2
-                    // Categoría
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6, // Reducido de 8 a 6
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.primaryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(
-                          6,
-                        ), // Reducido de 8 a 6
-                      ),
-                      child: Text(
-                        '${producto.categoryId}',
-                        style: TextStyle(
-                          fontSize: 8, // Reducido de 10 a 8
-                          color: theme.primaryColor,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
                   ],
                 ),
               ),
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildPlaceholderImage() {
-    return Container(
-      width: double.infinity,
-      height: double.infinity,
-      color: Colors.grey.shade200,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.image_outlined, size: 40, color: Colors.grey.shade400),
-          const SizedBox(height: 8),
-          Text(
-            'Sin imagen',
-            style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
-          ),
-        ],
       ),
     );
   }

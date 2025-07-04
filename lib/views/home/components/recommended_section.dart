@@ -41,7 +41,7 @@ class RecommendedSection extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         SizedBox(
-          height: 220,
+          height: 250,
           child: FutureBuilder<List<Producto>>(
             future: SupabaseProductoService.obtenerProductosEnOferta(limit: 10),
             builder: (context, snapshot) {

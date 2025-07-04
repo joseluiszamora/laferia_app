@@ -66,19 +66,31 @@ class ProductoCardMini extends StatelessWidget {
                                   height: 100,
                                   fit: BoxFit.cover,
                                   errorBuilder: (context, error, stackTrace) {
-                                    return Icon(
-                                      Icons.image_not_supported,
-                                      size: 40,
-                                      color: theme.colorScheme.primary,
+                                    return _buildPlaceholderImage();
+                                  },
+                                  loadingBuilder: (
+                                    context,
+                                    child,
+                                    loadingProgress,
+                                  ) {
+                                    if (loadingProgress == null) return child;
+                                    return Center(
+                                      child: CircularProgressIndicator(
+                                        value:
+                                            loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                                ? loadingProgress
+                                                        .cumulativeBytesLoaded /
+                                                    loadingProgress
+                                                        .expectedTotalBytes!
+                                                : null,
+                                      ),
                                     );
                                   },
                                 ),
                               )
-                              : Icon(
-                                Icons.shopping_bag,
-                                size: 40,
-                                color: theme.colorScheme.primary,
-                              ),
+                              : _buildPlaceholderImage(),
                     ),
                     // Badge de oferta
                     if (producto.tieneOferta)
@@ -153,17 +165,43 @@ class ProductoCardMini extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      producto.categoryName ?? 'Sin categoría',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: theme.textTheme.bodySmall?.color,
-                        fontFamily: 'Kodchasan',
+                    // Categoría
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6, // Reducido de 8 a 6
+                        vertical: 2,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                      decoration: BoxDecoration(
+                        color: theme.primaryColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(
+                          6,
+                        ), // Reducido de 8 a 6
+                      ),
+                      child: Text(
+                        producto.categoryName ?? 'Sin categoría',
+                        style: TextStyle(
+                          fontSize: 8, // Reducido de 10 a 8
+                          color: theme.primaryColor,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 4), // Reducido de 6 a 4
+                    // Características
+                    // Expanded(
+                    //   child: Text(
+                    //     producto.description,
+                    //     style: theme.textTheme.bodySmall?.copyWith(
+                    //       color: Colors.grey.shade600,
+                    //       fontSize: 10, // Reducido el tamaño de fuente
+                    //     ),
+                    //     maxLines: 2,
+                    //     overflow: TextOverflow.ellipsis,
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -224,12 +262,82 @@ class ProductoCardMini extends StatelessWidget {
                           ),
                       ],
                     ),
+                    // Estado de disponibilidad y acepta ofertas
+                    Row(
+                      children: [
+                        // Estado de disponibilidad
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 4,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color:
+                                producto.isAvailable
+                                    ? Colors.green.shade100
+                                    : Colors.red.shade100,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            producto.isAvailable ? 'Disponible' : 'Agotado',
+                            style: TextStyle(
+                              fontSize: 8,
+                              color:
+                                  producto.isAvailable
+                                      ? Colors.green.shade700
+                                      : Colors.red.shade700,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 4),
+                        // Acepta ofertas
+                        if (producto.acceptOffers)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.orange.shade100,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              'Acepta ofertas',
+                              style: TextStyle(
+                                fontSize: 8,
+                                color: Colors.orange.shade700,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
                   ],
                 ),
               ),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildPlaceholderImage() {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: Colors.grey.shade200,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.image_outlined, size: 40, color: Colors.grey.shade400),
+          const SizedBox(height: 8),
+          Text(
+            'Sin imagen',
+            style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
+          ),
+        ],
       ),
     );
   }
