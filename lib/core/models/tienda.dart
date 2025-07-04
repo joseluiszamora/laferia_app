@@ -34,6 +34,7 @@ class Tienda extends Equatable {
   final String ownerName;
   final Ubicacion ubicacion;
   final int categoryId;
+  final String? categoryName;
   final List<String> productos;
   final Contacto? contacto;
   final String? address;
@@ -52,6 +53,7 @@ class Tienda extends Equatable {
     required this.ownerName,
     required this.ubicacion,
     required this.categoryId,
+    this.categoryName,
     this.productos = const [],
     this.contacto,
     this.address,
@@ -89,6 +91,7 @@ class Tienda extends Equatable {
           json['category_id'] is int
               ? json['category_id']
               : int.parse(json['category_id'].toString()),
+      categoryName: json['Category']?['name'],
       productos: List<String>.from(json['products'] ?? json['productos'] ?? []),
       contacto:
           json['contact'] != null

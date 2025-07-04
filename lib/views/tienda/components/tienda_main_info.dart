@@ -60,6 +60,14 @@ class TiendaMainInfo extends StatelessWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
+                        tienda.categoryName ?? 'Sin categoría',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
                         'Propietario: ${tienda.nombrePropietario}',
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: Colors.grey.shade600,

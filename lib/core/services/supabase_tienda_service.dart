@@ -108,7 +108,7 @@ class SupabaseTiendaService {
     try {
       final response = await _supabase
           .from(_tiendaTableName)
-          .select()
+          .select('*, Category(name)')
           .eq('status', 'active')
           .order('created_at', ascending: false)
           .range(offset, offset + limit - 1);

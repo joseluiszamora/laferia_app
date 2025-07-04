@@ -92,14 +92,26 @@ class TiendaCardMini extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
+                    // Text(
+                    //   tienda.ownerName,
+                    //   style: TextStyle(
+                    //     fontSize: 12,
+                    //     color: theme.textTheme.bodySmall?.color,
+                    //     fontFamily: 'Kodchasan',
+                    //   ),
+                    //   maxLines: 1,
+                    //   overflow: TextOverflow.ellipsis,
+                    // ),
+                    // const SizedBox(height: 4),
                     Text(
-                      tienda.ownerName,
+                      tienda.categoryName ?? 'Sin categoría',
                       style: TextStyle(
                         fontSize: 12,
+                        fontWeight: FontWeight.bold,
                         color: theme.textTheme.bodySmall?.color,
                         fontFamily: 'Kodchasan',
                       ),
-                      maxLines: 1,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 8),
