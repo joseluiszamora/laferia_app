@@ -3,10 +3,10 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:laferia/core/models/tienda.dart';
 import 'package:laferia/views/common_components/info_row.dart';
 
-class TiendaHeader extends StatelessWidget {
+class TiendaMainInfo extends StatelessWidget {
   final Tienda tienda;
 
-  const TiendaHeader({super.key, required this.tienda});
+  const TiendaMainInfo({super.key, required this.tienda});
 
   @override
   Widget build(BuildContext context) {
@@ -35,8 +35,18 @@ class TiendaHeader extends StatelessWidget {
                     color: theme.primaryColor.withOpacity(0.2),
                     borderRadius: BorderRadius.circular(40),
                   ),
-                  child: Icon(Icons.store, color: theme.primaryColor, size: 40),
+                  child:
+                      tienda.logoUrl != null
+                          ? Center(
+                            child: Image.network(tienda.logoUrl!, width: 60),
+                          )
+                          : Icon(
+                            Icons.store,
+                            color: theme.primaryColor,
+                            size: 60,
+                          ),
                 ),
+
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
