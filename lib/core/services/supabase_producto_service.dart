@@ -528,13 +528,18 @@ class SupabaseProductoService {
     try {
       final response = await _supabase
           .from(_tablaProducto)
-          .select()
+          .select('*, ProductMedias(*)')
           .not('discounted_price', 'is', null)
           .order('created_at', ascending: false)
           .range(offset, offset + limit - 1);
 
       final List<dynamic> data = response as List<dynamic>;
-      return data.map((json) => _mapearProductoCompleto(json)).toList();
+      return data.map((json) {
+        // Mapear medias si existen
+        final mediasJson = json['ProductMedias'] ?? [];
+        json['medias'] = mediasJson;
+        return _mapearProductoCompleto(json);
+      }).toList();
     } catch (e) {
       throw Exception('Error al obtener productos en oferta: $e');
     }

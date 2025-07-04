@@ -41,7 +41,7 @@ class LatestStoresSection extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         SizedBox(
-          height: 180,
+          height: 220,
           child: FutureBuilder<List<Tienda>>(
             future: SupabaseTiendaService.obtenerUltimasTiendas(limit: 10),
             builder: (context, snapshot) {

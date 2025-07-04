@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:laferia/core/models/tienda.dart';
+import 'package:laferia/core/models/producto.dart';
 
-class TiendaCardMini extends StatelessWidget {
-  const TiendaCardMini({
+class ProductoCardMini extends StatelessWidget {
+  const ProductoCardMini({
     super.key,
-    required this.tienda,
+    required this.producto,
     required this.onTap,
     required this.width,
   });
 
-  final Tienda tienda;
+  final Producto producto;
   final VoidCallback onTap;
   final double width;
 
@@ -39,12 +39,12 @@ class TiendaCardMini extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Icono y nombre
+              // Image section
               Container(
                 height: 100,
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.08),
+                  color: theme.colorScheme.primary.withOpacity(0.1),
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(16),
                     topRight: Radius.circular(16),
@@ -52,14 +52,14 @@ class TiendaCardMini extends StatelessWidget {
                 ),
                 child: Center(
                   child:
-                      (tienda.bannerUrl != null)
+                      producto.tieneImagenes
                           ? ClipRRect(
                             borderRadius: const BorderRadius.only(
                               topLeft: Radius.circular(16),
                               topRight: Radius.circular(16),
                             ),
                             child: Image.network(
-                              tienda.bannerUrl!,
+                              producto.imagenPrincipal?.url ?? '',
                               width: double.infinity,
                               height: 100,
                               fit: BoxFit.cover,
@@ -73,19 +73,20 @@ class TiendaCardMini extends StatelessWidget {
                             ),
                           )
                           : Icon(
-                            Icons.store,
+                            Icons.shopping_bag,
                             size: 40,
                             color: theme.colorScheme.primary,
                           ),
                 ),
               ),
+              // Content section
               Padding(
                 padding: const EdgeInsets.all(12),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      tienda.name,
+                      producto.name,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,
@@ -96,38 +97,51 @@ class TiendaCardMini extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
-                    // Text(
-                    //   tienda.ownerName,
-                    //   style: TextStyle(
-                    //     fontSize: 12,
-                    //     color: theme.textTheme.bodySmall?.color,
-                    //     fontFamily: 'Kodchasan',
-                    //   ),
-                    //   maxLines: 1,
-                    //   overflow: TextOverflow.ellipsis,
-                    // ),
-                    // const SizedBox(height: 4),
                     Text(
-                      tienda.categoryName ?? 'Sin categoría',
+                      '${producto.categoryId}',
                       style: TextStyle(
                         fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: theme.textTheme.bodySmall?.color,
-                        fontFamily: 'Kodchasan',
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      tienda.address ?? 'Sin dirección',
-                      style: TextStyle(
-                        fontSize: 11,
                         color: theme.textTheme.bodySmall?.color,
                         fontFamily: 'Kodchasan',
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "\$${producto.price.toStringAsFixed(0)}",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.primary,
+                            fontFamily: 'Kodchasan',
+                          ),
+                        ),
+                        if (producto.acceptOffers)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.green.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(color: Colors.green, width: 1),
+                            ),
+                            child: Text(
+                              'Oferta',
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.green,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: 'Kodchasan',
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                   ],
                 ),
