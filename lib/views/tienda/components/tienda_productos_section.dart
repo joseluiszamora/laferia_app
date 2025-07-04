@@ -113,6 +113,7 @@ class TiendaProductosSection extends StatelessWidget {
                     final producto = state.productos[index];
                     return ProductoCard(
                       producto: producto,
+                      width: 200,
                       onTap: () => _navigateToProductoDetail(context, producto),
                     );
                   },

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:laferia/views/producto/components/producto_card_mini.dart';
+import 'package:laferia/views/producto/components/producto_card.dart';
 import '../../../core/services/supabase_producto_service.dart';
 import '../../../core/models/producto.dart';
 import '../../producto/producto_detail_page.dart';
@@ -77,7 +77,7 @@ class LatestProductsSection extends StatelessWidget {
                 itemCount: latestProducts.length,
                 itemBuilder: (context, index) {
                   final producto = latestProducts[index];
-                  return ProductoCardMini(
+                  return ProductoCard(
                     producto: producto,
                     onTap: () => _navigateToProductDetail(context, producto),
                     width: 160,
