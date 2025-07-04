@@ -165,6 +165,21 @@ class ProductoCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
+                    // Características
+                    Row(
+                      children: [
+                        Text(
+                          producto.description,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: Colors.grey.shade600,
+                            fontSize: 10, // Reducido el tamaño de fuente
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
                     // Categoría
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -188,20 +203,8 @@ class ProductoCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(height: 4), // Reducido de 6 a 4
-                    // Características
-                    // Expanded(
-                    //   child: Text(
-                    //     producto.description,
-                    //     style: theme.textTheme.bodySmall?.copyWith(
-                    //       color: Colors.grey.shade600,
-                    //       fontSize: 10, // Reducido el tamaño de fuente
-                    //     ),
-                    //     maxLines: 2,
-                    //     overflow: TextOverflow.ellipsis,
-                    //   ),
-                    // ),
-                    // const SizedBox(height: 8),
+
+                    const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
