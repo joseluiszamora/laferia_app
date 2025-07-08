@@ -51,7 +51,6 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
         showControls: true,
         defaultCenter: LatLng(-16.4953, -68.1700),
         initialZoom: 15.0,
-        tiendasMarkers: TiendaService.obtenerTiendas,
       ),
       const DesignPagesPage(),
       const AdminDemoPage(),

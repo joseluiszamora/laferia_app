@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:laferia/core/blocs/location/location.dart';
 import 'package:laferia/core/models/tienda.dart';
+import 'package:laferia/core/services/supabase_tienda_service.dart';
 import 'package:laferia/maps/custom_cached_tile_provider.dart';
 import 'package:laferia/maps/default_tiles_service.dart';
 import 'package:laferia/maps/map_provider_helper.dart';
@@ -20,13 +21,11 @@ class MarkersMapsPage extends StatefulWidget {
     required this.showControls,
     required this.defaultCenter,
     required this.initialZoom,
-    required this.tiendasMarkers,
   });
 
   final bool showControls;
   final LatLng defaultCenter;
   final double initialZoom;
-  final List<Tienda> tiendasMarkers;
 
   @override
   State<MarkersMapsPage> createState() => _MarkersMapsPageState();
@@ -36,6 +35,7 @@ class _MarkersMapsPageState extends State<MarkersMapsPage>
     with TickerProviderStateMixin {
   late MapController mapController;
   late AnimationController _controlsAnimationController;
+  // late List<Tienda> tiendasMarkers;
   final String _currentProvider = OfflineMapConfig.defaultProvider;
   int providerChangeCounter = 0; // Contador para forzar rebuilds
   bool _isLoading = true;
@@ -45,7 +45,7 @@ class _MarkersMapsPageState extends State<MarkersMapsPage>
   final double _maxZoom = 19.0;
 
   // Lista de markers de ejemplo
-  late List<Marker> _markers;
+  List<Marker> markers = [];
   Marker? _userLocationMarker;
 
   @override
@@ -62,9 +62,11 @@ class _MarkersMapsPageState extends State<MarkersMapsPage>
     _initializeMap();
   }
 
-  void _initializeMarkers() {
-    _markers =
-        widget.tiendasMarkers.map((tienda) {
+  void _initializeMarkers() async {
+    List<Tienda> tmpTiendas = await SupabaseTiendaService.getAllTiendas();
+
+    List<Marker> tmpMarkers =
+        tmpTiendas.map((tienda) {
           return Marker(
             point: LatLng(tienda.ubicacion.lat, tienda.ubicacion.lng),
             width: 60,
@@ -77,6 +79,10 @@ class _MarkersMapsPageState extends State<MarkersMapsPage>
             ),
           );
         }).toList();
+
+    setState(() {
+      markers = tmpMarkers;
+    });
   }
 
   void _showMarkerInfo(Tienda tienda) {
@@ -298,7 +304,7 @@ class _MarkersMapsPageState extends State<MarkersMapsPage>
   }
 
   Widget _buildMarkersLayer() {
-    final allMarkers = <Marker>[..._markers];
+    final allMarkers = <Marker>[...markers];
     if (_userLocationMarker != null) {
       allMarkers.add(_userLocationMarker!);
     }

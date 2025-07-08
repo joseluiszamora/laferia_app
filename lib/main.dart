@@ -68,24 +68,24 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
-        return MaterialApp(
-          title: 'La Feria',
-          debugShowCheckedModeBanner: false,
-          theme: DesignTheme.lightTheme(context),
-          darkTheme: DesignTheme.darkTheme(context),
-          themeMode:
-              themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-          home: AuthWrapper(),
-        );
-        // return MaterialApp.router(
+        // return MaterialApp(
         //   title: 'La Feria',
         //   debugShowCheckedModeBanner: false,
         //   theme: DesignTheme.lightTheme(context),
         //   darkTheme: DesignTheme.darkTheme(context),
         //   themeMode:
         //       themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-        //   routerConfig: appRouter(),
+        //   home: AuthWrapper(),
         // );
+        return MaterialApp.router(
+          title: 'La Feria',
+          debugShowCheckedModeBanner: false,
+          theme: DesignTheme.lightTheme(context),
+          darkTheme: DesignTheme.darkTheme(context),
+          themeMode:
+              themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+          routerConfig: appRouter(),
+        );
       },
     );
   }
