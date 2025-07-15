@@ -65,18 +65,15 @@ class _MarkersMapsPageState extends State<MarkersMapsPage>
   void _initializeMarkers() async {
     List<Tienda> tmpTiendas = await SupabaseTiendaService.getAllTiendas();
 
+    // Ajustamos el tamaño base según el nivel de zoom
+    final baseSize = 30.0 + (_currentZoom - 10.0); // Aumenta tamaño con zoom
+
     List<Marker> tmpMarkers =
         tmpTiendas.map((tienda) {
-          return Marker(
-            point: LatLng(tienda.ubicacion.lat, tienda.ubicacion.lng),
-            width: 60,
-            height: 60,
-            child: TiendaMarker(
-              icon: Tienda.getIconData(tienda.icon),
-              color: Tienda.getColorFromHex(tienda.color),
-              label: tienda.nombre,
-              onTap: () => _showMarkerInfo(tienda),
-            ),
+          return TiendaMarker().makeTiendaMarker(
+            tienda: tienda,
+            baseSize: baseSize,
+            onTap: () => _showMarkerInfo(tienda),
           );
         }).toList();
 
@@ -308,6 +305,6 @@ class _MarkersMapsPageState extends State<MarkersMapsPage>
     if (_userLocationMarker != null) {
       allMarkers.add(_userLocationMarker!);
     }
-    return MarkerLayer(markers: allMarkers);
+    return MarkerLayer(rotate: true, markers: allMarkers);
   }
 }
