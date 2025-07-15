@@ -88,9 +88,10 @@ class _MarkersMapsPageState extends State<MarkersMapsPage>
       backgroundColor: Colors.transparent,
       builder:
           (context) => TiendaInfo(
-            title: tienda.nombre,
-            description: '${tienda.horarioAtencion} - ${tienda.icon}',
-            color: Colors.blue,
+            tienda: tienda,
+            // title: tienda.nombre,
+            // description: '${tienda.horarioAtencion} - ${tienda.icon}',
+            // color: Colors.blue,
           ),
     );
   }

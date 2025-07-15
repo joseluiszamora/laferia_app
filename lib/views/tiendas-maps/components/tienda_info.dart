@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:laferia/core/models/tienda.dart';
+import 'package:laferia/views/tienda/tienda_detail_page.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class TiendaInfo extends StatelessWidget {
-  const TiendaInfo({
-    super.key,
-    required this.title,
-    required this.description,
-    required this.color,
-  });
+  const TiendaInfo({super.key, required this.tienda});
 
-  final String title;
-  final String description;
-  final Color color;
+  final Tienda tienda;
 
   @override
   Widget build(BuildContext context) {
+    Color color = Tienda.getColorFromHex(tienda.color);
+    IconData icon = Tienda.getIconData(tienda.icon);
+
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -41,14 +40,25 @@ class TiendaInfo extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 20,
-                height: 20,
-                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.8),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white, width: 2.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.3),
+                      blurRadius: 5,
+                      spreadRadius: 1,
+                      offset: const Offset(2, 2),
+                    ),
+                  ],
+                ),
+                child: Icon(icon, color: Colors.white, size: 30),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               Expanded(
                 child: Text(
-                  title,
+                  tienda.nombre,
                   style: const TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -61,7 +71,7 @@ class TiendaInfo extends StatelessWidget {
 
           // Descripción
           Text(
-            description,
+            '${tienda.direccion} - ${tienda.horarioAtencion}',
             style: TextStyle(fontSize: 16, color: Colors.grey[600]),
           ),
           const SizedBox(height: 20),
@@ -71,7 +81,9 @@ class TiendaInfo extends StatelessWidget {
             children: [
               Expanded(
                 child: ElevatedButton.icon(
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () async {
+                    _openInGoogleMaps(tienda);
+                  },
                   icon: const Icon(Icons.directions),
                   label: const Text('Cómo llegar'),
                   style: ElevatedButton.styleFrom(
@@ -83,7 +95,7 @@ class TiendaInfo extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: OutlinedButton.icon(
-                  onPressed: () => Navigator.of(context).pop(),
+                  onPressed: () => _navigateToTiendaDetail(context, tienda),
                   icon: const Icon(Icons.info),
                   label: const Text('Más info'),
                   style: OutlinedButton.styleFrom(
@@ -96,6 +108,21 @@ class TiendaInfo extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _openInGoogleMaps(Tienda tienda) async {
+    final url = Uri.parse(
+      'https://www.google.com/maps/dir/?api=1&destination=${tienda.ubicacion.lat},${tienda.ubicacion.lng}&travelmode=driving',
+    );
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    }
+  }
+
+  void _navigateToTiendaDetail(BuildContext context, Tienda tienda) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => TiendaDetailPage(tienda: tienda)),
     );
   }
 }
