@@ -15,7 +15,7 @@ class SupabaseTiendaService {
     try {
       final response = await _supabase
           .from(_tiendaTableName)
-          .select('*')
+          .select('*, Category(icon, color)')
           .order('name');
 
       final List<dynamic> data = response as List<dynamic>;
@@ -23,7 +23,7 @@ class SupabaseTiendaService {
       // Cargar comentarios para cada tienda
       List<Tienda> tiendas = [];
       for (final json in data) {
-        final tienda = await _fromSupabaseJsonWithComentarios(json);
+        final tienda = await _fromSupabaseJson(json);
         tiendas.add(tienda);
       }
 
@@ -252,6 +252,43 @@ class SupabaseTiendaService {
   /// MÉTODOS PRIVADOS DE CONVERSIÓN ///
 
   /// Convertir de JSON de Supabase a modelo Tienda (incluyendo comentarios)
+  static Future<Tienda> _fromSupabaseJson(Map<String, dynamic> json) async {
+    // Obtener comentarios de la tienda
+    final tiendaId =
+        json['store_id'] is int
+            ? json['store_id']
+            : int.parse(json['store_id'].toString());
+
+    return Tienda(
+      id: tiendaId,
+      name: json['name'] as String,
+      ownerName: json['owner_name'] as String,
+      ubicacion: Ubicacion(
+        lat: (json['latitude'] as num).toDouble(),
+        lng: (json['longitude'] as num).toDouble(),
+      ),
+      categoryId:
+          json['category_id'] is int
+              ? json['category_id']
+              : int.parse(json['category_id'].toString()),
+      productos: List<String>.from(json['products'] ?? []),
+      contacto:
+          json['contact'] != null
+              ? _contactoFromJson(json['contact'] as Map<String, dynamic>)
+              : null,
+      address: json['address'] as String?,
+      schedules: List<String>.from(json['schedules'] ?? ['Jueves', 'Domingo']),
+      operatingHours: json['operating_hours'] as String? ?? '08:00 - 18:00',
+      status: StoreStatus.fromString(json['status'] ?? 'active'),
+      averageRating: json['average_rating']?.toDouble(),
+      totalComments: json['total_comments'] ?? 0,
+      comentarios: [],
+      icon: json['Category']?['icon'],
+      color: json['Category']?['color'],
+    );
+  }
+
+  /// Convertir de JSON de Supabase a modelo Tienda (incluyendo comentarios)
   static Future<Tienda> _fromSupabaseJsonWithComentarios(
     Map<String, dynamic> json,
   ) async {
@@ -286,6 +323,8 @@ class SupabaseTiendaService {
       averageRating: json['average_rating']?.toDouble(),
       totalComments: json['total_comments'] ?? 0,
       comentarios: comentarios,
+      icon: json['icon'] as String?,
+      color: json['color'] as String?,
     );
   }
 

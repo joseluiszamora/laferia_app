@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:laferia/core/services/categoria_service.dart';
 import 'ubicacion.dart';
 import 'contacto.dart';
 import 'comentario.dart';
@@ -46,6 +48,8 @@ class Tienda extends Equatable {
   final List<Comentario> comentarios;
   final String? logoUrl;
   final String? bannerUrl;
+  final String? icon;
+  final String? color;
 
   const Tienda({
     required this.id,
@@ -65,6 +69,8 @@ class Tienda extends Equatable {
     this.comentarios = const [],
     this.logoUrl,
     this.bannerUrl,
+    this.icon,
+    this.color,
   });
 
   // Getters para compatibilidad con código existente
@@ -114,6 +120,8 @@ class Tienda extends Equatable {
       comentarios: [],
       logoUrl: json['logo_url'] ?? json['logo'],
       bannerUrl: json['banner_url'] ?? json['banner'],
+      icon: json['Category']?['icon'],
+      color: json['Category']?['color'],
     );
   }
 
@@ -134,6 +142,8 @@ class Tienda extends Equatable {
       'total_comments': totalComments,
       'logo_url': logoUrl,
       'banner_url': bannerUrl,
+      'icon': icon,
+      'color': color,
     };
   }
 
@@ -156,6 +166,8 @@ class Tienda extends Equatable {
     comentarios,
     logoUrl,
     bannerUrl,
+    icon,
+    color,
   ];
 
   Tienda copyWith({
@@ -176,6 +188,8 @@ class Tienda extends Equatable {
     List<Comentario>? comentarios,
     String? logoUrl,
     String? bannerUrl,
+    String? icon,
+    String? color,
   }) {
     return Tienda(
       id: id ?? this.id,
@@ -195,10 +209,35 @@ class Tienda extends Equatable {
       comentarios: comentarios ?? this.comentarios,
       logoUrl: logoUrl ?? this.logoUrl,
       bannerUrl: bannerUrl ?? this.bannerUrl,
+      icon: icon ?? this.icon,
+      color: color ?? this.color,
     );
   }
 
   @override
   String toString() =>
       'Tienda(id: $id, name: $name, ownerName: $ownerName, categoryId: $categoryId, status: $status)';
+
+  // Método auxiliar para obtener el icono
+  static IconData getIconData(String? iconName) {
+    if (iconName != null) {
+      final iconMap = CategoriaService.availableIcons.firstWhere(
+        (icon) => icon['name'] == iconName,
+        orElse: () => CategoriaService.availableIcons.first,
+      );
+      return iconMap['icon'] as IconData;
+    } else {
+      return Icons.store;
+    }
+  }
+
+  // Método auxiliar para obtener el color desde hex
+  static Color getColorFromHex(String? hexColor) {
+    if (hexColor == null || hexColor.isEmpty) {
+      return Colors.blue;
+    }
+
+    final hex = hexColor.replaceAll('#', '');
+    return Color(int.parse('FF$hex', radix: 16));
+  }
 }
