@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:laferia/views/producto/producto_detail_page.dart';
+import 'package:laferia/views/tienda/tienda_detail_page.dart';
 import '../../core/models/categoria.dart';
 import '../../core/models/tienda.dart';
 import '../../core/models/producto.dart';
@@ -687,16 +689,16 @@ class _CategoriaDetailPageState extends State<CategoriaDetailPage>
 
   // Métodos de navegación
   void _navigateToTiendaDetail(Tienda tienda) {
-    // TODO: Implementar navegación a detalle de tienda
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('Navegar a tienda: ${tienda.name}')));
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => TiendaDetailPage(tienda: tienda)),
+    );
   }
 
   void _navigateToProductoDetail(Producto producto) {
-    // TODO: Implementar navegación a detalle de producto
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Navegar a producto: ${producto.name}')),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ProductoDetailPage(producto: producto),
+      ),
     );
   }
 
