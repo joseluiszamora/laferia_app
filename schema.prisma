@@ -50,6 +50,10 @@ model Category {
   createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
+  // Nuevos campos para búsqueda
+  searchKeywords String[] @default([]) @map("search_keywords")
+  searchScore    Decimal  @default(0.0) @map("search_score") @db.Decimal(10, 4)
+
   // Auto-relación para jerarquías
   parentCategory Category?  @relation("CategoryHierarchy", fields: [parentCategoryId], references: [categoryId], onDelete: Cascade)
   subcategories  Category[] @relation("CategoryHierarchy")
@@ -62,6 +66,8 @@ model Category {
   @@index([slug], map: "idx_category_slug")
   @@index([isActive], map: "idx_category_active")
   @@index([sortOrder], map: "idx_category_sort_order")
+  @@index([searchKeywords], map: "idx_category_search_keywords", type: Gin)
+  @@index([searchScore], map: "idx_category_search_score")
   @@map("Category")
 }
 
@@ -89,6 +95,11 @@ model Store {
   createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime    @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
+  // Nuevos campos para búsqueda
+  searchKeywords String[] @default([]) @map("search_keywords")
+  searchScore    Decimal  @default(0.0) @map("search_score") @db.Decimal(10, 4)
+  isPromoted     Boolean  @default(false) @map("is_promoted")
+
   // Relaciones
   category Category  @relation(fields: [categoryId], references: [categoryId], onUpdate: NoAction)
   comments Comment[]
@@ -99,6 +110,8 @@ model Store {
   @@index([latitude, longitude], map: "idx_store_location")
   @@index([categoryId], map: "idx_store_category_id")
   @@index([status], map: "idx_store_status")
+  @@index([searchKeywords], map: "idx_store_search_keywords", type: Gin)
+  @@index([searchScore], map: "idx_store_search_score")
   @@map("Store")
 }
 
@@ -132,6 +145,11 @@ model Product {
   createdAt        DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
+  // Nuevos campos para búsqueda
+  searchKeywords String[] @default([]) @map("search_keywords") // palabras clave adicionales
+  searchScore    Decimal  @default(0.0) @map("search_score") @db.Decimal(10, 4) // score de relevancia
+  isPromoted     Boolean  @default(false) @map("is_promoted") // producto promocionado en búsquedas
+
   // Relaciones
   category   Category            @relation(fields: [categoryId], references: [categoryId], onUpdate: NoAction)
   brand      Brand?              @relation(fields: [brandId], references: [brandId], onUpdate: NoAction)
@@ -149,6 +167,8 @@ model Product {
   @@index([isFeatured], map: "idx_product_featured")
   @@index([sku], map: "idx_product_sku")
   @@index([barcode], map: "idx_product_barcode")
+  @@index([searchKeywords], map: "idx_product_search_keywords", type: Gin)
+  @@index([searchScore], map: "idx_product_search_score")
   @@map("Product")
 }
 
@@ -236,4 +256,59 @@ model Comment {
   store Store @relation(fields: [storeId], references: [storeId], onDelete: Cascade, onUpdate: NoAction)
 
   @@map("Comment")
+}
+
+model SearchHistory {
+  searchHistoryId Int      @id @default(autoincrement()) @map("search_history_id")
+  userId          String?  @map("user_id") // null para usuarios anónimos
+  sessionId       String   @map("session_id") // para tracking anónimo
+  query           String   @db.VarChar(255)
+  searchType      String   @default("general") @map("search_type") // general, product, store, category
+  resultCount     Int      @default(0) @map("result_count")
+  clicked         Boolean  @default(false) // si el usuario hizo clic en algún resultado
+  clickedType     String?  @map("clicked_type") // product, store, category
+  clickedId       Int?     @map("clicked_id")
+  filters         Json? // filtros aplicados en la búsqueda
+  location        Json? // {lat, lng} si se usó ubicación
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([userId], map: "idx_search_history_user")
+  @@index([sessionId], map: "idx_search_history_session")
+  @@index([query], map: "idx_search_history_query")
+  @@index([createdAt], map: "idx_search_history_created")
+  @@map("SearchHistory")
+}
+
+model TrendingSearches {
+  trendingSearchId Int      @id @default(autoincrement()) @map("trending_search_id")
+  query            String   @unique @db.VarChar(255)
+  searchCount      Int      @default(1) @map("search_count")
+  category         String?  @db.VarChar(100) // para agrupar por categoría
+  region           String?  @db.VarChar(100) // para tendencias regionales
+  isPromoted       Boolean  @default(false) @map("is_promoted") // búsquedas promocionadas
+  trendScore       Decimal  @default(0.0) @map("trend_score") @db.Decimal(10, 4)
+  lastSearched     DateTime @default(now()) @map("last_searched") @db.Timestamptz(6)
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([trendScore], map: "idx_trending_trend_score")
+  @@index([searchCount], map: "idx_trending_search_count")
+  @@index([category], map: "idx_trending_category")
+  @@index([lastSearched], map: "idx_trending_last_searched")
+  @@map("TrendingSearches")
+}
+
+model SearchSuggestions {
+  suggestionId   Int      @id @default(autoincrement()) @map("suggestion_id")
+  query          String   @db.VarChar(255)
+  suggestion     String   @db.VarChar(255)
+  suggestionType String   @map("suggestion_type") // autocomplete, related, similar
+  weight         Int      @default(1) // peso/relevancia de la sugerencia
+  isActive       Boolean  @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([query], map: "idx_suggestions_query")
+  @@index([suggestionType], map: "idx_suggestions_type")
+  @@index([weight], map: "idx_suggestions_weight")
+  @@map("SearchSuggestions")
 }

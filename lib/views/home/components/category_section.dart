@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:laferia/core/services/categoria_service.dart';
 import 'package:laferia/views/categorias/categoria_detail_page.dart';
 import 'package:laferia/views/categorias/categorias_page.dart';
+import 'package:laferia/views/search/search_page.dart';
 import '../../../core/blocs/categorias/categorias_bloc.dart';
 import '../../../core/blocs/categorias/categorias_event.dart';
 import '../../../core/blocs/categorias/categorias_state.dart';
@@ -181,7 +182,10 @@ class _CategorySectionState extends State<CategorySection> {
   void _navigateToAllCategorias(BuildContext context) {
     Navigator.of(
       context,
-    ).push(MaterialPageRoute(builder: (context) => const CategoriasPage()));
+    ).push(MaterialPageRoute(builder: (context) => const SearchPage()));
+    // Navigator.of(
+    //   context,
+    // ).push(MaterialPageRoute(builder: (context) => const CategoriasPage()));
   }
 
   IconData _getIconData(String iconName) {

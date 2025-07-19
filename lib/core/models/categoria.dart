@@ -71,6 +71,40 @@ class Categoria extends Equatable {
   /// Indica si la categoría está activa
   bool get activa => true;
 
+  /// Factory constructor para crear desde JSON
+  factory Categoria.fromJson(Map<String, dynamic> json) {
+    return Categoria(
+      id: json['category_id'] ?? json['id'],
+      parentId: json['parent_id'],
+      name: json['name'] ?? '',
+      slug: json['slug'] ?? '',
+      description: json['description'],
+      icon: json['icon'],
+      color: json['color'],
+      imageUrl: json['image_url'],
+      createdAt:
+          json['created_at'] != null
+              ? DateTime.parse(json['created_at'])
+              : null,
+      subcategorias: const [],
+    );
+  }
+
+  /// Convierte a JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'category_id': id,
+      'parent_id': parentId,
+      'name': name,
+      'slug': slug,
+      'description': description,
+      'icon': icon,
+      'color': color,
+      'image_url': imageUrl,
+      'created_at': createdAt?.toIso8601String(),
+    };
+  }
+
   /// Copia la categoría con nuevos valores
   Categoria copyWith({
     int? id,
