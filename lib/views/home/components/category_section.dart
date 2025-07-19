@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:laferia/core/services/categoria_service.dart';
+import 'package:laferia/views/categorias/categoria_detail_page.dart';
 import 'package:laferia/views/categorias/categorias_page.dart';
 import '../../../core/blocs/categorias/categorias_bloc.dart';
 import '../../../core/blocs/categorias/categorias_event.dart';
@@ -170,10 +171,11 @@ class _CategorySectionState extends State<CategorySection> {
   }
 
   void _navigateToCategoria(BuildContext context, Categoria categoria) {
-    // TODO: Navegar a la página de productos de la categoría
-    // Navigator.of(context).push(
-    //   MaterialPageRoute(builder: (context) => ProductosPage(categoria: categoria)),
-    // );
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => CategoriaDetailPage(categoria: categoria),
+      ),
+    );
   }
 
   void _navigateToAllCategorias(BuildContext context) {
