@@ -9,6 +9,7 @@ import 'package:laferia/core/blocs/service_locator.dart';
 import 'package:laferia/core/blocs/tiendas/tiendas_bloc.dart';
 import 'package:laferia/core/providers/theme_provider.dart';
 import 'package:laferia/core/routes/app_router.dart';
+import 'package:laferia/core/services/mapbox_service.dart';
 import 'package:laferia/core/themes/design_theme.dart';
 import 'package:laferia/maps/tile_cache_service.dart';
 import 'package:laferia/views/auth/auth_screen.dart';
@@ -21,6 +22,13 @@ void main() async {
   await TileCacheService.instance.initialize();
 
   serviceLocatorInit();
+
+  // Inicializar Mapbox
+  try {
+    await MapboxService.initialize();
+  } catch (e) {
+    print('Error inicializando Mapbox: $e');
+  }
 
   await Supabase.initialize(
     url: 'https://sfporjwgzplyckosbdqx.supabase.co',

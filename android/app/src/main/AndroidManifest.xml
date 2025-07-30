@@ -39,6 +39,12 @@
                 <data android:scheme="com.example.laferia" android:host="oauth" />
             </intent-filter>
         </activity>
+        
+        <!-- Mapbox access token -->
+        <meta-data
+            android:name="com.mapbox.token"
+            android:value="pk.eyJ1IjoiZXhhbXBsZSIsImEiOiJjazY5aGNkN2owMGY5M2lwMnc1YW84eTFnIn0.example_token" />
+        
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

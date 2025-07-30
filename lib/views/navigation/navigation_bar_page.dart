@@ -10,6 +10,7 @@ import 'package:laferia/views/design/design_pages.dart';
 import 'package:laferia/views/home/home_page.dart';
 import 'package:laferia/views/home/home_page_with_map.dart';
 import 'package:laferia/views/maps/main_map.dart';
+import 'package:laferia/views/maps/mapbox_page.dart';
 import 'package:laferia/views/navigation/components/header_section.dart';
 import 'package:laferia/views/tienda/tienda_list_page.dart';
 import 'package:laferia/views/tiendas-maps/markers_maps_page.dart';
@@ -52,7 +53,8 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
         defaultCenter: LatLng(-16.4953, -68.1700),
         initialZoom: 15.0,
       ),
-      const DesignPagesPage(),
+      MapboxPage(),
+      // const DesignPagesPage(),
       const AdminDemoPage(),
     ];
 
