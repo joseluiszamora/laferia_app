@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:laferia/views/auth/login_page.dart';
-import '../../core/services/auth_service_new.dart';
+import 'package:provider/provider.dart';
+import '../../core/providers/auth_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomePageDemo extends StatelessWidget {
@@ -155,25 +155,17 @@ class HomePageDemo extends StatelessWidget {
   }
 
   Future<void> _signOut(BuildContext context) async {
-    try {
-      final result = await AuthService.signOut();
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
-      if (result.isSuccess) {
-        if (context.mounted) {
-          Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (context) => const LoginPage()));
-        }
-      } else {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result.message),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
+    try {
+      final result = await authProvider.signOut();
+
+      if (!result.isSuccess && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(result.message), backgroundColor: Colors.red),
+        );
       }
+      // Si el signOut es exitoso, el AuthWrapper se encargará de navegar al login automáticamente
     } catch (e) {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(

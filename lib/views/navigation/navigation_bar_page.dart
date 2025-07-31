@@ -17,6 +17,7 @@ import 'package:laferia/views/tiendas-maps/tiendas_maps_page.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class NavigationBarPage extends StatefulWidget {
   const NavigationBarPage({super.key});
@@ -130,12 +131,13 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
 
   Widget _buildDrawer(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final user = Supabase.instance.client.auth.currentUser;
 
     return Drawer(
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          _buildDrawerHeader(),
+          _buildDrawerHeader('${user?.userMetadata?['full_name']}'),
           _buildDrawerItem(
             icon: Icons.person,
             text: 'Perfil',
@@ -193,7 +195,7 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
     );
   }
 
-  Widget _buildDrawerHeader() {
+  Widget _buildDrawerHeader(String user) {
     return DrawerHeader(
       decoration: BoxDecoration(color: const Color(0xFF0bbfdf)),
       child: Column(
@@ -206,7 +208,7 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
           ),
           SizedBox(height: 10),
           Text(
-            'Cargando...',
+            user,
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,

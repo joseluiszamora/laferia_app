@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../core/services/auth_service_new.dart';
+import 'package:provider/provider.dart';
+import '../../core/providers/auth_provider.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -25,15 +26,16 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   Future<void> _resetPassword() async {
     if (!_formKey.currentState!.validate()) return;
 
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
     setState(() {
-      _isLoading = true;
       _errorMessage = null;
       _successMessage = null;
     });
 
     try {
-      final result = await AuthService.resetPassword(
-        email: _emailController.text.trim(),
+      final result = await authProvider.resetPassword(
+        _emailController.text.trim(),
       );
 
       if (result.isSuccess) {
@@ -49,12 +51,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       setState(() {
         _errorMessage = 'Error inesperado: ${e.toString()}';
       });
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
     }
   }
 
