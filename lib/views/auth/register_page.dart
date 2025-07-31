@@ -1,51 +1,65 @@
 import 'package:flutter/material.dart';
-import 'package:laferia/views/auth/forgot_password_page.dart';
-import 'package:laferia/views/auth/home_page_demo.dart';
-import 'package:laferia/views/auth/register_page.dart';
+import 'package:laferia/views/auth/login_page.dart';
 import '../../core/services/auth_service_new.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<RegisterPage> createState() => _RegisterPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
+  final _fullNameController = TextEditingController();
 
   bool _isLoading = false;
   bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
   String? _errorMessage;
+  String? _successMessage;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    _fullNameController.dispose();
     super.dispose();
   }
 
-  Future<void> _signIn() async {
+  Future<void> _signUp() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
       _isLoading = true;
       _errorMessage = null;
+      _successMessage = null;
     });
 
     try {
-      final result = await AuthService.signInWithEmail(
+      final result = await AuthService.signUpWithEmail(
         email: _emailController.text.trim(),
         password: _passwordController.text,
+        fullName: _fullNameController.text.trim(),
       );
 
       if (result.isSuccess) {
+        setState(() {
+          _successMessage =
+              'Cuenta creada exitosamente. Revisa tu email para confirmar tu cuenta.';
+        });
+
+        // Esperar un momento para mostrar el mensaje y luego navegar al login
+        await Future.delayed(const Duration(seconds: 2));
+
         if (mounted) {
           Navigator.of(
             context,
-          ).push(MaterialPageRoute(builder: (context) => const HomePageDemo()));
+          ).push(MaterialPageRoute(builder: (context) => const LoginPage()));
         }
       } else {
         setState(() {
@@ -69,17 +83,23 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('Crear Cuenta'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.black,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 60),
+              const SizedBox(height: 20),
 
-              // Logo o título
+              // Título
               Text(
-                'LaFeria',
+                'Únete a LaFeria',
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Colors.green[700],
@@ -90,28 +110,62 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 8),
 
               Text(
-                'Bienvenido de vuelta',
+                'Crea tu cuenta y descubre todo lo que tenemos para ti',
                 style: Theme.of(
                   context,
                 ).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
                 textAlign: TextAlign.center,
               ),
 
-              const SizedBox(height: 48),
+              const SizedBox(height: 40),
 
               // Formulario
               Form(
                 key: _formKey,
                 child: Column(
                   children: [
+                    // Campo Nombre Completo
+                    TextFormField(
+                      controller: _fullNameController,
+                      textInputAction: TextInputAction.next,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: InputDecoration(
+                        labelText: 'Nombre Completo',
+                        hintText: 'Ingresa tu nombre completo',
+                        prefixIcon: const Icon(Icons.person_outlined),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.green[700]!),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Por favor ingresa tu nombre completo';
+                        }
+                        if (value.trim().length < 2) {
+                          return 'El nombre debe tener al menos 2 caracteres';
+                        }
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 16),
+
                     // Campo Email
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
-                        labelText: 'Email o Usuario',
-                        hintText: 'Ingresa tu email o nombre de usuario',
+                        labelText: 'Email',
+                        hintText: 'Ingresa tu email',
                         prefixIcon: const Icon(Icons.email_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -127,7 +181,12 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Por favor ingresa tu email o usuario';
+                          return 'Por favor ingresa tu email';
+                        }
+                        if (!RegExp(
+                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                        ).hasMatch(value)) {
+                          return 'Ingresa un email válido';
                         }
                         return null;
                       },
@@ -139,11 +198,10 @@ class _LoginPageState extends State<LoginPage> {
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _obscurePassword,
-                      textInputAction: TextInputAction.done,
-                      onFieldSubmitted: (_) => _signIn(),
+                      textInputAction: TextInputAction.next,
                       decoration: InputDecoration(
                         labelText: 'Contraseña',
-                        hintText: 'Ingresa tu contraseña',
+                        hintText: 'Al menos 6 caracteres',
                         prefixIcon: const Icon(Icons.lock_outlined),
                         suffixIcon: IconButton(
                           icon: Icon(
@@ -171,30 +229,61 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Por favor ingresa tu contraseña';
+                          return 'Por favor ingresa una contraseña';
+                        }
+                        if (value.length < 6) {
+                          return 'La contraseña debe tener al menos 6 caracteres';
                         }
                         return null;
                       },
                     ),
 
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 16),
 
-                    // Enlace "Olvidé mi contraseña"
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const ForgotPasswordPage(),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          '¿Olvidaste tu contraseña?',
-                          style: TextStyle(color: Colors.green[700]),
+                    // Campo Confirmar Contraseña
+                    TextFormField(
+                      controller: _confirmPasswordController,
+                      obscureText: _obscureConfirmPassword,
+                      textInputAction: TextInputAction.done,
+                      onFieldSubmitted: (_) => _signUp(),
+                      decoration: InputDecoration(
+                        labelText: 'Confirmar Contraseña',
+                        hintText: 'Repite tu contraseña',
+                        prefixIcon: const Icon(Icons.lock_outlined),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscureConfirmPassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscureConfirmPassword =
+                                  !_obscureConfirmPassword;
+                            });
+                          },
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.grey[300]!),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.green[700]!),
                         ),
                       ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor confirma tu contraseña';
+                        }
+                        if (value != _passwordController.text) {
+                          return 'Las contraseñas no coinciden';
+                        }
+                        return null;
+                      },
                     ),
 
                     const SizedBox(height: 24),
@@ -223,12 +312,39 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
 
-                    // Botón de iniciar sesión
+                    // Mensaje de éxito
+                    if (_successMessage != null)
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.green[50],
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.green[200]!),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.check_circle_outline,
+                              color: Colors.green[600],
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                _successMessage!,
+                                style: TextStyle(color: Colors.green[600]),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    // Botón de crear cuenta
                     SizedBox(
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: _isLoading ? null : _signIn,
+                        onPressed: _isLoading ? null : _signUp,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green[700],
                           foregroundColor: Colors.white,
@@ -249,7 +365,7 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 )
                                 : const Text(
-                                  'Iniciar Sesión',
+                                  'Crear Cuenta',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
@@ -260,67 +376,36 @@ class _LoginPageState extends State<LoginPage> {
 
                     const SizedBox(height: 24),
 
-                    // Divisor "O"
-                    Row(
-                      children: [
-                        Expanded(child: Divider(color: Colors.grey[300])),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            'O',
-                            style: TextStyle(color: Colors.grey[600]),
-                          ),
-                        ),
-                        Expanded(child: Divider(color: Colors.grey[300])),
-                      ],
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Botón de Google (temporalmente deshabilitado)
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: OutlinedButton.icon(
-                        onPressed:
-                            null, // _isLoading ? null : _signInWithGoogle,
-                        icon: const Icon(Icons.g_mobiledata, size: 24),
-                        label: const Text(
-                          'Continuar con Google (Próximamente)',
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.grey[400],
-                          side: BorderSide(color: Colors.grey[300]!),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                      ),
+                    // Términos y condiciones
+                    Text(
+                      'Al crear una cuenta, aceptas nuestros Términos de Servicio y Política de Privacidad',
+                      style: TextStyle(color: Colors.grey[600], fontSize: 12),
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 48),
+              const SizedBox(height: 40),
 
-              // Enlace para registrarse
+              // Enlace para ir al login
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '¿No tienes cuenta? ',
+                    '¿Ya tienes cuenta? ',
                     style: TextStyle(color: Colors.grey[600]),
                   ),
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
-                          builder: (context) => const RegisterPage(),
+                          builder: (context) => const LoginPage(),
                         ),
                       );
                     },
                     child: Text(
-                      'Regístrate',
+                      'Inicia Sesión',
                       style: TextStyle(
                         color: Colors.green[700],
                         fontWeight: FontWeight.w600,

@@ -9,6 +9,10 @@ class AppRoutes {
 
   /* <---- AUTH -----> */
   static const authLogin = '/auth_login_page';
+  static const newLogin = '/new-login';
+  static const newRegister = '/new-register';
+  static const newForgotPassword = '/new-forgot-password';
+  static const homeDemo = '/home-demo';
 
   /* <---- DESIGN FLOW -----> */
   static const designPages = '/design_pages';
@@ -16,6 +20,7 @@ class AppRoutes {
   static const onboarding = '/onboarding';
   static const login = '/login';
   static const register = '/register';
+  static const forgotPassword = '/forgot-password';
   static const emailVerification = '/email_verification';
   static const cuisineSelection = '/cuisine_selection';
   static const locationSetup = '/location_setup';

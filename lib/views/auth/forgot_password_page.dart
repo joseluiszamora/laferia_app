@@ -1,52 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:laferia/views/auth/forgot_password_page.dart';
-import 'package:laferia/views/auth/home_page_demo.dart';
-import 'package:laferia/views/auth/register_page.dart';
 import '../../core/services/auth_service_new.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class ForgotPasswordPage extends StatefulWidget {
+  const ForgotPasswordPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
 
   bool _isLoading = false;
-  bool _obscurePassword = true;
   String? _errorMessage;
+  String? _successMessage;
 
   @override
   void dispose() {
     _emailController.dispose();
-    _passwordController.dispose();
     super.dispose();
   }
 
-  Future<void> _signIn() async {
+  Future<void> _resetPassword() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
       _isLoading = true;
       _errorMessage = null;
+      _successMessage = null;
     });
 
     try {
-      final result = await AuthService.signInWithEmail(
+      final result = await AuthService.resetPassword(
         email: _emailController.text.trim(),
-        password: _passwordController.text,
       );
 
       if (result.isSuccess) {
-        if (mounted) {
-          Navigator.of(
-            context,
-          ).push(MaterialPageRoute(builder: (context) => const HomePageDemo()));
-        }
+        setState(() {
+          _successMessage = result.message;
+        });
       } else {
         setState(() {
           _errorMessage = result.message;
@@ -69,6 +62,12 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const Text('Recuperar Contraseña'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        foregroundColor: Colors.black,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -77,9 +76,14 @@ class _LoginPageState extends State<LoginPage> {
             children: [
               const SizedBox(height: 60),
 
-              // Logo o título
+              // Icono
+              Icon(Icons.lock_reset, size: 80, color: Colors.green[700]),
+
+              const SizedBox(height: 24),
+
+              // Título
               Text(
-                'LaFeria',
+                'Recuperar Contraseña',
                 style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: Colors.green[700],
@@ -90,10 +94,10 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 8),
 
               Text(
-                'Bienvenido de vuelta',
+                'Ingresa tu email y te enviaremos un enlace para restablecer tu contraseña',
                 style: Theme.of(
                   context,
-                ).textTheme.titleMedium?.copyWith(color: Colors.grey[600]),
+                ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
                 textAlign: TextAlign.center,
               ),
 
@@ -108,10 +112,11 @@ class _LoginPageState extends State<LoginPage> {
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      textInputAction: TextInputAction.next,
+                      textInputAction: TextInputAction.done,
+                      onFieldSubmitted: (_) => _resetPassword(),
                       decoration: InputDecoration(
-                        labelText: 'Email o Usuario',
-                        hintText: 'Ingresa tu email o nombre de usuario',
+                        labelText: 'Email',
+                        hintText: 'Ingresa tu email registrado',
                         prefixIcon: const Icon(Icons.email_outlined),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -127,74 +132,15 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Por favor ingresa tu email o usuario';
+                          return 'Por favor ingresa tu email';
+                        }
+                        if (!RegExp(
+                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                        ).hasMatch(value)) {
+                          return 'Ingresa un email válido';
                         }
                         return null;
                       },
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Campo Contraseña
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: _obscurePassword,
-                      textInputAction: TextInputAction.done,
-                      onFieldSubmitted: (_) => _signIn(),
-                      decoration: InputDecoration(
-                        labelText: 'Contraseña',
-                        hintText: 'Ingresa tu contraseña',
-                        prefixIcon: const Icon(Icons.lock_outlined),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                          ),
-                          onPressed: () {
-                            setState(() {
-                              _obscurePassword = !_obscurePassword;
-                            });
-                          },
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey[300]!),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.green[700]!),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Por favor ingresa tu contraseña';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    // Enlace "Olvidé mi contraseña"
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => const ForgotPasswordPage(),
-                            ),
-                          );
-                        },
-                        child: Text(
-                          '¿Olvidaste tu contraseña?',
-                          style: TextStyle(color: Colors.green[700]),
-                        ),
-                      ),
                     ),
 
                     const SizedBox(height: 24),
@@ -223,12 +169,39 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
 
-                    // Botón de iniciar sesión
+                    // Mensaje de éxito
+                    if (_successMessage != null)
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          color: Colors.green[50],
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.green[200]!),
+                        ),
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.check_circle_outline,
+                              color: Colors.green[600],
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                _successMessage!,
+                                style: TextStyle(color: Colors.green[600]),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    // Botón de enviar
                     SizedBox(
                       width: double.infinity,
                       height: 50,
                       child: ElevatedButton(
-                        onPressed: _isLoading ? null : _signIn,
+                        onPressed: _isLoading ? null : _resetPassword,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green[700],
                           foregroundColor: Colors.white,
@@ -249,7 +222,7 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 )
                                 : const Text(
-                                  'Iniciar Sesión',
+                                  'Enviar enlace de recuperación',
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontWeight: FontWeight.w600,
@@ -260,41 +233,27 @@ class _LoginPageState extends State<LoginPage> {
 
                     const SizedBox(height: 24),
 
-                    // Divisor "O"
-                    Row(
-                      children: [
-                        Expanded(child: Divider(color: Colors.grey[300])),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            'O',
-                            style: TextStyle(color: Colors.grey[600]),
+                    // Información adicional
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.blue[50],
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.blue[200]!),
+                      ),
+                      child: Column(
+                        children: [
+                          Icon(Icons.info_outline, color: Colors.blue[600]),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Revisa tu bandeja de entrada y carpeta de spam. El enlace de recuperación será válido por 1 hora.',
+                            style: TextStyle(
+                              color: Colors.blue[700],
+                              fontSize: 14,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                        ),
-                        Expanded(child: Divider(color: Colors.grey[300])),
-                      ],
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Botón de Google (temporalmente deshabilitado)
-                    SizedBox(
-                      width: double.infinity,
-                      height: 50,
-                      child: OutlinedButton.icon(
-                        onPressed:
-                            null, // _isLoading ? null : _signInWithGoogle,
-                        icon: const Icon(Icons.g_mobiledata, size: 24),
-                        label: const Text(
-                          'Continuar con Google (Próximamente)',
-                        ),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.grey[400],
-                          side: BorderSide(color: Colors.grey[300]!),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
+                        ],
                       ),
                     ),
                   ],
@@ -303,24 +262,20 @@ class _LoginPageState extends State<LoginPage> {
 
               const SizedBox(height: 48),
 
-              // Enlace para registrarse
+              // Enlace para volver al login
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '¿No tienes cuenta? ',
+                    '¿Recordaste tu contraseña? ',
                     style: TextStyle(color: Colors.grey[600]),
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => const RegisterPage(),
-                        ),
-                      );
+                      Navigator.of(context).pushReplacementNamed('/new-login');
                     },
                     child: Text(
-                      'Regístrate',
+                      'Inicia Sesión',
                       style: TextStyle(
                         color: Colors.green[700],
                         fontWeight: FontWeight.w600,
