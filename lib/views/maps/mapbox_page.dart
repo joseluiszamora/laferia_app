@@ -257,6 +257,186 @@ class _MapboxPageState extends State<MapboxPage> {
     }
   }
 
+  void _showMapStyleModal() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return DraggableScrollableSheet(
+          initialChildSize: 0.6,
+          minChildSize: 0.3,
+          maxChildSize: 0.8,
+          builder: (context, scrollController) {
+            return Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(20),
+                ),
+              ),
+              child: SingleChildScrollView(
+                controller: scrollController,
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Indicador de arrastre
+                      Center(
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[300],
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+
+                      // Título
+                      const Text(
+                        'Estilos de Mapa',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+
+                      // Lista de estilos
+                      _buildStyleOption(
+                        'Estándar',
+                        MapboxStyles.STANDARD,
+                        Icons.map,
+                        'Vista estándar con calles y etiquetas',
+                      ),
+                      _buildStyleOption(
+                        'Satélite',
+                        MapboxStyles.SATELLITE,
+                        Icons.satellite_alt,
+                        'Imágenes satelitales de alta resolución',
+                      ),
+                      _buildStyleOption(
+                        'Satélite con Calles',
+                        MapboxStyles.SATELLITE_STREETS,
+                        Icons.layers,
+                        'Combina vista satelital con información de calles',
+                      ),
+                      _buildStyleOption(
+                        'Oscuro',
+                        MapboxStyles.DARK,
+                        Icons.dark_mode,
+                        'Tema oscuro ideal para navegación nocturna',
+                      ),
+
+                      // Espacio extra en la parte inferior
+                      SizedBox(
+                        height: MediaQuery.of(context).viewInsets.bottom + 20,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildStyleOption(
+    String title,
+    String style,
+    IconData icon,
+    String description,
+  ) {
+    final isSelected = _selectedMapStyle == style;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: InkWell(
+        onTap: () {
+          _changeMapStyle(style);
+          Navigator.pop(context);
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color:
+                isSelected
+                    ? Theme.of(context).primaryColor.withOpacity(0.1)
+                    : Colors.grey[50],
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color:
+                  isSelected
+                      ? Theme.of(context).primaryColor
+                      : Colors.grey[300]!,
+              width: isSelected ? 2 : 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color:
+                      isSelected
+                          ? Theme.of(context).primaryColor
+                          : Colors.grey[400],
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Icon(icon, color: Colors.white, size: 18),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color:
+                            isSelected
+                                ? Theme.of(context).primaryColor
+                                : Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      description,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: Colors.grey[600],
+                        height: 1.2,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              if (isSelected)
+                Icon(
+                  Icons.check_circle,
+                  color: Theme.of(context).primaryColor,
+                  size: 20,
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -288,41 +468,17 @@ class _MapboxPageState extends State<MapboxPage> {
               child: const Center(child: CircularProgressIndicator()),
             ),
 
-          // Panel de controles superior
+          // Botón de estilos de mapa (superior derecho)
           Positioned(
-            top: MediaQuery.of(context).padding.top + 10,
-            left: 16,
+            top: MediaQuery.of(context).padding.top + 16,
             right: 16,
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'Estilos de Mapa',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 8,
-                      children: [
-                        _buildStyleChip('Estándar', MapboxStyles.STANDARD),
-                        _buildStyleChip('Satélite', MapboxStyles.SATELLITE),
-                        _buildStyleChip(
-                          'Calles',
-                          MapboxStyles.SATELLITE_STREETS,
-                        ),
-                        _buildStyleChip('Oscuro', MapboxStyles.DARK),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+            child: FloatingActionButton(
+              heroTag: 'map_styles',
+              onPressed: _showMapStyleModal,
+              backgroundColor: Colors.white,
+              foregroundColor: Colors.black87,
+              mini: true,
+              child: const Icon(Icons.layers),
             ),
           ),
 
@@ -385,20 +541,19 @@ class _MapboxPageState extends State<MapboxPage> {
                             fontSize: 16,
                           ),
                         ),
-                        Row(
-                          children: [
-                            Text('${_markers.length} marcadores'),
-                            const SizedBox(width: 8),
-                            Container(
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                color:
-                                    _isLoading ? Colors.orange : Colors.green,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ],
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        Text('${_markers.length} marcadores'),
+                        const SizedBox(width: 8),
+                        Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: _isLoading ? Colors.orange : Colors.green,
+                            shape: BoxShape.circle,
+                          ),
                         ),
                       ],
                     ),
@@ -425,22 +580,6 @@ class _MapboxPageState extends State<MapboxPage> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildStyleChip(String label, String style) {
-    final isSelected = _selectedMapStyle == style;
-
-    return FilterChip(
-      label: Text(label),
-      selected: isSelected,
-      onSelected: (selected) {
-        if (selected) {
-          _changeMapStyle(style);
-        }
-      },
-      selectedColor: Theme.of(context).primaryColor.withOpacity(0.2),
-      checkmarkColor: Theme.of(context).primaryColor,
     );
   }
 
