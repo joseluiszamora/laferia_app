@@ -1,8 +1,6 @@
 class MapboxConfig {
-  // TODO: Reemplazar con tu token de acceso público de Mapbox
-  // Obtén tu token en: https://account.mapbox.com/access-tokens/
   static const String accessToken =
-      'pk.eyJ1IjoiZXhhbXBsZSIsImEiOiJjazY5aGNkN2owMGY5M2lwMnc1YW84eTFnIn0.example_token';
+      'pk.eyJ1IjoianphbW9yYWRldiIsImEiOiJjbWRvejBuaWEwN20yMm1vYW9qOTh0bWRvIn0.ami0_3zu5xlVlT6aPZcRuw';
 
   // Estilos de mapa predefinidos
   static const String standardStyle = 'mapbox://styles/mapbox/standard';
