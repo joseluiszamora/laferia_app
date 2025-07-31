@@ -5,6 +5,7 @@ import 'package:laferia/core/providers/theme_provider.dart';
 import 'package:laferia/core/constants/app_colors.dart';
 import 'package:laferia/core/services/tienda_service.dart';
 import 'package:laferia/views/admin/admin_demo_page.dart';
+import 'package:laferia/views/auth/home_page_demo.dart';
 import 'package:laferia/views/categorias/categorias_page.dart';
 import 'package:laferia/views/design/design_pages.dart';
 import 'package:laferia/views/home/home_page.dart';
@@ -36,7 +37,8 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
 
     //* Pages List
     List<Widget> pages = [
-      const HomePageWithMap(),
+      // const HomePageWithMap(),
+      const HomePageDemo(),
       const CategoriasPage(),
       // const TiendaListPage(),
       const HomePage(),
