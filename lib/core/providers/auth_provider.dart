@@ -120,6 +120,25 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  /// Iniciar sesión con Google
+  Future<AuthResult> signInWithGoogle() async {
+    try {
+      _isLoading = true;
+      notifyListeners();
+
+      final result = await AuthService.signInWithGoogle();
+
+      _isLoading = false;
+      notifyListeners();
+
+      return result;
+    } catch (e) {
+      _isLoading = false;
+      notifyListeners();
+      return AuthResult.error('Error inesperado: ${e.toString()}');
+    }
+  }
+
   /// Cerrar sesión
   Future<AuthResult> signOut() async {
     try {

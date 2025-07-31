@@ -52,6 +52,38 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  Future<void> _signInWithGoogle() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    setState(() {
+      _errorMessage = null;
+    });
+
+    try {
+      final result = await authProvider.signInWithGoogle();
+
+      if (!result.isSuccess) {
+        setState(() {
+          _errorMessage = result.message;
+        });
+      } else {
+        // Mostrar mensaje de éxito o redirección
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result.message),
+              backgroundColor: Colors.green[600],
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Error inesperado con Google: ${e.toString()}';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthProvider>(
@@ -270,18 +302,19 @@ class _LoginPageState extends State<LoginPage> {
 
                         const SizedBox(height: 24),
 
-                        // Botón de Google (temporalmente deshabilitado)
+                        // Botón de Google
                         SizedBox(
                           width: double.infinity,
                           height: 50,
                           child: OutlinedButton.icon(
-                            onPressed: null,
+                            onPressed:
+                                authProvider.isLoading
+                                    ? null
+                                    : _signInWithGoogle,
                             icon: const Icon(Icons.g_mobiledata, size: 24),
-                            label: const Text(
-                              'Continuar con Google (Próximamente)',
-                            ),
+                            label: const Text('Continuar con Google'),
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: Colors.grey[400],
+                              foregroundColor: Colors.grey[700],
                               side: BorderSide(color: Colors.grey[300]!),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),

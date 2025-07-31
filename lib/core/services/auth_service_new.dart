@@ -104,11 +104,31 @@ class AuthService {
     }
   }
 
-  /// LOGIN CON GOOGLE (Temporalmente deshabilitado - se implementará después)
+  /// LOGIN CON GOOGLE
   static Future<AuthResult> signInWithGoogle() async {
-    return AuthResult.error(
-      'Autenticación con Google temporalmente no disponible',
-    );
+    try {
+      // Usar Supabase OAuth para Google
+      // Esto abrirá el navegador para la autenticación
+      final bool success = await _supabase.auth.signInWithOAuth(
+        OAuthProvider.google,
+        redirectTo: 'io.supabase.laferia://login-callback',
+      );
+
+      if (success) {
+        // La autenticación se completará cuando el usuario regrese de Google
+        return AuthResult.success(
+          'Redirigiendo a Google para autenticación...',
+        );
+      } else {
+        return AuthResult.error('Error al iniciar autenticación con Google');
+      }
+    } on AuthException catch (e) {
+      return AuthResult.error(_handleAuthException(e));
+    } catch (e) {
+      return AuthResult.error(
+        'Error inesperado con Google Sign-In: ${e.toString()}',
+      );
+    }
   }
 
   /// CERRAR SESIÓN
