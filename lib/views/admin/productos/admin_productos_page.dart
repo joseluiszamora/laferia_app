@@ -217,6 +217,19 @@ class _AdminProductosPageState extends State<AdminProductosPage> {
                 ),
               ] else ...[
                 IconButton(
+                  icon: const Icon(Icons.refresh),
+                  onPressed: () {
+                    context.read<AdminProductosBloc>().add(
+                      LoadAdminProductos(
+                        searchQuery: _currentSearchQuery,
+                        categoryId: _currentCategoryId,
+                        status: _currentStatus,
+                      ),
+                    );
+                  },
+                  tooltip: 'Actualizar lista',
+                ),
+                IconButton(
                   icon: const Icon(Icons.checklist),
                   onPressed: _toggleSelectionMode,
                 ),
@@ -226,7 +239,11 @@ class _AdminProductosPageState extends State<AdminProductosPage> {
                     final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const AdminProductoFormPage(),
+                        builder:
+                            (context) => BlocProvider.value(
+                              value: context.read<AdminProductosBloc>(),
+                              child: const AdminProductoFormPage(),
+                            ),
                       ),
                     );
 
@@ -299,8 +316,12 @@ class _AdminProductosPageState extends State<AdminProductosPage> {
                         context,
                         MaterialPageRoute(
                           builder:
-                              (context) =>
-                                  AdminProductoFormPage(producto: producto),
+                              (context) => BlocProvider.value(
+                                value: context.read<AdminProductosBloc>(),
+                                child: AdminProductoFormPage(
+                                  producto: producto,
+                                ),
+                              ),
                         ),
                       );
 

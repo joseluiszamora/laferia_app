@@ -5,7 +5,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:typed_data';
 import '../../../core/models/producto.dart';
 import '../../../core/models/producto_medias.dart';
+import '../../../core/models/categoria.dart';
 import '../../../core/blocs/admin_productos/admin_productos.dart';
+import '../../../core/services/supabase_categoria_service.dart';
 
 class AdminProductoFormPage extends StatefulWidget {
   final Producto? producto;
@@ -37,6 +39,10 @@ class _AdminProductoFormPageState extends State<AdminProductoFormPage> {
   int? _categoryId;
   int? _storeId;
 
+  // Lista de categorías disponibles
+  List<Categoria> _categorias = [];
+  bool _isLoadingCategorias = true;
+
   // Campos para manejo de imágenes y medios
   List<ProductoMedias> _existingMedias = [];
   List<Map<String, dynamic>> _newMedias = [];
@@ -51,6 +57,9 @@ class _AdminProductoFormPageState extends State<AdminProductoFormPage> {
 
     // Inicializar valores por defecto
     _lowStockAlertController.text = '5';
+
+    // Cargar categorías
+    _loadCategorias();
 
     if (_isEditing) {
       _loadProductoData();
@@ -78,6 +87,26 @@ class _AdminProductoFormPageState extends State<AdminProductoFormPage> {
 
     // Cargar medios existentes
     _existingMedias = List.from(producto.medias);
+  }
+
+  Future<void> _loadCategorias() async {
+    try {
+      final categorias = await SupabaseCategoriaService.getAllCategorias();
+      setState(() {
+        _categorias = categorias;
+        _isLoadingCategorias = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoadingCategorias = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error al cargar categorías: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -128,7 +157,7 @@ class _AdminProductoFormPageState extends State<AdminProductoFormPage> {
         'is_featured': _isFeatured,
         'status': _status.value,
         'category_id':
-            _categoryId ?? 1, // Categoría por defecto si no se selecciona
+            _categoryId, // Ahora es obligatorio seleccionar categoría
         'store_id': _storeId ?? 1, // Tienda por defecto si no se selecciona
         // Generar slug a partir del nombre
         'slug': _nameController.text
@@ -877,6 +906,83 @@ class _AdminProductoFormPageState extends State<AdminProductoFormPage> {
                   return null;
                 },
               ),
+
+              const SizedBox(height: 16),
+
+              // Selector de categoría
+              _isLoadingCategorias
+                  ? Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey.shade300),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Row(
+                      children: [
+                        SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                        SizedBox(width: 12),
+                        Text('Cargando categorías...'),
+                      ],
+                    ),
+                  )
+                  : _categorias.isEmpty
+                  ? Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.orange.shade300),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.warning, color: Colors.orange.shade700),
+                        const SizedBox(width: 12),
+                        const Expanded(
+                          child: Text('No se pudieron cargar categorías'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            setState(() {
+                              _isLoadingCategorias = true;
+                            });
+                            _loadCategorias();
+                          },
+                          child: const Text('Reintentar'),
+                        ),
+                      ],
+                    ),
+                  )
+                  : DropdownButtonFormField<int>(
+                    value: _categoryId,
+                    decoration: const InputDecoration(
+                      labelText: 'Categoría *',
+                      border: OutlineInputBorder(),
+                      helperText: 'Selecciona la categoría del producto',
+                    ),
+                    items:
+                        _categorias
+                            .map(
+                              (categoria) => DropdownMenuItem<int>(
+                                value: categoria.id,
+                                child: Text(categoria.name),
+                              ),
+                            )
+                            .toList(),
+                    onChanged: (value) {
+                      setState(() {
+                        _categoryId = value;
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null) {
+                        return 'Selecciona una categoría';
+                      }
+                      return null;
+                    },
+                  ),
 
               const SizedBox(height: 24),
 

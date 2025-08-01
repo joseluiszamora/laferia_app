@@ -108,6 +108,9 @@ class AdminProductoService {
       final medias =
           mainData.remove('medias') as List<Map<String, dynamic>>? ?? [];
 
+      // Remover campos que no pertenecen a la tabla Product
+      mainData.remove('medias_to_delete');
+
       // Crear producto principal
       final response =
           await _supabase
@@ -116,7 +119,7 @@ class AdminProductoService {
               .select()
               .single();
 
-      final productoId = response['id'] as int;
+      final productoId = response['product_id'] as int;
 
       // Agregar atributos si existen
       if (atributos.isNotEmpty) {
@@ -141,7 +144,7 @@ class AdminProductoService {
       // Obtener el producto completo
       return await obtenerProductoPorId(productoId);
     } catch (e) {
-      throw Exception('Error al crear producto: $e');
+      throw Exception('Error al crear productoxx: $e');
     }
   }
 
@@ -151,17 +154,36 @@ class AdminProductoService {
     Map<String, dynamic> productoData,
   ) async {
     try {
+      print(
+        'DEBUG: Actualizando producto $productoId con datos: ${productoData.keys}',
+      );
+
       // Separar datos principales de atributos y medias
       final mainData = Map<String, dynamic>.from(productoData);
       final atributos =
           mainData.remove('atributos') as List<Map<String, dynamic>>?;
       final medias = mainData.remove('medias') as List<Map<String, dynamic>>?;
+      final mediasToDelete =
+          mainData.remove('medias_to_delete') as List<int>? ?? [];
+
+      print('DEBUG: Medias a eliminar: $mediasToDelete');
+      print('DEBUG: Nuevas medias: ${medias?.length ?? 0}');
+
+      // Primero eliminar medias marcadas para eliminación
+      if (mediasToDelete.isNotEmpty) {
+        print('DEBUG: Eliminando medias: $mediasToDelete');
+        await _supabase
+            .from(_tablaProductoMedias)
+            .delete()
+            .inFilter('id', mediasToDelete);
+      }
 
       // Actualizar datos principales
+      print('DEBUG: Actualizando datos principales: ${mainData.keys}');
       await _supabase
           .from(_tablaProducto)
           .update(mainData)
-          .eq('id', productoId);
+          .eq('product_id', productoId);
 
       // Actualizar atributos si se proporcionan
       if (atributos != null) {
@@ -183,22 +205,15 @@ class AdminProductoService {
       }
 
       // Actualizar medias si se proporcionan
-      if (medias != null) {
-        // Eliminar medias existentes
-        await _supabase
-            .from(_tablaProductoMedias)
-            .delete()
-            .eq('product_id', productoId);
+      if (medias != null && medias.isNotEmpty) {
+        print('DEBUG: Insertando ${medias.length} nuevas medias');
+        // Solo insertar nuevas medias (no eliminar todas las existentes)
+        final mediasData =
+            medias
+                .map((media) => {...media, 'product_id': productoId})
+                .toList();
 
-        // Insertar nuevas medias
-        if (medias.isNotEmpty) {
-          final mediasData =
-              medias
-                  .map((media) => {...media, 'product_id': productoId})
-                  .toList();
-
-          await _supabase.from(_tablaProductoMedias).insert(mediasData);
-        }
+        await _supabase.from(_tablaProductoMedias).insert(mediasData);
       }
 
       // Obtener el producto actualizado
@@ -243,7 +258,7 @@ class AdminProductoService {
             ProductAttributes(*),
             ProductMedias(*)
           ''')
-              .eq('id', productoId)
+              .eq('product_id', productoId)
               .single();
 
       return _mapJsonToProducto(response);

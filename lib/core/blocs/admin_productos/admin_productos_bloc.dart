@@ -6,6 +6,11 @@ import 'admin_productos_state.dart';
 
 class AdminProductosBloc
     extends Bloc<AdminProductosEvent, AdminProductosState> {
+  // Variables para recordar los últimos filtros
+  String? _lastSearchQuery;
+  int? _lastCategoryId;
+  ProductStatus? _lastStatus;
+
   AdminProductosBloc() : super(AdminProductosInitial()) {
     on<LoadAdminProductos>(_onLoadAdminProductos);
     on<CreateProducto>(_onCreateProducto);
@@ -24,6 +29,11 @@ class AdminProductosBloc
     if (event.offset == 0) {
       emit(AdminProductosLoading());
     }
+
+    // Guardar los filtros actuales
+    _lastSearchQuery = event.searchQuery;
+    _lastCategoryId = event.categoryId;
+    _lastStatus = event.status;
 
     try {
       final result = await AdminProductoService.obtenerProductosAdmin(
@@ -88,8 +98,14 @@ class AdminProductosBloc
         ),
       );
 
-      // Recargar la lista de productos
-      add(LoadAdminProductos());
+      // Recargar la lista de productos con los últimos filtros
+      add(
+        LoadAdminProductos(
+          searchQuery: _lastSearchQuery,
+          categoryId: _lastCategoryId,
+          status: _lastStatus,
+        ),
+      );
     } catch (e) {
       emit(AdminProductosError(message: 'Error al crear producto: $e'));
     }
@@ -113,8 +129,14 @@ class AdminProductosBloc
         ),
       );
 
-      // Recargar la lista de productos
-      add(LoadAdminProductos());
+      // Recargar la lista de productos con los últimos filtros
+      add(
+        LoadAdminProductos(
+          searchQuery: _lastSearchQuery,
+          categoryId: _lastCategoryId,
+          status: _lastStatus,
+        ),
+      );
     } catch (e) {
       emit(AdminProductosError(message: 'Error al actualizar producto: $e'));
     }
@@ -135,8 +157,14 @@ class AdminProductosBloc
         ),
       );
 
-      // Recargar la lista de productos
-      add(LoadAdminProductos());
+      // Recargar la lista de productos con los últimos filtros
+      add(
+        LoadAdminProductos(
+          searchQuery: _lastSearchQuery,
+          categoryId: _lastCategoryId,
+          status: _lastStatus,
+        ),
+      );
     } catch (e) {
       emit(AdminProductosError(message: 'Error al eliminar producto: $e'));
     }
@@ -204,8 +232,14 @@ class AdminProductosBloc
         ),
       );
 
-      // Recargar la lista de productos
-      add(LoadAdminProductos());
+      // Recargar la lista de productos con los últimos filtros
+      add(
+        LoadAdminProductos(
+          searchQuery: _lastSearchQuery,
+          categoryId: _lastCategoryId,
+          status: _lastStatus,
+        ),
+      );
     } catch (e) {
       emit(AdminProductosError(message: 'Error al actualizar estados: $e'));
     }
@@ -226,8 +260,14 @@ class AdminProductosBloc
         ),
       );
 
-      // Recargar la lista de productos
-      add(LoadAdminProductos());
+      // Recargar la lista de productos con los últimos filtros
+      add(
+        LoadAdminProductos(
+          searchQuery: _lastSearchQuery,
+          categoryId: _lastCategoryId,
+          status: _lastStatus,
+        ),
+      );
     } catch (e) {
       emit(AdminProductosError(message: 'Error al eliminar productos: $e'));
     }
