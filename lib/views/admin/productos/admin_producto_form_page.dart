@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'dart:typed_data';
 import '../../../core/models/producto.dart';
 import '../../../core/models/producto_medias.dart';
+import '../../../core/models/producto_atributos.dart';
 import '../../../core/models/categoria.dart';
 import '../../../core/blocs/admin_productos/admin_productos.dart';
 import '../../../core/services/supabase_categoria_service.dart';
@@ -50,6 +51,11 @@ class _AdminProductoFormPageState extends State<AdminProductoFormPage> {
   bool _isUploadingImage = false;
   final ImagePicker _imagePicker = ImagePicker();
 
+  // Campos para manejo de atributos
+  List<ProductoAtributos> _existingAtributos = [];
+  List<Map<String, dynamic>> _newAtributos = [];
+  List<int> _atributosToDelete = [];
+
   @override
   void initState() {
     super.initState();
@@ -87,6 +93,9 @@ class _AdminProductoFormPageState extends State<AdminProductoFormPage> {
 
     // Cargar medios existentes
     _existingMedias = List.from(producto.medias);
+
+    // Cargar atributos existentes
+    _existingAtributos = List.from(producto.atributos);
   }
 
   Future<void> _loadCategorias() async {
@@ -168,6 +177,13 @@ class _AdminProductoFormPageState extends State<AdminProductoFormPage> {
         // Agregar información de medios
         'medias': _newMedias,
         'medias_to_delete': _mediasToDelete,
+        // Agregar información de atributos
+        'atributos': _newAtributos, // Solo atributos completamente nuevos
+        'atributos_existentes':
+            _existingAtributos
+                .map((attr) => attr.toJson())
+                .toList(), // Atributos existentes (editados o no)
+        'atributos_to_delete': _atributosToDelete,
       };
 
       if (_isEditing) {
@@ -434,6 +450,77 @@ class _AdminProductoFormPageState extends State<AdminProductoFormPage> {
     });
   }
 
+  // Métodos para gestión de atributos
+  void _addAtributo() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => _AtributoDialog(
+            onSave: (atributo) {
+              setState(() {
+                _newAtributos.add(atributo);
+              });
+            },
+          ),
+    );
+  }
+
+  void _editAtributo(int index, bool isExisting) {
+    Map<String, dynamic> atributoData;
+
+    if (isExisting) {
+      final atributo = _existingAtributos[index];
+      atributoData = {
+        'name': atributo.name,
+        'value': atributo.value,
+        'type': atributo.type,
+        'unity': atributo.unity,
+        'is_visible': atributo.isVisible,
+      };
+    } else {
+      atributoData = Map<String, dynamic>.from(_newAtributos[index]);
+    }
+
+    showDialog(
+      context: context,
+      builder:
+          (context) => _AtributoDialog(
+            initialData: atributoData,
+            onSave: (atributo) {
+              setState(() {
+                if (isExisting) {
+                  // Para atributos existentes, marcamos para actualización
+                  _existingAtributos[index] = _existingAtributos[index]
+                      .copyWith(
+                        name: atributo['name'],
+                        value: atributo['value'],
+                        type: atributo['type'],
+                        unity: atributo['unity'],
+                        isVisible: atributo['is_visible'],
+                      );
+                } else {
+                  _newAtributos[index] = atributo;
+                }
+              });
+            },
+          ),
+    );
+  }
+
+  void _removeExistingAtributo(int index) {
+    setState(() {
+      final atributo = _existingAtributos[index];
+      _atributosToDelete.add(atributo.id);
+      _existingAtributos.removeAt(index);
+    });
+  }
+
+  void _removeNewAtributo(int index) {
+    setState(() {
+      _newAtributos.removeAt(index);
+    });
+  }
+
   Widget _buildMediaSection() {
     final allMedias = <Widget>[];
 
@@ -671,6 +758,180 @@ class _AdminProductoFormPageState extends State<AdminProductoFormPage> {
         ),
       ],
     );
+  }
+
+  Widget _buildAtributosSection() {
+    final allAtributos = <Widget>[];
+
+    // Agregar atributos existentes
+    for (int i = 0; i < _existingAtributos.length; i++) {
+      final atributo = _existingAtributos[i];
+      allAtributos.add(
+        _buildAtributoItem(
+          name: atributo.name,
+          value: atributo.value,
+          type: atributo.type,
+          unity: atributo.unity,
+          isNew: false,
+          onEdit: () => _editAtributo(i, true),
+          onRemove: () => _removeExistingAtributo(i),
+        ),
+      );
+    }
+
+    // Agregar nuevos atributos
+    for (int i = 0; i < _newAtributos.length; i++) {
+      final atributo = _newAtributos[i];
+      allAtributos.add(
+        _buildAtributoItem(
+          name: atributo['name'] ?? '',
+          value: atributo['value'] ?? '',
+          type: atributo['type'] ?? 'text',
+          unity: atributo['unity'],
+          isNew: true,
+          onEdit: () => _editAtributo(i, false),
+          onRemove: () => _removeNewAtributo(i),
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Text(
+              'Atributos del producto',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            TextButton.icon(
+              onPressed: _addAtributo,
+              icon: const Icon(Icons.add),
+              label: const Text('Agregar Atributo'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (allAtributos.isEmpty)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(32),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey.shade300),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              children: [
+                Icon(Icons.tune, size: 48, color: Colors.grey.shade400),
+                const SizedBox(height: 12),
+                Text(
+                  'No hay atributos agregados',
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton.icon(
+                  onPressed: _addAtributo,
+                  icon: const Icon(Icons.add),
+                  label: const Text('Agregar Primer Atributo'),
+                ),
+              ],
+            ),
+          )
+        else
+          Column(children: allAtributos),
+        const SizedBox(height: 16),
+        if (allAtributos.isNotEmpty)
+          Text(
+            'Ejemplo: Color: Azul, Talla: M, Material: Algodón',
+            style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildAtributoItem({
+    required String name,
+    required String value,
+    required String type,
+    String? unity,
+    required bool isNew,
+    required VoidCallback onEdit,
+    required VoidCallback onRemove,
+  }) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        leading: CircleAvatar(
+          backgroundColor: isNew ? Colors.green.shade100 : Colors.blue.shade100,
+          child: Icon(
+            _getAtributoIcon(type),
+            color: isNew ? Colors.green.shade700 : Colors.blue.shade700,
+            size: 20,
+          ),
+        ),
+        title: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text(
+          unity != null ? '$value $unity' : value,
+          style: TextStyle(color: Colors.grey.shade600),
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isNew)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade100,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  'NUEVO',
+                  style: TextStyle(
+                    color: Colors.green.shade700,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            IconButton(
+              icon: const Icon(Icons.edit, size: 20),
+              onPressed: onEdit,
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete, color: Colors.red, size: 20),
+              onPressed: onRemove,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  IconData _getAtributoIcon(String type) {
+    switch (type.toLowerCase()) {
+      case 'color':
+        return Icons.palette;
+      case 'size':
+      case 'talla':
+        return Icons.straighten;
+      case 'weight':
+      case 'peso':
+        return Icons.scale;
+      case 'material':
+        return Icons.texture;
+      case 'number':
+        return Icons.numbers;
+      case 'boolean':
+        return Icons.check_box;
+      default:
+        return Icons.text_fields;
+    }
   }
 
   @override
@@ -998,6 +1259,16 @@ class _AdminProductoFormPageState extends State<AdminProductoFormPage> {
 
               const SizedBox(height: 24),
 
+              // Sección de atributos del producto
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: _buildAtributosSection(),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
               // Estado del producto
               DropdownButtonFormField<ProductStatus>(
                 value: _status,
@@ -1117,5 +1388,190 @@ class _AdminProductoFormPageState extends State<AdminProductoFormPage> {
       case ProductStatus.exhausted:
         return 'Agotado';
     }
+  }
+}
+
+// Diálogo para agregar/editar atributos
+class _AtributoDialog extends StatefulWidget {
+  final Map<String, dynamic>? initialData;
+  final Function(Map<String, dynamic>) onSave;
+
+  const _AtributoDialog({this.initialData, required this.onSave});
+
+  @override
+  State<_AtributoDialog> createState() => _AtributoDialogState();
+}
+
+class _AtributoDialogState extends State<_AtributoDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _valueController = TextEditingController();
+  final _unityController = TextEditingController();
+
+  String _selectedType = 'text';
+  bool _isVisible = true;
+
+  final List<Map<String, String>> _atributoTypes = [
+    {'value': 'text', 'label': 'Texto'},
+    {'value': 'number', 'label': 'Número'},
+    {'value': 'color', 'label': 'Color'},
+    {'value': 'size', 'label': 'Talla/Tamaño'},
+    {'value': 'material', 'label': 'Material'},
+    {'value': 'weight', 'label': 'Peso'},
+    {'value': 'boolean', 'label': 'Sí/No'},
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.initialData != null) {
+      _nameController.text = widget.initialData!['name'] ?? '';
+      _valueController.text = widget.initialData!['value'] ?? '';
+      _unityController.text = widget.initialData!['unity'] ?? '';
+      _selectedType = widget.initialData!['type'] ?? 'text';
+      _isVisible = widget.initialData!['is_visible'] ?? true;
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _valueController.dispose();
+    _unityController.dispose();
+    super.dispose();
+  }
+
+  void _saveAtributo() {
+    if (_formKey.currentState?.validate() ?? false) {
+      final atributoData = {
+        'name': _nameController.text.trim(),
+        'value': _valueController.text.trim(),
+        'type': _selectedType,
+        'unity':
+            _unityController.text.trim().isEmpty
+                ? null
+                : _unityController.text.trim(),
+        'is_visible': _isVisible,
+        'order': 0,
+        'created_at': DateTime.now().toIso8601String(),
+      };
+
+      widget.onSave(atributoData);
+      Navigator.of(context).pop();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        widget.initialData != null ? 'Editar Atributo' : 'Agregar Atributo',
+      ),
+      content: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Nombre del atributo
+              TextFormField(
+                controller: _nameController,
+                decoration: const InputDecoration(
+                  labelText: 'Nombre del atributo *',
+                  hintText: 'Ej: Color, Talla, Material',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'El nombre es obligatorio';
+                  }
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 16),
+
+              // Valor del atributo
+              TextFormField(
+                controller: _valueController,
+                decoration: const InputDecoration(
+                  labelText: 'Valor del atributo *',
+                  hintText: 'Ej: Azul, M, Algodón',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'El valor es obligatorio';
+                  }
+                  return null;
+                },
+              ),
+
+              const SizedBox(height: 16),
+
+              // Tipo de atributo
+              DropdownButtonFormField<String>(
+                value: _selectedType,
+                decoration: const InputDecoration(
+                  labelText: 'Tipo de atributo',
+                  border: OutlineInputBorder(),
+                ),
+                items:
+                    _atributoTypes
+                        .map(
+                          (type) => DropdownMenuItem(
+                            value: type['value'],
+                            child: Text(type['label']!),
+                          ),
+                        )
+                        .toList(),
+                onChanged: (value) {
+                  setState(() {
+                    _selectedType = value ?? 'text';
+                  });
+                },
+              ),
+
+              const SizedBox(height: 16),
+
+              // Unidad de medida (opcional)
+              TextFormField(
+                controller: _unityController,
+                decoration: const InputDecoration(
+                  labelText: 'Unidad de medida (opcional)',
+                  hintText: 'Ej: kg, cm, litros, %',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Switch para visibilidad
+              SwitchListTile(
+                title: const Text('Visible al público'),
+                subtitle: const Text('¿Mostrar este atributo en el producto?'),
+                value: _isVisible,
+                onChanged: (value) {
+                  setState(() {
+                    _isVisible = value;
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancelar'),
+        ),
+        ElevatedButton(
+          onPressed: _saveAtributo,
+          child: Text(widget.initialData != null ? 'Actualizar' : 'Agregar'),
+        ),
+      ],
+    );
   }
 }

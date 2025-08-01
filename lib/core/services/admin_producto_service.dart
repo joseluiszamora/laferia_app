@@ -110,6 +110,8 @@ class AdminProductoService {
 
       // Remover campos que no pertenecen a la tabla Product
       mainData.remove('medias_to_delete');
+      mainData.remove('atributos_to_delete');
+      mainData.remove('atributos_existentes');
 
       // Crear producto principal
       final response =
@@ -167,12 +169,20 @@ class AdminProductoService {
       final mainData = Map<String, dynamic>.from(productoData);
       final atributos =
           mainData.remove('atributos') as List<Map<String, dynamic>>?;
+      final atributosExistentes =
+          mainData.remove('atributos_existentes')
+              as List<Map<String, dynamic>>?;
       final medias = mainData.remove('medias') as List<Map<String, dynamic>>?;
       final mediasToDelete =
           mainData.remove('medias_to_delete') as List<int>? ?? [];
+      final atributosToDelete =
+          mainData.remove('atributos_to_delete') as List<int>? ?? [];
 
       print('DEBUG: Medias a eliminar: $mediasToDelete');
       print('DEBUG: Nuevas medias: ${medias?.length ?? 0}');
+      print('DEBUG: Atributos a eliminar: $atributosToDelete');
+      print('DEBUG: Nuevos atributos: ${atributos?.length ?? 0}');
+      print('DEBUG: Atributos existentes: ${atributosExistentes?.length ?? 0}');
 
       // Primero eliminar medias marcadas para eliminación
       if (mediasToDelete.isNotEmpty) {
@@ -183,6 +193,24 @@ class AdminProductoService {
             .inFilter('product_medias_id', mediasToDelete);
       }
 
+      // Eliminar atributos marcados para eliminación
+      if (atributosToDelete.isNotEmpty) {
+        print('DEBUG: Eliminando atributos: $atributosToDelete');
+        await _supabase
+            .from(_tablaProductoAtributos)
+            .delete()
+            .inFilter('product_attributes_id', atributosToDelete);
+      }
+
+      // Eliminar atributos marcados para eliminación
+      if (atributosToDelete.isNotEmpty) {
+        print('DEBUG: Eliminando atributos: $atributosToDelete');
+        await _supabase
+            .from(_tablaProductoAtributos)
+            .delete()
+            .inFilter('product_attributes_id', atributosToDelete);
+      }
+
       // Actualizar datos principales
       print('DEBUG: Actualizando datos principales: ${mainData.keys}');
       await _supabase
@@ -190,22 +218,26 @@ class AdminProductoService {
           .update(mainData)
           .eq('product_id', productoId);
 
-      // Actualizar atributos si se proporcionan
-      if (atributos != null) {
-        // Eliminar atributos existentes
-        await _supabase
-            .from(_tablaProductoAtributos)
-            .delete()
-            .eq('product_id', productoId);
+      // Actualizar atributos existentes si se proporcionan
+      if (atributosExistentes != null && atributosExistentes.isNotEmpty) {
+        print(
+          'DEBUG: Actualizando ${atributosExistentes.length} atributos existentes',
+        );
+        for (final atributo in atributosExistentes) {
+          final atributoId =
+              atributo['product_attributes_id'] ?? atributo['id'];
+          if (atributoId != null) {
+            final atributoData = Map<String, dynamic>.from(atributo);
+            atributoData.remove('product_attributes_id');
+            atributoData.remove('id');
+            atributoData.remove('product_id');
+            atributoData.remove('created_at');
 
-        // Insertar nuevos atributos
-        if (atributos.isNotEmpty) {
-          final atributosData =
-              atributos
-                  .map((attr) => {...attr, 'product_id': productoId})
-                  .toList();
-
-          await _supabase.from(_tablaProductoAtributos).insert(atributosData);
+            await _supabase
+                .from(_tablaProductoAtributos)
+                .update(atributoData)
+                .eq('product_attributes_id', atributoId);
+          }
         }
       }
 
@@ -224,6 +256,19 @@ class AdminProductoService {
             }).toList();
 
         await _supabase.from(_tablaProductoMedias).insert(mediasData);
+      }
+
+      // Insertar nuevos atributos si se proporcionan
+      if (atributos != null && atributos.isNotEmpty) {
+        print('DEBUG: Insertando ${atributos.length} nuevos atributos');
+        final atributosData =
+            atributos.map((atributo) {
+              // Crear una copia del atributo limpio
+              final cleanAtributo = Map<String, dynamic>.from(atributo);
+              return {...cleanAtributo, 'product_id': productoId};
+            }).toList();
+
+        await _supabase.from(_tablaProductoAtributos).insert(atributosData);
       }
 
       // Obtener el producto actualizado
