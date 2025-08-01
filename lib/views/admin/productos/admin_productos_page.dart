@@ -175,14 +175,39 @@ class _AdminProductosPageState extends State<AdminProductosPage> {
       create: (context) => AdminProductosBloc()..add(LoadAdminProductos()),
       child: BlocListener<AdminProductosBloc, AdminProductosState>(
         listener: (context, state) {
+          print('DEBUG: BlocListener recibió estado: ${state.runtimeType}');
+
           if (state is AdminProductoOperationSuccess) {
+            print(
+              'DEBUG: AdminProductoOperationSuccess detectado - operation: ${state.operation}',
+            );
+
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
                 backgroundColor: Colors.green,
               ),
             );
+
+            // Recargar la lista después de operaciones exitosas
+            print(
+              'DEBUG: Recargando lista con filtros - search: $_currentSearchQuery, category: $_currentCategoryId, status: $_currentStatus',
+            );
+
+            // Pequeño delay para asegurar que el estado se procese
+            Future.delayed(const Duration(milliseconds: 100), () {
+              if (context.mounted) {
+                context.read<AdminProductosBloc>().add(
+                  LoadAdminProductos(
+                    searchQuery: _currentSearchQuery,
+                    categoryId: _currentCategoryId,
+                    status: _currentStatus,
+                  ),
+                );
+              }
+            });
           } else if (state is AdminProductosError) {
+            print('DEBUG: AdminProductosError detectado: ${state.message}');
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
@@ -247,16 +272,11 @@ class _AdminProductosPageState extends State<AdminProductosPage> {
                       ),
                     );
 
-                    // Si se creó/editó un producto, recargar la lista
-                    if (result == true) {
-                      context.read<AdminProductosBloc>().add(
-                        LoadAdminProductos(
-                          searchQuery: _currentSearchQuery,
-                          categoryId: _currentCategoryId,
-                          status: _currentStatus,
-                        ),
-                      );
-                    }
+                    // Ya no necesitamos recargar manualmente aquí,
+                    // el BLoC lo hace automáticamente después de crear/editar
+                    print(
+                      'DEBUG: Regresando de agregar producto, result: $result',
+                    );
                   },
                 ),
               ],
@@ -325,16 +345,11 @@ class _AdminProductosPageState extends State<AdminProductosPage> {
                         ),
                       );
 
-                      // Si se editó el producto, recargar la lista
-                      if (result == true) {
-                        context.read<AdminProductosBloc>().add(
-                          LoadAdminProductos(
-                            searchQuery: _currentSearchQuery,
-                            categoryId: _currentCategoryId,
-                            status: _currentStatus,
-                          ),
-                        );
-                      }
+                      // Ya no necesitamos recargar manualmente aquí,
+                      // el BLoC lo hace automáticamente después de editar
+                      print(
+                        'DEBUG: Regresando de editar producto, result: $result',
+                      );
                     }
                   },
                 ),

@@ -334,13 +334,15 @@ class _AdminProductoFormPageState extends State<AdminProductoFormPage> {
       // Agregar imagen a la lista
       setState(() {
         _newMedias.add({
-          'media_url': imageUrl,
-          'media_type': 'image',
-          'is_primary': _newMedias.isEmpty && _existingMedias.isEmpty,
+          'url': imageUrl,
+          'type': 'image',
+          'is_main': _newMedias.isEmpty && _existingMedias.isEmpty,
+          'is_active': true,
           'alt_text': 'Imagen del producto',
-          'order_index': _newMedias.length + _existingMedias.length,
+          'order': _newMedias.length + _existingMedias.length,
           'file_name': fileName, // Guardar nombre para posible eliminación
           'file_size': fileSize,
+          'created_at': DateTime.now().toIso8601String(),
         });
       });
 
@@ -413,7 +415,7 @@ class _AdminProductoFormPageState extends State<AdminProductoFormPage> {
     setState(() {
       // Quitar primary de todos los nuevos medios
       for (var media in _newMedias) {
-        media['is_primary'] = false;
+        media['is_main'] = false;
       }
 
       // Establecer el nuevo primary
@@ -427,7 +429,7 @@ class _AdminProductoFormPageState extends State<AdminProductoFormPage> {
           ),
         );
       } else if (newIndex >= 0) {
-        _newMedias[newIndex]['is_primary'] = true;
+        _newMedias[newIndex]['is_main'] = true;
       }
     });
   }
@@ -454,8 +456,8 @@ class _AdminProductoFormPageState extends State<AdminProductoFormPage> {
       final media = _newMedias[i];
       allMedias.add(
         _buildMediaItem(
-          imageUrl: media['media_url'],
-          isPrimary: media['is_primary'] ?? false,
+          imageUrl: media['url'],
+          isPrimary: media['is_main'] ?? false,
           isNew: true,
           onRemove: () => _removeNewMedia(i),
           onSetPrimary: () => _setAsPrimaryMedia(-1, i),

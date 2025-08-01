@@ -24,8 +24,13 @@ class ProductosListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AdminProductosBloc, AdminProductosState>(
       builder: (context, state) {
+        print(
+          'DEBUG: ProductosListView BlocBuilder recibió estado: ${state.runtimeType}',
+        );
+
         if (state is AdminProductosLoading &&
             !(state is AdminProductosLoaded)) {
+          print('DEBUG: Mostrando loading indicator');
           return const Center(child: CircularProgressIndicator());
         }
 
@@ -61,6 +66,10 @@ class ProductosListView extends StatelessWidget {
         }
 
         if (state is AdminProductosLoaded) {
+          print(
+            'DEBUG: ProductosListView mostrando ${state.productos.length} productos',
+          );
+
           if (state.productos.isEmpty) {
             return Center(
               child: Column(

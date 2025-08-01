@@ -428,7 +428,7 @@ class SupabaseProductoService {
       final response =
           await _supabase
               .from(_tablaProductoMedias)
-              .insert(media.toJson())
+              .insert(media.toJson(includeId: false))
               .select()
               .single();
 
@@ -444,14 +444,14 @@ class SupabaseProductoService {
     ProductoMedias media,
   ) async {
     try {
-      final data = media.toJson();
+      final data = media.toJson(includeId: false);
       data['updated_at'] = DateTime.now().toIso8601String();
 
       final response =
           await _supabase
               .from(_tablaProductoMedias)
               .update(data)
-              .eq('id', id)
+              .eq('product_medias_id', id)
               .select()
               .single();
 
@@ -464,7 +464,10 @@ class SupabaseProductoService {
   /// Elimina una media
   static Future<void> eliminarMedia(int id) async {
     try {
-      await _supabase.from(_tablaProductoMedias).delete().eq('id', id);
+      await _supabase
+          .from(_tablaProductoMedias)
+          .delete()
+          .eq('product_medias_id', id);
     } catch (e) {
       throw Exception('Error al eliminar media: $e');
     }
@@ -486,7 +489,7 @@ class SupabaseProductoService {
       await _supabase
           .from(_tablaProductoMedias)
           .update({'is_main': true})
-          .eq('id', mediaId);
+          .eq('product_medias_id', mediaId);
     } catch (e) {
       throw Exception('Error al establecer imagen principal: $e');
     }
@@ -711,7 +714,12 @@ class SupabaseProductoService {
   ) async {
     final mediasData =
         medias
-            .map((media) => {...media.toJson(), 'product_id': productoId})
+            .map(
+              (media) => {
+                ...media.toJson(includeId: false),
+                'product_id': productoId,
+              },
+            )
             .toList();
 
     await _supabase.from(_tablaProductoMedias).insert(mediasData);

@@ -63,20 +63,24 @@ class ProductoMedias extends Equatable {
 
   factory ProductoMedias.fromJson(Map<String, dynamic> json) {
     return ProductoMedias(
-      id: json['product_medias_id'] ?? json['id'] ?? 0,
-      productId: json['product_id'] ?? 0,
+      id:
+          json['product_medias_id'] ??
+          json['productMediasId'] ??
+          json['id'] ??
+          0,
+      productId: json['product_id'] ?? json['productId'] ?? 0,
       type: MediaType.fromString(json['type'] ?? 'image'),
       url: json['url'] ?? '',
-      thumbnailUrl: json['thumbnail_url'],
+      thumbnailUrl: json['thumbnail_url'] ?? json['thumbnailUrl'],
       width: json['width'],
       height: json['height'],
-      fileSize: json['file_size']?.toInt(),
+      fileSize: _parseFileSize(json['file_size'] ?? json['fileSize']),
       duration: json['duration'],
       order: json['order'] ?? json['orden'] ?? 0,
-      isMain: json['is_main'] ?? false,
-      isActive: json['is_active'] ?? true,
+      isMain: json['is_main'] ?? json['isMain'] ?? false,
+      isActive: json['is_active'] ?? json['isActive'] ?? true,
       description: json['description'] ?? json['descripcion'],
-      altText: json['alt_text'],
+      altText: json['alt_text'] ?? json['altText'],
       metadata:
           json['metadata'] != null
               ? Map<String, dynamic>.from(json['metadata'])
@@ -84,17 +88,27 @@ class ProductoMedias extends Equatable {
       createdAt:
           json['created_at'] != null
               ? DateTime.parse(json['created_at'])
+              : json['createdAt'] != null
+              ? DateTime.parse(json['createdAt'])
               : DateTime.now(),
       updatedAt:
           json['updated_at'] != null
               ? DateTime.parse(json['updated_at'])
+              : json['updatedAt'] != null
+              ? DateTime.parse(json['updatedAt'])
               : null,
     );
   }
 
-  Map<String, dynamic> toJson() {
-    return {
-      'product_medias_id': id,
+  static int? _parseFileSize(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is String) return int.tryParse(value);
+    return null;
+  }
+
+  Map<String, dynamic> toJson({bool includeId = false}) {
+    final json = <String, dynamic>{
       'product_id': productId,
       'type': type.value,
       'url': url,
@@ -112,6 +126,12 @@ class ProductoMedias extends Equatable {
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt?.toIso8601String(),
     };
+
+    if (includeId && id > 0) {
+      json['product_medias_id'] = id;
+    }
+
+    return json;
   }
 
   @override

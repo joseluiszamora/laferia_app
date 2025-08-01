@@ -134,9 +134,14 @@ class AdminProductoService {
       // Agregar medias si existen
       if (medias.isNotEmpty) {
         final mediasData =
-            medias
-                .map((media) => {...media, 'product_id': productoId})
-                .toList();
+            medias.map((media) {
+              // Crear una copia del media sin el campo file_name
+              final cleanMedia = Map<String, dynamic>.from(media);
+              cleanMedia.remove(
+                'file_name',
+              ); // Remover campo que no existe en BD
+              return {...cleanMedia, 'product_id': productoId};
+            }).toList();
 
         await _supabase.from(_tablaProductoMedias).insert(mediasData);
       }
@@ -175,7 +180,7 @@ class AdminProductoService {
         await _supabase
             .from(_tablaProductoMedias)
             .delete()
-            .inFilter('id', mediasToDelete);
+            .inFilter('product_medias_id', mediasToDelete);
       }
 
       // Actualizar datos principales
@@ -209,9 +214,14 @@ class AdminProductoService {
         print('DEBUG: Insertando ${medias.length} nuevas medias');
         // Solo insertar nuevas medias (no eliminar todas las existentes)
         final mediasData =
-            medias
-                .map((media) => {...media, 'product_id': productoId})
-                .toList();
+            medias.map((media) {
+              // Crear una copia del media sin el campo file_name
+              final cleanMedia = Map<String, dynamic>.from(media);
+              cleanMedia.remove(
+                'file_name',
+              ); // Remover campo que no existe en BD
+              return {...cleanMedia, 'product_id': productoId};
+            }).toList();
 
         await _supabase.from(_tablaProductoMedias).insert(mediasData);
       }
@@ -239,7 +249,10 @@ class AdminProductoService {
           .eq('product_id', productoId);
 
       // Eliminar producto principal
-      await _supabase.from(_tablaProducto).delete().eq('id', productoId);
+      await _supabase
+          .from(_tablaProducto)
+          .delete()
+          .eq('product_id', productoId);
     } catch (e) {
       throw Exception('Error al eliminar producto: $e');
     }
@@ -276,7 +289,7 @@ class AdminProductoService {
       await _supabase
           .from(_tablaProducto)
           .update({'status': status.value})
-          .eq('id', productoId);
+          .eq('product_id', productoId);
     } catch (e) {
       throw Exception('Error al actualizar estado del producto: $e');
     }
@@ -291,7 +304,7 @@ class AdminProductoService {
       await _supabase
           .from(_tablaProducto)
           .update({'status': status.value})
-          .inFilter('id', productoIds);
+          .inFilter('product_id', productoIds);
     } catch (e) {
       throw Exception('Error al actualizar estado masivo: $e');
     }
@@ -313,7 +326,10 @@ class AdminProductoService {
           .inFilter('product_id', productoIds);
 
       // Eliminar productos principales
-      await _supabase.from(_tablaProducto).delete().inFilter('id', productoIds);
+      await _supabase
+          .from(_tablaProducto)
+          .delete()
+          .inFilter('product_id', productoIds);
     } catch (e) {
       throw Exception('Error al eliminar productos masivo: $e');
     }
