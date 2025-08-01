@@ -222,13 +222,24 @@ class _AdminProductosPageState extends State<AdminProductosPage> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.add),
-                  onPressed: () {
-                    Navigator.push(
+                  onPressed: () async {
+                    final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const AdminProductoFormPage(),
                       ),
                     );
+
+                    // Si se creó/editó un producto, recargar la lista
+                    if (result == true) {
+                      context.read<AdminProductosBloc>().add(
+                        LoadAdminProductos(
+                          searchQuery: _currentSearchQuery,
+                          categoryId: _currentCategoryId,
+                          status: _currentStatus,
+                        ),
+                      );
+                    }
                   },
                 ),
               ],
@@ -276,7 +287,7 @@ class _AdminProductosPageState extends State<AdminProductosPage> {
                   isSelectionMode: _isSelectionMode,
                   selectedProductos: _selectedProductos,
                   onProductoSelected: _selectProducto,
-                  onProductoTap: (producto) {
+                  onProductoTap: (producto) async {
                     if (_isSelectionMode) {
                       _selectProducto(
                         producto.id,
@@ -284,7 +295,7 @@ class _AdminProductosPageState extends State<AdminProductosPage> {
                       );
                     } else {
                       // Navegar a detalle o edición
-                      Navigator.push(
+                      final result = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder:
@@ -292,6 +303,17 @@ class _AdminProductosPageState extends State<AdminProductosPage> {
                                   AdminProductoFormPage(producto: producto),
                         ),
                       );
+
+                      // Si se editó el producto, recargar la lista
+                      if (result == true) {
+                        context.read<AdminProductosBloc>().add(
+                          LoadAdminProductos(
+                            searchQuery: _currentSearchQuery,
+                            categoryId: _currentCategoryId,
+                            status: _currentStatus,
+                          ),
+                        );
+                      }
                     }
                   },
                 ),
