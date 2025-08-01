@@ -12,7 +12,7 @@ import 'package:laferia/views/design/setup_complete_page.dart';
 import 'package:laferia/views/design/design_pages.dart';
 import 'package:laferia/views/design/search_page.dart';
 import 'package:laferia/views/design/cart_page.dart';
-import 'package:laferia/views/design/profile_page.dart';
+import 'package:laferia/views/profile/profile_page.dart';
 import 'package:laferia/views/design/payment_methods_page.dart';
 import 'package:laferia/views/design/order_history_page.dart';
 import 'package:laferia/views/tienda/tienda_list_page.dart';

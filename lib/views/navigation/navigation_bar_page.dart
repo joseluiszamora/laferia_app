@@ -1,24 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:laferia/core/layouts/layout_main.dart';
-import 'package:laferia/core/providers/theme_provider.dart';
 import 'package:laferia/core/constants/app_colors.dart';
-import 'package:laferia/core/services/tienda_service.dart';
 import 'package:laferia/views/admin/admin_demo_page.dart';
 import 'package:laferia/views/auth/home_page_demo.dart';
 import 'package:laferia/views/categorias/categorias_page.dart';
 import 'package:laferia/views/design/design_pages.dart';
+import 'package:laferia/views/profile/profile_page.dart';
 import 'package:laferia/views/home/home_page.dart';
-import 'package:laferia/views/home/home_page_with_map.dart';
-import 'package:laferia/views/maps/main_map.dart';
 import 'package:laferia/views/navigation/components/header_section.dart';
-import 'package:laferia/views/tienda/tienda_list_page.dart';
 import 'package:laferia/views/tiendas-maps/markers_maps_page.dart';
-import 'package:laferia/views/tiendas-maps/tiendas_maps_page.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class NavigationBarPage extends StatefulWidget {
   const NavigationBarPage({super.key});
@@ -29,7 +22,6 @@ class NavigationBarPage extends StatefulWidget {
 
 class _NavigationBarPageState extends State<NavigationBarPage> {
   int _pageSelected = 2;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
@@ -69,14 +61,11 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
     ];
 
     return Scaffold(
-      key: _scaffoldKey,
       appBar: HeaderSection(
         title: titles[_pageSelected],
-        openDrawer: () => _scaffoldKey.currentState?.openDrawer(),
         isMainPage:
             _pageSelected == 2, // Check if the current page is the main page
       ),
-      drawer: _buildDrawer(context),
       body: AnimatedSwitcher(
         duration: const Duration(milliseconds: 600),
         child: LayoutMain(content: pages[_pageSelected]),
@@ -130,133 +119,4 @@ class _NavigationBarPageState extends State<NavigationBarPage> {
       ),
     );
   }
-
-  Widget _buildDrawer(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
-    final user = Supabase.instance.client.auth.currentUser;
-
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
-        children: [
-          _buildDrawerHeader('${user?.userMetadata?['full_name']}'),
-          _buildDrawerItem(
-            icon: Icons.person,
-            text: 'Perfil',
-            onTap: () => _navigateTo(context, '/profile'),
-          ),
-          _buildDrawerItem(
-            icon: Icons.handshake,
-            text: 'Mis Ofertas',
-            onTap: () {
-              Navigator.pop(context); // Cierra el drawer
-              setState(() {
-                _pageSelected = 2; // Cambia a la pestaña de ofertas
-              });
-            },
-          ),
-          _buildDrawerItem(
-            icon: Icons.history,
-            text: 'Historial',
-            onTap: () => _navigateTo(context, '/history'),
-          ),
-          _buildDrawerItem(
-            icon: Icons.settings,
-            text: 'Configuración',
-            onTap: () => _navigateTo(context, '/settings'),
-          ),
-          // Selector de tema
-          ListTile(
-            leading: Icon(
-              themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
-            ),
-            title: Text(
-              'Tema ${themeProvider.isDarkMode ? 'Oscuro' : 'Claro'}',
-            ),
-            trailing: Switch(
-              value: themeProvider.isDarkMode,
-              onChanged: (_) {
-                themeProvider.toggleTheme();
-              },
-              activeColor: Theme.of(context).colorScheme.primary,
-            ),
-          ),
-          const Divider(),
-          _buildDrawerItem(
-            icon: Icons.help,
-            text: 'Ayuda',
-            onTap: () => _navigateTo(context, '/help'),
-          ),
-          _buildDrawerItem(
-            icon: Icons.exit_to_app,
-            text: 'Cerrar sesión',
-            onTap: () => _logout(context),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDrawerHeader(String user) {
-    return DrawerHeader(
-      decoration: BoxDecoration(color: const Color(0xFF0bbfdf)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          CircleAvatar(
-            radius: 30,
-            child: Icon(Icons.person, size: 30, color: Colors.white),
-          ),
-          SizedBox(height: 10),
-          Text(
-            user,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Text('', style: TextStyle(color: Colors.white70, fontSize: 14)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDrawerItem({
-    required IconData icon,
-    required String text,
-    required VoidCallback onTap,
-  }) {
-    return ListTile(leading: Icon(icon), title: Text(text), onTap: onTap);
-  }
-
-  void _navigateTo(BuildContext context, String route) {
-    Navigator.pop(context); // Cierra el drawer
-    Navigator.pushNamed(context, route);
-  }
-
-  void _logout(BuildContext context) {
-    // Navigator.pop(context);
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: const Text('Cerrar Sesión'),
-            content: const Text('¿Está seguro que desea cerrar sesión?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancelar'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Cerrar Sesión'),
-              ),
-            ],
-          ),
-    ); // Cierra el drawer
-  }
-} // Lógica para cerrar sesión
+}

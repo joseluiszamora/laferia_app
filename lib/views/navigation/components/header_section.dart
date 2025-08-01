@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:laferia/views/profile/profile_page.dart';
 
 class HeaderSection extends StatefulWidget implements PreferredSizeWidget {
-  final VoidCallback openDrawer;
   final String title;
   final bool isMainPage;
 
   const HeaderSection({
     super.key,
-    required this.openDrawer,
     required this.title,
     required this.isMainPage,
   });
@@ -48,10 +48,7 @@ class _HeaderSectionState extends State<HeaderSection> {
     return AppBar(
       backgroundColor: theme.appBarTheme.backgroundColor,
       elevation: theme.appBarTheme.elevation,
-      leading: IconButton(
-        icon: Icon(Icons.menu, color: isDarkMode ? Colors.white : Colors.black),
-        onPressed: widget.openDrawer,
-      ),
+      leading: _buildUserAvatar(isDarkMode),
       title: Padding(
         padding: const EdgeInsets.only(left: 0),
         child:
@@ -72,12 +69,6 @@ class _HeaderSectionState extends State<HeaderSection> {
                 ),
       ),
       actions: [
-        // CircleAvatar(
-        //   radius: 16,
-        //   backgroundImage: NetworkImage(
-        //     'https://randomuser.me/api/portraits/men/7.jpg',
-        //   ),
-        // ),
         IconButton(
           icon: Icon(
             Icons.notifications,
@@ -88,6 +79,41 @@ class _HeaderSectionState extends State<HeaderSection> {
           },
         ),
       ],
+    );
+  }
+
+  Widget _buildUserAvatar(bool isDarkMode) {
+    final user = Supabase.instance.client.auth.currentUser;
+    final avatarUrl = user?.userMetadata?['avatar_url'];
+
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const ProfilePage()),
+          );
+        },
+        child: CircleAvatar(
+          radius: 14,
+          backgroundColor: Theme.of(
+            context,
+          ).colorScheme.primary.withOpacity(0.2),
+          backgroundImage:
+              avatarUrl != null && avatarUrl.isNotEmpty
+                  ? NetworkImage(avatarUrl)
+                  : null,
+          child:
+              avatarUrl == null || avatarUrl.isEmpty
+                  ? Icon(
+                    Icons.person,
+                    size: 16,
+                    color: Theme.of(context).colorScheme.primary,
+                  )
+                  : null,
+        ),
+      ),
     );
   }
 
