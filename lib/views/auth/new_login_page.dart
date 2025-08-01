@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../core/providers/auth_provider.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class NewLoginPage extends StatefulWidget {
+  const NewLoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<NewLoginPage> createState() => _NewLoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _NewLoginPageState extends State<NewLoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -48,38 +48,6 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e) {
       setState(() {
         _errorMessage = 'Error inesperado: ${e.toString()}';
-      });
-    }
-  }
-
-  Future<void> _signInWithGoogle() async {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
-
-    setState(() {
-      _errorMessage = null;
-    });
-
-    try {
-      final result = await authProvider.signInWithGoogle();
-
-      if (!result.isSuccess) {
-        setState(() {
-          _errorMessage = result.message;
-        });
-      } else {
-        // Mostrar mensaje de éxito o redirección
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(result.message),
-              backgroundColor: Colors.green[600],
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      setState(() {
-        _errorMessage = 'Error inesperado con Google: ${e.toString()}';
       });
     }
   }
@@ -302,19 +270,18 @@ class _LoginPageState extends State<LoginPage> {
 
                         const SizedBox(height: 24),
 
-                        // Botón de Google
+                        // Botón de Google (temporalmente deshabilitado)
                         SizedBox(
                           width: double.infinity,
                           height: 50,
                           child: OutlinedButton.icon(
-                            onPressed:
-                                authProvider.isLoading
-                                    ? null
-                                    : _signInWithGoogle,
+                            onPressed: null,
                             icon: const Icon(Icons.g_mobiledata, size: 24),
-                            label: const Text('Continuar con Google'),
+                            label: const Text(
+                              'Continuar con Google (Próximamente)',
+                            ),
                             style: OutlinedButton.styleFrom(
-                              foregroundColor: Colors.grey[700],
+                              foregroundColor: Colors.grey[400],
                               side: BorderSide(color: Colors.grey[300]!),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),

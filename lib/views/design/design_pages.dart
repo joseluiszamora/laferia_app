@@ -179,7 +179,7 @@ class DesignPagesPage extends StatelessWidget {
             child: Material(
               color: Colors.transparent,
               child: InkWell(
-                onTap: () => context.push(page.route),
+                onTap: () => context.pushNamed(page.route),
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
                   padding: const EdgeInsets.all(16),

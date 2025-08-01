@@ -8,11 +8,12 @@ import 'package:laferia/core/blocs/productos/productos_bloc.dart';
 import 'package:laferia/core/blocs/service_locator.dart';
 import 'package:laferia/core/blocs/tiendas/tiendas_bloc.dart';
 import 'package:laferia/core/providers/theme_provider.dart';
-import 'package:laferia/core/routes/app_router.dart';
+import 'package:laferia/core/providers/auth_provider.dart';
 import 'package:laferia/core/themes/design_theme.dart';
+import 'package:laferia/core/widgets/auth_wrapper.dart';
+import 'package:laferia/views/auth/register_page.dart';
+import 'package:laferia/views/auth/forgot_password_page.dart';
 import 'package:laferia/maps/tile_cache_service.dart';
-import 'package:laferia/views/auth/auth_screen.dart';
-import 'package:laferia/views/auth/home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -38,7 +39,10 @@ void main() async {
   );
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => ThemeProvider())],
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+      ],
       child: const BlocsProviders(),
     ),
   );
@@ -83,47 +87,33 @@ class MyApp extends StatelessWidget {
         //       themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
         //   home: AuthWrapper(),
         // );
-        return MaterialApp.router(
+        // Usar AuthWrapper en lugar del router para manejar autenticación
+        return MaterialApp(
           title: 'La Feria',
           debugShowCheckedModeBanner: false,
           theme: DesignTheme.lightTheme(context),
           darkTheme: DesignTheme.darkTheme(context),
           themeMode:
               themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-          routerConfig: appRouter(),
+          home: const AuthWrapper(),
+          // Mantener el router para navegación interna
+          // onGenerateRoute: (settings) {
+          //   // Manejar rutas específicas si es necesario
+          //   switch (settings.name) {
+          //     case '/new-register':
+          //       return MaterialPageRoute(
+          //         builder: (context) => const RegisterPage(),
+          //       );
+          //     case '/new-forgot-password':
+          //       return MaterialPageRoute(
+          //         builder: (context) => const ForgotPasswordPage(),
+          //       );
+          //     default:
+          //       return null;
+          //   }
+          // },
         );
       },
     );
-  }
-}
-
-class AuthWrapper extends StatefulWidget {
-  const AuthWrapper({super.key});
-
-  @override
-  State<AuthWrapper> createState() => _AuthWrapperState();
-}
-
-class _AuthWrapperState extends State<AuthWrapper> {
-  @override
-  void initState() {
-    super.initState();
-    _checkAuthState();
-  }
-
-  void _checkAuthState() {
-    // Escuchar cambios en el estado de autenticación
-    Supabase.instance.client.auth.onAuthStateChange.listen((data) {
-      if (mounted) {
-        setState(() {});
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final session = Supabase.instance.client.auth.currentSession;
-
-    return session == null ? AuthScreen() : HomeScreen();
   }
 }

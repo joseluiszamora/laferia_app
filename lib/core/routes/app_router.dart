@@ -12,18 +12,23 @@ import 'package:laferia/views/design/setup_complete_page.dart';
 import 'package:laferia/views/design/design_pages.dart';
 import 'package:laferia/views/design/search_page.dart';
 import 'package:laferia/views/design/cart_page.dart';
-import 'package:laferia/views/design/profile_page.dart';
+import 'package:laferia/views/profile/profile_page.dart';
 import 'package:laferia/views/design/payment_methods_page.dart';
 import 'package:laferia/views/design/order_history_page.dart';
 import 'package:laferia/views/tienda/tienda_list_page.dart';
-import 'package:laferia/views/tiendas-maps/tiendas_maps_page.dart';
+
+// Importar nuestra nueva página de recuperación de contraseña
+import 'package:laferia/views/auth/forgot_password_page.dart';
+// Importar nuestras páginas de autenticación mejoradas
+import 'package:laferia/views/auth/login_page.dart' as new_auth;
+import 'package:laferia/views/auth/register_page.dart' as new_auth;
+import 'package:laferia/views/auth/home_page_demo.dart';
 
 import 'app_routes.dart';
 
 GoRouter appRouter() => GoRouter(
-  // Cambiar initialLocation a la página de diseño
-  // initialLocation: AppRoutes.splash,
-  initialLocation: AppRoutes.navigation,
+  // Cambiar initialLocation a nuestra nueva página de login
+  initialLocation: AppRoutes.newLogin,
   routes: publicRoutes(),
   redirect: (context, state) {
     final isSplashRoute = state.matchedLocation == AppRoutes.splash;
@@ -35,7 +40,7 @@ GoRouter appRouter() => GoRouter(
     // // Si está en design pages, permitir
     // if (isDesignPageRoute) return null;
 
-    // return null;
+    return null;
   },
 );
 
@@ -66,6 +71,33 @@ List<RouteBase> publicRoutes() => [
     path: AppRoutes.register,
     name: 'Register',
     builder: (context, state) => const RegisterPage(),
+  ),
+  GoRoute(
+    path: AppRoutes.forgotPassword,
+    name: 'ForgotPassword',
+    builder: (context, state) => const ForgotPasswordPage(),
+  ),
+
+  /* <---- NUEVAS PÁGINAS DE AUTENTICACIÓN -----> */
+  GoRoute(
+    path: AppRoutes.newLogin,
+    name: 'NewLogin',
+    builder: (context, state) => const new_auth.LoginPage(),
+  ),
+  GoRoute(
+    path: AppRoutes.newRegister,
+    name: 'NewRegister',
+    builder: (context, state) => const new_auth.RegisterPage(),
+  ),
+  GoRoute(
+    path: AppRoutes.newForgotPassword,
+    name: 'NewForgotPassword',
+    builder: (context, state) => const ForgotPasswordPage(),
+  ),
+  GoRoute(
+    path: AppRoutes.homeDemo,
+    name: 'HomeDemo',
+    builder: (context, state) => const HomePageDemo(),
   ),
   GoRoute(
     path: AppRoutes.emailVerification,

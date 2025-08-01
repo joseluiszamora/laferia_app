@@ -1,25 +1,43 @@
 import 'package:flutter/material.dart';
 import 'package:laferia/views/design/components/custom_buttons.dart';
 import 'package:laferia/views/design/components/custom_text_field.dart';
+import 'package:laferia/core/services/auth_service.dart';
+import 'package:laferia/core/providers/theme_provider.dart';
+import 'package:laferia/core/providers/auth_provider.dart';
+import 'package:laferia/core/widgets/auth_wrapper.dart';
+import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  const ProfilePage({super.key});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final TextEditingController _nameController = TextEditingController(
-    text: "John Doe",
-  );
-  final TextEditingController _emailController = TextEditingController(
-    text: "john.doe@example.com",
-  );
-  final TextEditingController _phoneController = TextEditingController(
-    text: "+1 234 567 8900",
-  );
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   bool _isEditing = false;
+  final AuthService _authService = AuthService();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  void _loadUserData() {
+    final user = _authService.currentUser;
+    if (user != null) {
+      _nameController.text =
+          _authService.userDisplayName ??
+          user.userMetadata?['full_name'] ??
+          'Usuario sin nombre';
+      _emailController.text = user.email ?? 'Sin email';
+      _phoneController.text = user.userMetadata?['phone'] ?? '';
+    }
+  }
 
   @override
   void dispose() {
@@ -46,7 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          "Profile",
+          "Perfil",
           style: TextStyle(
             color: theme.textTheme.headlineMedium?.color,
             fontWeight: FontWeight.bold,
@@ -93,8 +111,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
             // Logout button
             SecondaryButton(
-              text: "Logout",
-              onPressed: _showLogoutDialog,
+              text: "Cerrar Sesión",
+              onPressed: () => _signOut(context),
               margin: EdgeInsets.zero,
               backgroundColor: Colors.red.shade50,
               textColor: Colors.red.shade700,
@@ -105,7 +123,56 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  Future<void> _signOut(BuildContext context) async {
+    // final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    // try {
+    //   final result = await authProvider.signOut();
+
+    //   if (!result.isSuccess && context.mounted) {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text(result.message), backgroundColor: Colors.red),
+    //     );
+    //   }
+    //   // Si el signOut es exitoso, el AuthWrapper se encargará de navegar al login automáticamente
+    // } catch (e) {
+    //   if (context.mounted) {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(
+    //         content: Text('Error al cerrar sesión: ${e.toString()}'),
+    //         backgroundColor: Colors.red,
+    //       ),
+    //     );
+    //   }
+    // }
+    try {
+      // Primero cerrar la sesión
+      await _authService.signOut();
+
+      if (mounted) {
+        // Usar AuthProvider para actualizar el estado
+        final authProvider = Provider.of<AuthProvider>(context, listen: false);
+        await authProvider.signOut();
+
+        // Navegar al AuthWrapper que manejará automáticamente mostrar login
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const AuthWrapper()),
+          (Route<dynamic> route) => false,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error al cerrar sesión: ${e.toString()}")),
+        );
+      }
+    }
+  }
+
   Widget _buildProfileHeader(ThemeData theme) {
+    final user = _authService.currentUser;
+    final avatarUrl = user?.userMetadata?['avatar_url'];
+
     return Column(
       children: [
         Stack(
@@ -113,11 +180,18 @@ class _ProfilePageState extends State<ProfilePage> {
             CircleAvatar(
               radius: 60,
               backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
-              child: Icon(
-                Icons.person,
-                size: 60,
-                color: theme.colorScheme.primary,
-              ),
+              backgroundImage:
+                  avatarUrl != null && avatarUrl.isNotEmpty
+                      ? NetworkImage(avatarUrl)
+                      : null,
+              child:
+                  avatarUrl == null || avatarUrl.isEmpty
+                      ? Icon(
+                        Icons.person,
+                        size: 60,
+                        color: theme.colorScheme.primary,
+                      )
+                      : null,
             ),
             if (_isEditing)
               Positioned(
@@ -168,18 +242,33 @@ class _ProfilePageState extends State<ProfilePage> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: Colors.green.shade100,
+            color:
+                user?.emailConfirmedAt != null
+                    ? Colors.green.shade100
+                    : Colors.orange.shade100,
             borderRadius: BorderRadius.circular(20),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.verified, size: 16, color: Colors.green.shade700),
+              Icon(
+                user?.emailConfirmedAt != null ? Icons.verified : Icons.warning,
+                size: 16,
+                color:
+                    user?.emailConfirmedAt != null
+                        ? Colors.green.shade700
+                        : Colors.orange.shade700,
+              ),
               const SizedBox(width: 4),
               Text(
-                "Verified Account",
+                user?.emailConfirmedAt != null
+                    ? "Cuenta Verificada"
+                    : "Email sin verificar",
                 style: TextStyle(
-                  color: Colors.green.shade700,
+                  color:
+                      user?.emailConfirmedAt != null
+                          ? Colors.green.shade700
+                          : Colors.orange.shade700,
                   fontWeight: FontWeight.w600,
                   fontSize: 12,
                   fontFamily: 'Kodchasan',
@@ -204,7 +293,7 @@ class _ProfilePageState extends State<ProfilePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Personal Information",
+            "Información Personal",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -215,7 +304,7 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(height: 20),
 
           CustomTextField(
-            label: "Full Name",
+            label: "Nombre Completo",
             controller: _nameController,
             enabled: _isEditing,
             prefixIcon: Icon(
@@ -227,9 +316,9 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(height: 16),
 
           CustomTextField(
-            label: "Email",
+            label: "Correo Electrónico",
             controller: _emailController,
-            enabled: _isEditing,
+            enabled: false, // El email no se puede editar
             keyboardType: TextInputType.emailAddress,
             prefixIcon: Icon(
               Icons.email_outlined,
@@ -240,7 +329,7 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(height: 16),
 
           CustomTextField(
-            label: "Phone Number",
+            label: "Número de Teléfono",
             controller: _phoneController,
             enabled: _isEditing,
             keyboardType: TextInputType.phone,
@@ -267,7 +356,7 @@ class _ProfilePageState extends State<ProfilePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Quick Actions",
+            "Acciones Rápidas",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -282,7 +371,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Expanded(
                 child: _QuickActionButton(
                   icon: Icons.history,
-                  label: "Order History",
+                  label: "Historial",
                   theme: theme,
                   onTap: () => _navigateToOrderHistory(),
                 ),
@@ -291,7 +380,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Expanded(
                 child: _QuickActionButton(
                   icon: Icons.favorite_outline,
-                  label: "Favorites",
+                  label: "Favoritos",
                   theme: theme,
                   onTap: () => _navigateToFavorites(),
                 ),
@@ -304,7 +393,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Expanded(
                 child: _QuickActionButton(
                   icon: Icons.location_on_outlined,
-                  label: "Addresses",
+                  label: "Direcciones",
                   theme: theme,
                   onTap: () => _navigateToAddresses(),
                 ),
@@ -313,7 +402,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Expanded(
                 child: _QuickActionButton(
                   icon: Icons.payment,
-                  label: "Payment",
+                  label: "Pagos",
                   theme: theme,
                   onTap: () => _navigateToPaymentMethods(),
                 ),
@@ -326,6 +415,8 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildSettingsSection(ThemeData theme) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -337,7 +428,7 @@ class _ProfilePageState extends State<ProfilePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Settings",
+            "Configuración",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -347,32 +438,36 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           const SizedBox(height: 16),
 
+          // Selector de tema
+          _buildThemeSelector(theme, themeProvider),
+          const SizedBox(height: 8),
+
           _buildSettingItem(
             theme,
             Icons.notifications_outlined,
-            "Notifications",
-            "Manage your notification preferences",
+            "Notificaciones",
+            "Gestiona tus preferencias de notificación",
             () => _navigateToNotifications(),
           ),
           _buildSettingItem(
             theme,
             Icons.security,
-            "Privacy & Security",
-            "Manage your privacy settings",
+            "Privacidad y Seguridad",
+            "Gestiona tu configuración de privacidad",
             () => _navigateToPrivacy(),
           ),
           _buildSettingItem(
             theme,
             Icons.help_outline,
-            "Help & Support",
-            "Get help and contact support",
+            "Ayuda y Soporte",
+            "Obtén ayuda y contacta con soporte",
             () => _navigateToSupport(),
           ),
           _buildSettingItem(
             theme,
             Icons.info_outline,
-            "About",
-            "App version and information",
+            "Acerca de",
+            "Versión de la app e información",
             () => _showAboutDialog(),
           ),
         ],
@@ -418,18 +513,160 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void _changeProfilePicture() {
-    // Implement image picker functionality
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Profile picture update functionality")),
+  Widget _buildThemeSelector(ThemeData theme, ThemeProvider themeProvider) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(
+              themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+              color: theme.colorScheme.primary,
+              size: 20,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Tema ${themeProvider.isDarkMode ? 'Oscuro' : 'Claro'}',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontFamily: 'Kodchasan',
+                  ),
+                ),
+                Text(
+                  'Cambia entre tema claro y oscuro',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: theme.textTheme.bodySmall?.color,
+                    fontFamily: 'Kodchasan',
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Switch(
+            value: themeProvider.isDarkMode,
+            onChanged: (_) {
+              themeProvider.toggleTheme();
+            },
+            activeColor: theme.colorScheme.primary,
+          ),
+        ],
+      ),
     );
   }
 
-  void _saveProfile() {
-    // Implement save functionality
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Profile updated successfully")),
+  void _changeProfilePicture() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('Seleccionar de galería'),
+                onTap: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Funcionalidad de galería próximamente"),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.photo_camera),
+                title: const Text('Tomar foto'),
+                onTap: () {
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text("Funcionalidad de cámara próximamente"),
+                    ),
+                  );
+                },
+              ),
+              if (_authService.currentUser?.userMetadata?['avatar_url'] != null)
+                ListTile(
+                  leading: const Icon(Icons.delete, color: Colors.red),
+                  title: const Text(
+                    'Eliminar foto actual',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _removeProfilePicture();
+                  },
+                ),
+            ],
+          ),
+        );
+      },
     );
+  }
+
+  void _removeProfilePicture() async {
+    try {
+      await _authService.updateProfile(additionalData: {'avatar_url': null});
+
+      setState(() {
+        _loadUserData(); // Recargar datos para actualizar UI
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Foto de perfil eliminada")),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error al eliminar foto: ${e.toString()}")),
+        );
+      }
+    }
+  }
+
+  void _saveProfile() async {
+    try {
+      // Validar que el nombre no esté vacío
+      if (_nameController.text.trim().isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("El nombre no puede estar vacío")),
+        );
+        return;
+      }
+
+      // Actualizar el perfil del usuario
+      await _authService.updateProfile(
+        displayName: _nameController.text.trim(),
+        additionalData: {'phone': _phoneController.text.trim()},
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Perfil actualizado exitosamente")),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Error al actualizar perfil: ${e.toString()}"),
+          ),
+        );
+      }
+    }
   }
 
   void _showLogoutDialog() {
@@ -437,22 +674,58 @@ class _ProfilePageState extends State<ProfilePage> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: Text("Logout", style: TextStyle(fontFamily: 'Kodchasan')),
+            title: Text(
+              "Cerrar Sesión",
+              style: TextStyle(fontFamily: 'Kodchasan'),
+            ),
             content: Text(
-              "Are you sure you want to logout?",
+              "¿Estás seguro de que quieres cerrar sesión?",
               style: TextStyle(fontFamily: 'Kodchasan'),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text("Cancel"),
+                child: Text("Cancelar"),
               ),
               TextButton(
-                onPressed: () {
+                onPressed: () async {
                   Navigator.pop(context);
-                  // Implement logout functionality
+                  try {
+                    // Primero cerrar la sesión
+                    await _authService.signOut();
+
+                    if (mounted) {
+                      // Usar AuthProvider para actualizar el estado
+                      final authProvider = Provider.of<AuthProvider>(
+                        context,
+                        listen: false,
+                      );
+                      await authProvider.signOut();
+
+                      // Navegar al AuthWrapper que manejará automáticamente mostrar login
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (context) => const AuthWrapper(),
+                        ),
+                        (Route<dynamic> route) => false,
+                      );
+                    }
+                  } catch (e) {
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            "Error al cerrar sesión: ${e.toString()}",
+                          ),
+                        ),
+                      );
+                    }
+                  }
                 },
-                child: Text("Logout", style: TextStyle(color: Colors.red)),
+                child: Text(
+                  "Cerrar Sesión",
+                  style: TextStyle(color: Colors.red),
+                ),
               ),
             ],
           ),
@@ -460,51 +733,51 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _navigateToOrderHistory() {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text("Navigate to Order History")));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Navegar a Historial de Pedidos")),
+    );
   }
 
   void _navigateToFavorites() {
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text("Navigate to Favorites")));
+    ).showSnackBar(const SnackBar(content: Text("Navegar a Favoritos")));
   }
 
   void _navigateToAddresses() {
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text("Navigate to Addresses")));
+    ).showSnackBar(const SnackBar(content: Text("Navegar a Direcciones")));
   }
 
   void _navigateToPaymentMethods() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Navigate to Payment Methods")),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text("Navegar a Métodos de Pago")));
   }
 
   void _navigateToNotifications() {
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text("Navigate to Notifications")));
+    ).showSnackBar(const SnackBar(content: Text("Navegar a Notificaciones")));
   }
 
   void _navigateToPrivacy() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Navigate to Privacy Settings")),
+      const SnackBar(content: Text("Navegar a Configuración de Privacidad")),
     );
   }
 
   void _navigateToSupport() {
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(const SnackBar(content: Text("Navigate to Support")));
+    ).showSnackBar(const SnackBar(content: Text("Navegar a Soporte")));
   }
 
   void _showAboutDialog() {
     showAboutDialog(
       context: context,
-      applicationName: "Tasty!",
+      applicationName: "LaFeria",
       applicationVersion: "1.0.0",
       applicationIcon: Container(
         width: 60,
@@ -513,7 +786,7 @@ class _ProfilePageState extends State<ProfilePage> {
           color: Theme.of(context).colorScheme.primary,
           borderRadius: BorderRadius.circular(15),
         ),
-        child: const Icon(Icons.restaurant, color: Colors.white, size: 30),
+        child: const Icon(Icons.store, color: Colors.white, size: 30),
       ),
     );
   }
