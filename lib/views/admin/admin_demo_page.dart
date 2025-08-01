@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:laferia/views/admin/admin_categorias_pages.dart';
+import 'package:laferia/views/admin/productos/admin_productos_page.dart';
 import 'package:laferia/views/admin_components/admin_card.dart';
 import 'tiendas/tiendas.dart';
 
@@ -44,8 +45,10 @@ class AdminDemoPage extends StatelessWidget {
               icon: Icons.shopping_bag,
               color: Colors.green,
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Módulo en desarrollo')),
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const AdminProductosPage(),
+                  ),
                 );
               },
             ),

@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:laferia/core/blocs/admin_productos/admin_productos.dart';
 import 'package:laferia/core/blocs/categorias/categorias_bloc.dart';
 import 'package:laferia/core/blocs/comentarios/comentarios_bloc.dart';
 import 'package:laferia/core/blocs/location/location_bloc.dart';
@@ -15,4 +16,5 @@ void serviceLocatorInit() {
   getIt.registerLazySingleton<OfertasBloc>(() => OfertasBloc());
   getIt.registerLazySingleton<ProductosBloc>(() => ProductosBloc());
   getIt.registerLazySingleton<TiendasBloc>(() => TiendasBloc());
+  getIt.registerLazySingleton<AdminProductosBloc>(() => AdminProductosBloc());
 }

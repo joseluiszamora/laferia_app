@@ -16,6 +16,8 @@ import 'package:laferia/views/auth/home_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'core/blocs/admin_productos/admin_productos.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await TileCacheService.instance.initialize();
@@ -55,6 +57,10 @@ class BlocsProviders extends StatelessWidget {
         BlocProvider(create: (context) => getIt<OfertasBloc>(), lazy: true),
         BlocProvider(create: (context) => getIt<ProductosBloc>(), lazy: true),
         BlocProvider(create: (context) => getIt<TiendasBloc>(), lazy: true),
+        BlocProvider(
+          create: (context) => getIt<AdminProductosBloc>(),
+          lazy: true,
+        ),
       ],
       child: const MyApp(),
     );
